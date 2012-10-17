@@ -1,0 +1,8 @@
+Compiling
+---------
+
+You'll need: 
+
+ - LaTeX with -extras and -science packages, probably
+ - install.packages('knitr', dependencies = TRUE)
+ - install.packages('ggplot2', dependencies = TRUE)
