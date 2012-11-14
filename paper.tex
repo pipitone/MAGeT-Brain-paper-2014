@@ -70,12 +70,23 @@
 \begin{document}
 
 
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlfunctioncall{library}(ggplot2)
+\hlfunctioncall{library}(Hmisc)
+\hlfunctioncall{library}(reshape2)
+\end{alltt}
+\end{kframe}
+\end{knitrout}
+
 
 \title{Hippocampal segmentation with MAGeT}
-\author{Jon Pipitone, }
+\author{Jon Pipitone}
 \maketitle
 
 \section{Introduction}
+
 
 The hippocampus is of particular interest to many researchers because it is implicated in forms of brain dysfunction such as Alzheimer's disease and schizophrenia, and has functional significance in cognitive processes such as learning and memory.  For many research questions involving neuroimaging data, accurate identification of the hippocampus and its subregions in participant MR images is a necessary first step in order to analyse neuroanatomical differences and changes in  sample populations.  \todo{expand}
 
@@ -149,7 +160,7 @@ Source code can be found at \url{http://github.com/pipitone/MAGeTbrain}.
 
 \begin{figure}[h]
   \centering
-    \includegraphics[width=0.5\textwidth]{MAGeT-figure.png}
+    \includegraphics[width=0.5\textwidth]{figure/MAGeT-figure.png}
   \caption{Diagram of the MAGeT Brain algorithm}
 \end{figure}
 
@@ -248,36 +259,19 @@ Kappa vs. Number of templates:
 Smoothing line fitted using GAM (generalised additive model) from R with defaults from ggplot2 (formula: y ~ s(x, bs = "cs"))
 
 \begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
+
+{\centering \includegraphics[width=\maxwidth]{figure/a2a1} 
+
+}
 
 
-{\ttfamily\noindent\itshape\textcolor{messagecolor}{\#\# geom\_smooth: method="auto" and size of largest group is >=1000, so using gam with formula: y \textasciitilde{} s(x, bs = "cs"). Use 'method = x' to change the smoothing method.}}
 
-{\ttfamily\noindent\itshape\textcolor{messagecolor}{\#\# geom\_smooth: method="auto" and size of largest group is >=1000, so using gam with formula: y \textasciitilde{} s(x, bs = "cs"). Use 'method = x' to change the smoothing method.}}
+{\centering \includegraphics[width=\maxwidth]{figure/a2a2} 
 
-{\ttfamily\noindent\itshape\textcolor{messagecolor}{\#\# geom\_smooth: method="auto" and size of largest group is >=1000, so using gam with formula: y \textasciitilde{} s(x, bs = "cs"). Use 'method = x' to change the smoothing method.}}
-
-{\ttfamily\noindent\itshape\textcolor{messagecolor}{\#\# geom\_smooth: method="auto" and size of largest group is >=1000, so using gam with formula: y \textasciitilde{} s(x, bs = "cs"). Use 'method = x' to change the smoothing method.}}
-
-{\ttfamily\noindent\itshape\textcolor{messagecolor}{\#\# geom\_smooth: method="auto" and size of largest group is >=1000, so using gam with formula: y \textasciitilde{} s(x, bs = "cs"). Use 'method = x' to change the smoothing method.}}
-
-{\ttfamily\noindent\itshape\textcolor{messagecolor}{\#\# geom\_smooth: method="auto" and size of largest group is >=1000, so using gam with formula: y \textasciitilde{} s(x, bs = "cs"). Use 'method = x' to change the smoothing method.}}\begin{verbatim}
-## pdf 
-##   2
-\end{verbatim}
+}
 
 
-{\ttfamily\noindent\itshape\textcolor{messagecolor}{\#\# geom\_smooth: method="auto" and size of largest group is >=1000, so using gam with formula: y \textasciitilde{} s(x, bs = "cs"). Use 'method = x' to change the smoothing method.}}
-
-{\ttfamily\noindent\itshape\textcolor{messagecolor}{\#\# geom\_smooth: method="auto" and size of largest group is >=1000, so using gam with formula: y \textasciitilde{} s(x, bs = "cs"). Use 'method = x' to change the smoothing method.}}
-
-{\ttfamily\noindent\itshape\textcolor{messagecolor}{\#\# geom\_smooth: method="auto" and size of largest group is >=1000, so using gam with formula: y \textasciitilde{} s(x, bs = "cs"). Use 'method = x' to change the smoothing method.}}
-
-{\ttfamily\noindent\itshape\textcolor{messagecolor}{\#\# geom\_smooth: method="auto" and size of largest group is >=1000, so using gam with formula: y \textasciitilde{} s(x, bs = "cs"). Use 'method = x' to change the smoothing method.}}
-
-{\ttfamily\noindent\itshape\textcolor{messagecolor}{\#\# geom\_smooth: method="auto" and size of largest group is >=1000, so using gam with formula: y \textasciitilde{} s(x, bs = "cs"). Use 'method = x' to change the smoothing method.}}
-
-{\ttfamily\noindent\itshape\textcolor{messagecolor}{\#\# geom\_smooth: method="auto" and size of largest group is >=1000, so using gam with formula: y \textasciitilde{} s(x, bs = "cs"). Use 'method = x' to change the smoothing method.}}\end{kframe}\includegraphics[width=\maxwidth]{figure/a2a} 
 \end{knitrout}
 
 
@@ -300,7 +294,7 @@ Multi-atlas means:
 
 - more atlases -> better performance
 - larger template library -> better performance, but tails off around 10-15 templates
-- no significant difference between majority or weighted vote methods (haven’t tested this statistically though). 
+- no significant difference between majority or weighted vote methods (haven???t tested this statistically though). 
 - consistently performs better than average naive performance by XXX
 - using ANTS, with a large enough template library (>12) MAGeT brain performs better than the average multi-atlas approach with the same number of atlases.  using ANIMAL, 5 or more atlases needed before boost seen. 
 - more atlases -> smaller template library required to improve on average multi-atlas performance
@@ -311,7 +305,7 @@ Multi-atlas means:
 \subsubsection{Winterburn Atlas Segmentation of ADNI Baseline Images}
 
 - A2A shows that if atlas population strongly(?) represents subject set variability, then free choice from atlas population will produce improvements (we know this b/c of extensive validation trials). 
-- what about in the case where atlas population doesn’t strongly represent subject set variability (e.g. a priori atlas set)?  then, we can use atlas selection to refine atlas set? 
+- what about in the case where atlas population doesn???t strongly represent subject set variability (e.g. a priori atlas set)?  then, we can use atlas selection to refine atlas set? 
 
 \todo{Kappa against our manual rater is low}
 
@@ -335,14 +329,7 @@ Multi-atlas means:
 
 \begin{figure}[h]
 \begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-
-
-{\ttfamily\noindent\textcolor{warningcolor}{\#\# Warning: Removed 359 rows containing missing values (stat\_smooth).}}
-
-{\ttfamily\noindent\textcolor{warningcolor}{\#\# Warning: Removed 355 rows containing missing values (stat\_smooth).}}
-
-{\ttfamily\noindent\textcolor{warningcolor}{\#\# Warning: Removed 355 rows containing missing values (stat\_smooth).}}\end{kframe}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
 
 {\centering \includegraphics[width=\maxwidth]{figure/ADNI-baseline-volumes-plot} 
 
@@ -355,4 +342,51 @@ Multi-atlas means:
   \label{ADNI-baseline-volumes-plot}
 \end{figure}
 
+\subsubsection{First Episode Schizophrenic patients}
+
+
+% latex.default(cstats, title = title, caption = caption, rowlabel = rowlabel,      col.just = col.just, numeric.dollar = FALSE, insert.bottom = legend,      rowname = lab, dcolumn = dcolumn, extracolheads = extracolheads,      extracolsize = Nsize, ...) 
+%
+\begin{table}[h]
+\scriptsize
+\caption{Descriptive Statistics by DX\label{tab}} 
+\begin{center}
+\begin{tabular}{lrc}
+\hline\hline
+\multicolumn{1}{l}{}&\multicolumn{1}{c}{N}&\multicolumn{1}{c}{FEP}\tabularnewline
+&&\multicolumn{1}{c}{{\scriptsize $N=81$}}\tabularnewline
+\hline
+Age&80&{\scriptsize 21~}{23 }{\scriptsize 26} \tabularnewline
+Gender~:~M&81&63\%~{\scriptsize~(51)}\tabularnewline
+Handedness~:~ambi&81&~6\%~{\scriptsize~(~5)}\tabularnewline
+~~~~left&&~5\%~{\scriptsize~(~4)}\tabularnewline
+~~~~right&&89\%~{\scriptsize~(72)}\tabularnewline
+Education&81&{\scriptsize 11~}{13 }{\scriptsize 15} \tabularnewline
+SES~:~lower&81&31\%~{\scriptsize~(25)}\tabularnewline
+~~~~middle&&54\%~{\scriptsize~(44)}\tabularnewline
+~~~~upper&&15\%~{\scriptsize~(12)}\tabularnewline
+FSIQ&79&{\scriptsize  88~}{102 }{\scriptsize 109} \tabularnewline
+\hline
+\end{tabular}
+\end{center}
+\noindent {\scriptsize $a$\ }{$b$\ }{\scriptsize $c$\ } represent the lower quartile $a$, the median $b$, and the upper quartile $c$\ for continuous variables.\\$N$\ is the number of non--missing values.\\Numbers after percents are frequencies.\end{table}
+
+
+
+
+
+\begin{figure}[h]
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
+
+{\centering \includegraphics[width=\maxwidth]{figure/SZ_volumes} 
+
+}
+
+
+\end{knitrout}
+
+  \caption{Comparison of total HC volumes for MAGeT against manually rated volumes}
+  \label{SZ_volumes}
+\end{figure}
 \end{document}

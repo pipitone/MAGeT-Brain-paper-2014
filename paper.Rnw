@@ -13,14 +13,20 @@
 }
 
 \begin{document}
-\SweaveOpts{concordance=TRUE}
+\SweaveOpts{echo = TRUE, message = FALSE, warning = FALSE, fig.align = 'center', tidy = FALSE, comment = NA, cache = TRUE}
 
+<<loadpackages, results="hide", echo=TRUE, cache=FALSE>>=
+library(ggplot2)
+library(Hmisc)
+library(reshape2)
+@
 
 \title{Hippocampal segmentation with MAGeT}
-\author{Jon Pipitone, }
+\author{Jon Pipitone}
 \maketitle
 
 \section{Introduction}
+
 
 The hippocampus is of particular interest to many researchers because it is implicated in forms of brain dysfunction such as Alzheimer's disease and schizophrenia, and has functional significance in cognitive processes such as learning and memory.  For many research questions involving neuroimaging data, accurate identification of the hippocampus and its subregions in participant MR images is a necessary first step in order to analyse neuroanatomical differences and changes in  sample populations.  \todo{expand}
 
@@ -94,7 +100,7 @@ Source code can be found at \url{http://github.com/pipitone/MAGeTbrain}.
 
 \begin{figure}[h]
   \centering
-    \includegraphics[width=0.5\textwidth]{MAGeT-figure.png}
+    \includegraphics[width=0.5\textwidth]{figure/MAGeT-figure.png}
   \caption{Diagram of the MAGeT Brain algorithm}
 \end{figure}
 
@@ -193,7 +199,6 @@ Kappa vs. Number of templates:
 Smoothing line fitted using GAM (generalised additive model) from R with defaults from ggplot2 (formula: y ~ s(x, bs = "cs"))
 
 <<a2a, cache=TRUE, fig = T, echo = F, dev='CairoPDF', warning=F, error=F>>=
-library(ggplot2)
 multiplot <- function(..., plotlist=NULL, cols) {
     require(grid)
 
@@ -335,11 +340,11 @@ xlab( "Number of Templates" ) +
 ylab( "Kappa" )  
 
 #loess.control(trace.hat = c("approximate"), statistics = c("approximate"), surface = c("interpolate"))
-pdf("a2a_kbytemplates.pdf", width=15, height=15)
+#pdf("a2a_kbytemplates.pdf", width=15, height=15)
 multiplot(t_maj_plot  , a_maj_plot  ,
           t_xcorr_plot, a_xcorr_plot, 
           t_nmi_plot  , a_nmi_plot  , cols=2)
-dev.off()
+#dev.off()
 
 ############################################
 #  Kappa adjusted by Multi-atlas mean 
@@ -403,7 +408,7 @@ Multi-atlas means:
 
 - more atlases -> better performance
 - larger template library -> better performance, but tails off around 10-15 templates
-- no significant difference between majority or weighted vote methods (haven’t tested this statistically though). 
+- no significant difference between majority or weighted vote methods (haven???t tested this statistically though). 
 - consistently performs better than average naive performance by XXX
 - using ANTS, with a large enough template library (>12) MAGeT brain performs better than the average multi-atlas approach with the same number of atlases.  using ANIMAL, 5 or more atlases needed before boost seen. 
 - more atlases -> smaller template library required to improve on average multi-atlas performance
@@ -414,7 +419,7 @@ Multi-atlas means:
 \subsubsection{Winterburn Atlas Segmentation of ADNI Baseline Images}
 
 - A2A shows that if atlas population strongly(?) represents subject set variability, then free choice from atlas population will produce improvements (we know this b/c of extensive validation trials). 
-- what about in the case where atlas population doesn’t strongly represent subject set variability (e.g. a priori atlas set)?  then, we can use atlas selection to refine atlas set? 
+- what about in the case where atlas population doesn???t strongly represent subject set variability (e.g. a priori atlas set)?  then, we can use atlas selection to refine atlas set? 
 
 \todo{Kappa against our manual rater is low}
 
@@ -428,7 +433,6 @@ colnames(totals) <- c("ID","MAGeT","FSL","MAPER","UCSFSNT","SNT","DX")
 
 \begin{figure}[h]
 <<ADNI-baseline-volumes-boxplot,echo=F,fig=T, fig.align='center',dependson='ADNI-baseline-volumes-prep',cache=T>>=
-library(reshape2)
 qplot(DX,value,data=melt(totals,id.vars=c("ID","DX"),measure.vars=c("FSL","MAPER","MAGeT","SNT"),na.rm=T),colour=variable,geom="boxplot")
 @
   \caption{Comparison of HC volumes by FreeSurfer (FSF), MAGeT brain (MAGeT), MAPER, and manual (SNT).}
@@ -437,11 +441,27 @@ qplot(DX,value,data=melt(totals,id.vars=c("ID","DX"),measure.vars=c("FSL","MAPER
 
 \begin{figure}[h]
 <<ADNI-baseline-volumes-plot,echo=F,fig=T, fig.align='center',dependson='ADNI-baseline-volumes',cache=T>>=
-library(reshape2)
 qplot(SNT,value,data=melt(totals,id.vars=c("ID","SNT"),measure.vars=c("FSL","MAPER","MAGeT")),colour=variable, geom="smooth", method="lm")
 @
   \caption{Comparison of HC volumes by FreeSurfer (FSF), MAGeT brain (MAGeT), MAPER, and manual (SNT).}
   \label{ADNI-baseline-volumes-plot}
 \end{figure}
 
+\subsubsection{First Episode Schizophrenic patients}
+
+<<FEP-SZ-demographics, echo=F, results="asis",cache=FALSE>>=
+fep_sz_demographics = read.csv("data/SZ_demographics.csv", na.strings=c("","."))
+fep_sz_demographics = subset(fep_sz_demographics, Anon <= 81)
+tab <- summary(DX ~ Age + Gender + Handedness + Education + SES + FSIQ, data=fep_sz_demographics, method = "reverse", test = FALSE)
+latex(tab, file="", size="scriptsize", where="h")
+@
+
+\begin{figure}[h]
+<<SZ_volumes,echo=F,fig=T, fig.align='center',dependson='ADNI-baseline-volumes',cache=T>>=
+SZ_volumes=read.csv("data/SZ_volumes_by_method.csv")
+qplot(Manual,MAGeT,data=SZ_volumes) + geom_smooth(method="lm")
+@
+  \caption{Comparison of total HC volumes for MAGeT against manually rated volumes}
+  \label{SZ_volumes}
+\end{figure}
 \end{document}
