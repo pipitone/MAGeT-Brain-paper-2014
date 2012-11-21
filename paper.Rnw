@@ -1,16 +1,4 @@
-\documentclass{article}
-\usepackage[margin=1.5in]{geometry}
-\usepackage{algorithm, color,algpseudocode, amsmath, url, geometry, ctable }
-
-
-\newcommand{\todo}[1]{
-    \addcontentsline{tdo}{todo}{\protect{#1}}
-    \textcolor{red}{#1}
-}
-
-\begin{document}
 \SweaveOpts{echo = FALSE, message = FALSE, warning = FALSE, fig.align = 'center', tidy = FALSE, comment = NA, cache = TRUE}
-
 <<loadpackages, results="hide", echo=FALSE, cache=FALSE>>=
 library(ggplot2)
 library(Hmisc)
@@ -18,134 +6,120 @@ library(reshape2)
 library(ADNIMERGE)
 @
 
+\documentclass{article}
+\usepackage[margin=1.5in]{geometry}
+\usepackage{algorithm, color, algpseudocode, amsmath, url, geometry, ctable }
+\usepackage[square,numbers]{natbib}
+\setlength{\marginparwidth}{1.2in}
+\newcommand{\marginnote}[1]{\-\marginpar[\raggedleft\footnotesize #1]{\raggedright\footnotesize #1}}
+\newcommand{\todo}[1]{\marginnote{\textcolor{red}{TODO #1}}}
+\newcommand{\mc}[1]{\todo{(MC) #1}}
+
+%{\marginpar{ \textcolor{red}{\\ TODO: #1 \\} }
+\begin{document}
+
 \title{Hippocampal segmentation with MAGeT}
 \author{Jon Pipitone}
 \maketitle
 
-\section{Introduction}
+\begin{abstract}
+Neuroimaging research often relies on automated anatomical segmentations of MR
+images of the brain. Current multi-atlas based approaches provide accurate
+segmentations of brain images by propagating manually derived segmentations of
+specific neuroanatomical structures to unlabelled data. These approaches often
+rely on a large number of such manually segmented atlases that take significant
+time and expertise to produce. We present an algorithm for the automatic
+segmentation of the hippocampus that minimizes the number of atlases needed
+while still achieving similar accuracy to multi-atlas approaches.
+\mc{Finish this... }
+\end{abstract}
 
+\section{Introduction}
 
 The hippocampus is of particular interest to many researchers because it is
 implicated in forms of brain dysfunction such as Alzheimer's disease and
 schizophrenia, and has functional significance in cognitive processes such as
-learning and memory.  For many research questions involving neuroimaging data,
-accurate identification of the hippocampus and its subregions in participant MR
-images is a necessary first step in order to analyse neuroanatomical
-differences and changes in  sample populations.  \todo{expand}
+learning and memory.  For many research questions involving magnetic resonance
+imaging (MRI) data accurate identification of the hippocampus and its
+subregions is a necessary first step to better understand the individual
+neuroanatomy of subjects.  
 
 Currently, the gold standard for neuroanatomical segmentation is manual
-labelling by an expert human rater.  This is problematic for several reasons.
-Practically, manual segmentation takes a significant investment of time and
-expertise (Hammers2003) which may not be readily available to researchers or
-clinicians.  <blah> estimates that expert segmentation can take anywhere
-between 45 minutes to several days per image depending on the image resolution
-and protocol.  The amount of data produced in neuroimaging experiments
-increasingly exceeds the capacity for identification of specific
-neuroanatomical structures by an expert manual rater.  It may be difficult for
-laboratories to find or train, someone with the expertise to do such
-segmentation.  
+delineation by an expert human rater.  This is problematic for segmentation of
+the hippocampus for several reasons.  First, manual segmentation takes a
+significant investment of time and expertise \citep{Hammers2003} which may not
+be readily available to researchers or clinicians.  Second, the amount of data
+produced in neuroimaging experiments increasingly exceeds the capacity for
+identification of specific neuroanatomical structures by an expert manual
+rater.  Third, the true definition of hippocampal anatomy in MR images is
+disputed \citep{Geuze2004}, as evidenced by efforts to create an unified
+segmentation protocol \citep{Jack2011}.  
 
-Compounding this is that the hippocampus is a problematic structure for
-segmentation. Its very definition is disputed and varies widely in the
-literature (Geuze2004).  This has led to a variety of competing segmentation
-protocols in the literature which researchers can adhere to, including
-necessary ad-hoc modifications to adapt the definition in order to answer a
-particular research question.  Efforts are underway to create a unified
-protocol (Jack2011) for volumetry applications. But, even with a unified
-protocol, in order to investigate certain research questions it may be
-necessary to select from different hippocampal definitions. For example,
-(Poppenk2011) found that overall hippocampal volume change did not predict
-recollection memory performance, but dividing the hippocampus into anterior and
-posterior regions did. 
+Compounding each of these problems is the significant neuroanatomical
+variability in the hippocampus throughout the course of aging, development, and
+neuropsychiatric disorders \citep{Mouiha2011}.  Additionally, it may be
+necessary to use several different hippocampal definitions or, in fact, make
+specific modifications in the course of research. For example, Poppenk et al.
+\citep{Poppenk2011} found that subdividing the hippocampus into anterior and
+posterior regions resulted in a predictive relationship between volume
+difference of those regions and recollection memory performance.  Thus, while
+manual segmentation of the hippocampus is a necessary technique, to researchers
+or clinicians who do not have access to the needed human expertise its use may
+be infeasible.  
 
-\todo{this bit needs to be a little clearer - was it just the division of the
-HC that led to the improved understanding or was it that spatially localized
-differences in volumes are a better way to describe the difference).}
-  
-\todo{- Also, other situations: developmental studies -- need different
-definitions depending on the age range of subjects -- additionally, may want to
-tweak definition to test certain hypotheses (e.g. include subiculum: yes/no,
-more or less conservative WM/GM boundaries, compare with definitions from a
-different study,, etc...).}
+Automated segmentation techniques overcome the need for human expertise by
+performing segmentations computationally.  A popular class of automated
+methods, {\it multi-atlas-based segmentation}, rely on a set of expertly
+labeled neuroanatomical atlases. Each atlas is warped to fit a subject's
+neuroanatomy using nonlinear registration
+techniques \citep{Collins1995,Klein2009}.  Atlas labels are then transformed by
+this warping and a {\it label fusion} technique, such as voxel-wise voting, is
+used to merge the competing label definitions from each atlas into a final
+segmentation for a subject.  
 
-One can also expect neuroanatomical variability in this structure as it loses
-volume through aging and in the time course of different diseases.  \todo{This
-bit isn't really "joined to the previous statement"  may need a little glue
-here}
+Many descriptions of multi-atlas-based segmentation algorithms report relying
+on an atlas library containing anywhere between 30 and 80 expertly labeled
+brains \citep{Heckemann2011,Collins2010,Aljabar2009,Leung2010,Lotjonen2010}.  As
+noted, the production of an atlas library requires significant manual effort,
+and is limited since the choice of atlases or segmentation protocol may not
+reflect the underlying neuroanatomical variability of the population under
+study or be suited to answer the research questions at hand.
 
+In this paper we propose an automated segmentation method to address the above
+issues of existing multi-atlas-based methods. Principally, our method aims to
+dramatically reduce the number of manually labelled atlases needed (under 10).
+This is achieved by using the small atlas library to boot-strap a much larger
+"template library", which is then used to segment the subjects in a similar
+fashion to basic multi-atlas segmentation. This approach has the additional
+advantage of using the unique subject population on hand to initialize the
+segmentation process and improve accuracy.
 
-Automated segmentation techniques are available and can minimize several of the
-confounds often observed in studies that involve manual volumetry, such as the
-time and expertise required for segmentation and intra- and inter-rater
-reliability.  A class of segmentation approaches, known as atlas-based
-segmentation (also, template-based segmentation), make use of expertly labeled
-neuroanatomical atlases. An atlas MR image is warped to fit the subject
-neuroanatomy using nonlinear registration techniques [4, 11], and then the
-atlas labels are propagated via the registration transformation from the atlas
-to match the unique neuroanatomy of a particular subject.  Segmentation
-accuracy is affected by nonlinear registration and resampling errors, and by
-the extent to which the atlas neuroanatomy differs from the underlying
-neuroanatomical variability of the population under study (citation needed).
-To address these limitations, several atlases can be used (multi-atlas
-segmentation). Labels from each atlas are propagated to the subjects, by way of
-an nonlinear image registration, producing as many labellings for each subject
-as atlases. A label fusion technique is employed to merge the candidate
-labellings for a subject into a single segmentation using a decision rule (for
-instance, voxel-wise voting). Not all of the atlases need be used to segment
-each subject. Selecting only those atlases that are most similar to the subject
-image has been shown to significantly improve overall registration and
-segmentation accuracy (Aljabar 2008, Collins2010, Leung2010, Lotjonen2010). 
+The essential insight of generating a template library is not new.  Heckemann
+\citep{Heckemann2006} compared generating a template library from a single atlas
+to standard multi-atlas segmentation and found poor performance and so deemed
+the approach as inviable.  The LEAP algorithm \citep{Wolz2010} proceeds by
+iteratively segmenting the unlabelled image most similar to the atlas library
+images and then incorporating the now-labelled image into the atlas library,
+but requires 30 starting atlases.  The novelty of our method is to demonstrate
+the possibility of producing comparable segmentation accuracy to these and
+other multi-atlas-based methods while using significantly fewer manually
+created atlases.
 
-\todo{briefly discuss other automated segmentation methods, and justify our
-focus on atlas-based methods}
-
-In summary, whilst manual segmentation is the gold standard for neuroanatomical
-segmentation, it is time-consuming and requires an investment in expertise and
-training, and may be inflexible in the face of differing hippocampal
-definitions or changes. Atlas-based automated segmentation dramatically reduces
-the time needed for segmentation, and can be completed without any expert rater
-as long as an appropriate atlas library is available <be more specific (e.g.
-shares protocol, demographics, phenotypes of subject population)>.  In the
-situation where such an atlas library does not exist, then an expert rater is
-needed. Many automated approaches rely on an atlas library containing between
-30 and 80 expertly labeled brains (Heckemann2006, Collins2010) which, even
-though producing such a library may require less manual work than segmenting
-the entire set of subjects, it still poses a substantial time commitment.  
-
-In this paper we extend our automated method for subcortical segmentation
-(striatum, globus pallidus, and thalamus; Chakravarty2012) to hippocampal
-segmentation. This method, known as MAGeT brain, is suited for situations where
-manual effort is at a premium, and flexibility is needed in atlas definitions.
-Our strategy is to bootstrap the familiar multi-atlas-based segmentation
-process from only a very small number of atlases.  In our previous work we used
-only a single atlas, based on serial histological slices, and validated the
-algorithm on 20 adolescent MR images.  In this work, we extensively investigate
-MAGeT used with differently sized atlas and template libraries, registration
-algorithms, label fusion strategies, and hippocampal definitions.  We evaluate
-our algorithm on a subset of images from the ADNI dataset, and compare our
-segmentations to the manual segmentations provided by ADNI.  Additionally, we
-evaluate the segmentations produced with MAGeT using hippocampal definitions
-from five high-resolution T1 in-vivo atlases (Winterburn2012). <conclude with
-summary that this is detailed validation the algorithm in order to pick the
-best operating parameters, whereas our previous work showed the feasibility of
-the approach> 
-
-The essential insight of MAGeT brain, generating a template library, is not
-new. Heckemann2006 compared a multi-atlas-based segmentation method to that of
-generating a template library from a single atlas and found poor performance so
-did not investigate this approach any further. The LEAP algorithm (Wolz2010)
-begins with 30 atlases and labels the most similar unlabeled images. The
-labeled images from this step are included in the atlas set for the following
-step, and this proceeds until all images have been labeled. <expand; include
-other multi-atlas methods too? >
-
-In this work we conduct a thorough validation of the MAGeT brain approach. Our
-aim is not to improve on segmentation accuracy beyond existing methods, but
-instead to provide a method that trades off manual segmentation expertise for
-computational processing time whilst providing useful accuracy for the research
-and clinical setting. <blah blah.. this sucks>
+In our previous work \citep{Chakravarty2012}, we applied MAGeT brain to
+segmentation of the human striatum, globus pallidus, and thalamus using a
+single histologically-derived atlas. The main contribution of this paper is to
+extend our approach to the human hippocampus and perform a thorough validation
+over a range of atlas and template library sizes, which was not done in our
+previous work.  Due to the small number of atlases required, our method can
+easily accommodate different hippocampal definitions. Our aim is not to improve
+on segmentation accuracy beyond existing methods, but instead to provide a
+method that trades off manual segmentation expertise for computational
+processing time while providing sufficient accuracy for clinical and research
+applications.
 
 \section{Materials and Methods}
+
+
 explain two registration methods, definitions, fusion methods. 
 compare to each other, and then compare atlas-based, true multi-atlas, naive methods.
 trying to make choices as to the best reg/fusion/
@@ -154,33 +128,43 @@ evaluations
 described previously in Chakravarty2012. 
 
 \subsection{Segmentation Algorithm}
-The segmentation approach we follow is an extension of traditional multi-atlas
-segmentation. In multi-atlas segmentation, the inputs are a template library
-consisting of a set of manually labelled MR images (atlases), and a set of
-unlabelled MR images to be labelled.  Each unlabelled MR image is segmented by
-first propagating to it the labels from the template library images via image
-registration, and then these candidate labels are combined by a label fusion
-method (e.g. voxel-wise majority voting). The label fusion method used may
-determine which templates are used to segment a particular subject (for
-instance, voxel-wise majority vote takes labels from all templates, whereas a
-weighted majority vote selects only those templates most similar to the
-subject). 
+\todo{Make sure we explain what MAGeT stands for}
+In this paper, we use the term {\it atlas} to mean any manually segmented MR
+image, and the term {\it atlas library} to mean a set of such images.  We use
+the term {\it template} to refer to any MR image, and associated labelling,
+used to segment another image, and the term {\it template library} to refer to
+a set of such images.  An atlas library may be used as a template library but,
+as we will discuss, a template library may also be composed of images with
+computer generated labellings. 
 
-Our extension to this approach is to add a preliminary stage in which we
-construct the template library using a much smaller set of atlases and a subset
-of the given unlabelled images.  To begin, we (possibly arbitrarily) select
-from the unlabelled images to form the template library.  Multiple labellings
-are given to each image in the template library via label propagation from each
-of the atlases (label fusion is not conducted).  Traditional multi-atlas
-segmentation is then used to produce segmentations for the entire set of
-unlabelled images (including those used in the template library).  Our
-algorithm is illustrated in pseudocode in Algorithm 1, and diagrammatically in
-Figure 1. 
+The segmentation approach we propose is best understood as an extension of
+basic multi-atlas segmentation \citep{Collins2010}.  In multi-atlas segmentation,
+an atlas library and unlabelled MR images are given as input.  Every atlas
+image is nonlinearly registered to each unlabelled image, and then each atlas'
+labels are propagated via the resulting transformations.  These labels are then
+fused to produce a single, definitive segmentation by some label fusion method
+(e.g.  voxel-wise majority vote). 
 
-- Essentially, we add an extra layer of label propagation between the set of
-  atlases 
-- This allows the template library to better reflect the constitution of the
-  images to be labelled.
+Our extension adds a preliminary stage in which a template library is
+constructed from input images, and used in place of an atlas library in the
+standard multi-atlas-based method.  To create the template library, labels from
+each atlas image are propagated to each template library image via the
+transformation resulting from a non-linear registration between pair of images.
+As a result, each template library image has a label from each atlas.
+Basic multi-atlas segmentation is then used to produce segmentations for the
+entire set of unlabelled images (including those images used in the template
+library). 
+
+Label fusion is performed by cross-correlation weighted voting, a strategy
+weighted towards an optimal combination of subjects from the template library
+which has been previously shown to improve segmentation
+accuracy \citep{Aljabar2009,Collins2010}. In this method, each template library
+image is ranked in similarity to each unlabelled image by the normalized
+cross-correlation of image intensities after linear registration in a region of
+interest (ROI) generously encompassing the hippocampus.  Only the top ranked
+template library image labels are used in a voxel-wise majority vote. The ROI
+is heuristically defined as the extent of all atlas labels after linear
+registration to the template, dilated by three voxels \citep{Chakravarty2012}.
 
 Source code can be found at \url{http://github.com/pipitone/MAGeTbrain}.
 
@@ -228,8 +212,8 @@ The ANIMAL algorithm carries out Image registration is in two phases. In the
 first, a 12-parameter linear transformation (3 translations, rotations, scales,
 shears) is estimated between images using an algorithm that maximizes the
 correlation between blurred MR intensities and gradient magnitude over the
-whole brain [3]. In the second phase, nonlinear registration is completed using
-the ANIMAL algorithm [4]: an iterative procedure that estimates a 3D
+whole brain \citep{Collins}. In the second phase, nonlinear registration is completed using
+the ANIMAL algorithm \citep{Collins1995}: an iterative procedure that estimates a 3D
 deformation field between two MR images. At first, large deformations are
 estimated using blurred version of the input data. These larger deformations
 are then input to subsequent steps where the fit is refined by estimating
@@ -237,6 +221,12 @@ smaller deformations on data blurred with a Gaussian kernel with a smaller
 FWHM. The final transformation is a set of local translations defined on a bed
 of equally spaced nodes that were estimated through the optimization of the
 correlation coefficient. 
+
+For the purposes of this work we used the
+regularization parameters optimized in Robbins et al. \citep{Robbins2004}. It
+should be noted that the MAGeT brain algorithm is not dependent on this, or
+any, particular choice of registration method \citep{Chakravarty2012}.
+
 \todo{should add the MNI website here; also we should add the parameters we used somewhere}
 
 \subsubsection{Automatic Normalization Tools (ANTS)}
@@ -501,7 +491,10 @@ colnames(totals) <- c("ID","MAGeT","FSL","MAPER","UCSFSNT","SNT","DX")
 
 \begin{figure}[h]
 <<ADNI-baseline-volumes-boxplot,echo=F,fig=T, fig.align='center',dependson='ADNI-baseline-volumes-prep',cache=T>>=
-qplot(DX,value,data=melt(totals,id.vars=c("ID","DX"),measure.vars=c("FSL","MAPER","MAGeT","SNT"),na.rm=T),colour=variable,geom="boxplot")
+qplot(DX,value,data=melt(totals,id.vars=c("ID","DX"),
+      measure.vars=c("FSL","MAPER","MAGeT","SNT"),na.rm=T),
+      colour=variable,geom="boxplot") + 
+        xlab("Diagnosis") + ylab("Total Hippocampal Volume (cm3)")
 @
   \caption{Comparison of HC volumes by FreeSurfer (FSF), MAGeT brain (MAGeT), MAPER, and manual (SNT).}
   \label{ADNI-baseline-volumes-boxplot}
@@ -509,9 +502,14 @@ qplot(DX,value,data=melt(totals,id.vars=c("ID","DX"),measure.vars=c("FSL","MAPER
 
 \begin{figure}[h]
 <<ADNI-baseline-volumes-plot,echo=F,fig=T, fig.align='center',dependson='ADNI-baseline-volumes',cache=T>>=
-qplot(SNT,value,data=melt(totals,id.vars=c("ID","SNT"),measure.vars=c("FSL","MAPER","MAGeT")),colour=variable, geom="smooth", method="lm")
+qplot(SNT,value,data=melt(totals,id.vars=c("ID","SNT"),
+      measure.vars=c("FSL","MAPER","MAGeT")),
+      colour=variable, geom="smooth", method="lm") + 
+    geom_point() +
+    xlab("Total Hippocampal Volume (Manual Segmentation)") + 
+    ylab("Total Hippocampal Volume (Automatic Segmentation)")
 @
-  \caption{Comparison of HC volumes by FreeSurfer (FSF), MAGeT brain (MAGeT), MAPER, and manual (SNT).}
+  \caption{{\bf ADNI Baseline cohort.} Comparison of HC volumes by FreeSurfer (FSF), MAGeT brain (MAGeT), MAPER, and manual (SNT).}
   \label{ADNI-baseline-volumes-plot}
 \end{figure}
 
@@ -527,9 +525,12 @@ latex(tab, file="", size="scriptsize", where="h")
 \begin{figure}[h]
 <<SZ_volumes,echo=F,fig=T, fig.align='center',dependson='ADNI-baseline-volumes',cache=T>>=
 SZ_volumes=read.csv("data/SZ_volumes_by_method.csv")
-qplot(Manual,MAGeT,data=SZ_volumes) + geom_smooth(method="lm")
+qplot(Manual,MAGeT,data=SZ_volumes) + geom_smooth(method="lm") + 
+    xlab("Total Hippocampal Volume (Manual Segmentation)") + 
+    ylab("Total Hippocampal Volume (MAGeT Segmentation)")
+
 @
-  \caption{Comparison of total HC volumes for MAGeT against manually rated volumes}
+  \caption{{\bf First Episode Schizophrenic Patients.} Comparison of total HC volumes for MAGeT against manually rated volumes of}
   \label{SZ_volumes}
 \end{figure}
 \end{document}
