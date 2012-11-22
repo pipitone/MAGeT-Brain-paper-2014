@@ -4,6 +4,7 @@ library(ggplot2)
 library(Hmisc)
 library(reshape2)
 library(ADNIMERGE)
+options(digits=3)
 @
 
 \documentclass{article}
@@ -491,10 +492,10 @@ colnames(totals) <- c("ID","MAGeT","FSL","MAPER","UCSFSNT","SNT","DX")
 
 \begin{figure}[h]
 <<ADNI-baseline-volumes-boxplot,echo=F,fig=T, fig.align='center',dependson='ADNI-baseline-volumes-prep',cache=T>>=
-qplot(DX,value,data=melt(totals,id.vars=c("ID","DX"),
-      measure.vars=c("FSL","MAPER","MAGeT","SNT"),na.rm=T),
+qplot(DX,value,data=melt(totals,id.vars=c("ID","DX"),measure.vars=c("FSL","MAPER","MAGeT","SNT"),na.rm=T),
       colour=variable,geom="boxplot") + 
         xlab("Diagnosis") + ylab("Total Hippocampal Volume (mm3)")
+
 @
   \caption{Comparison of HC volumes by FreeSurfer (FSF), MAGeT brain (MAGeT), MAPER, and manual (SNT).}
   \label{ADNI-baseline-volumes-boxplot}
@@ -502,10 +503,26 @@ qplot(DX,value,data=melt(totals,id.vars=c("ID","DX"),
 
 \begin{figure}[h]
 <<ADNI-baseline-volumes-plot,echo=F,fig=T, fig.align='center',dependson='ADNI-baseline-volumes',cache=T>>=
-qplot(SNT,value,data=melt(totals,id.vars=c("ID","SNT"),
-      measure.vars=c("FSL","MAPER","MAGeT")),
+by_snt_volumes = melt(totals,id.vars=c("ID","SNT"), measure.vars=c("FSL","MAPER","MAGeT"))
+fsl=subset(by_snt_volumes, variable=="FSL")
+maper=subset(by_snt_volumes, variable=="MAPER")
+maget=subset(by_snt_volumes, variable=="MAGeT")
+
+qplot(SNT,value,data=by_snt_volumes,
       colour=variable, geom="smooth", method="lm") + 
     geom_point() +
+#     geom_text(aes(
+#       label=paste("FSL       R=", round(cor(fsl$SNT,fsl$value, use="complete.obs"), 2), 
+#                   ", p<", round(as.double(t.test(fsl$SNT,fsl$value, paired=T)["p.value"]), 2)),
+#       x=1800,y=10000, hjust=0,size=2)) + 
+#     geom_text(aes(
+#       label=paste("MAPER R=", round(cor(maper$SNT,maper$value, use="complete.obs"), 2), 
+#                   ", p<", t.test(maper$SNT,maper$value, paired=T)["p.value"]), 
+#       x=1800,y= 9500, hjust=0, size=2)) +
+#     geom_text(aes(
+#       label=paste("MAGeT  R=", round(cor(maget$SNT,maget$value, use="complete.obs"),2), 
+#                   ", p<", t.test(maget$SNT,maget$value, paired=T)["p.value"]), 
+#       x=1800,y= 9000, hjust=0, size=2)) +
     xlab("Total Hippocampal Volume (Manual Segmentation)") + 
     ylab("Total Hippocampal Volume (Automatic Segmentation)")
 @
@@ -526,6 +543,10 @@ latex(tab, file="", size="scriptsize", where="h")
 <<SZ_volumes,echo=F,fig=T, fig.align='center',dependson='ADNI-baseline-volumes',cache=T>>=
 SZ_volumes=read.csv("data/SZ_volumes_by_method.csv")
 qplot(Manual,MAGeT,data=SZ_volumes) + geom_smooth(method="lm") + 
+#   geom_text(aes(
+#       label=paste("R=", round(cor(Manual,MAGeT, use="complete.obs"), 2), 
+#                   ", p<", t.test(Manual, MAGeT, paired=T)["p.value"]),
+#       x=6500,y=10000, hjust=0,size=2)) +
     xlab("Total Hippocampal Volume (Manual Segmentation)") + 
     ylab("Total Hippocampal Volume (MAGeT Segmentation)")
 
