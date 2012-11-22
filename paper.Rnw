@@ -494,7 +494,7 @@ colnames(totals) <- c("ID","MAGeT","FSL","MAPER","UCSFSNT","SNT","DX")
 qplot(DX,value,data=melt(totals,id.vars=c("ID","DX"),
       measure.vars=c("FSL","MAPER","MAGeT","SNT"),na.rm=T),
       colour=variable,geom="boxplot") + 
-        xlab("Diagnosis") + ylab("Total Hippocampal Volume (cm3)")
+        xlab("Diagnosis") + ylab("Total Hippocampal Volume (mm3)")
 @
   \caption{Comparison of HC volumes by FreeSurfer (FSF), MAGeT brain (MAGeT), MAPER, and manual (SNT).}
   \label{ADNI-baseline-volumes-boxplot}
