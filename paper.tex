@@ -82,7 +82,7 @@ rely on a large number of such manually segmented atlases that take significant
 time and expertise to produce. We present an algorithm for the automatic
 segmentation of the hippocampus that minimizes the number of atlases needed
 while still achieving similar accuracy to multi-atlas approaches.
-\mc{Finish this... }
+\todo{Finish this... }
 \end{abstract}
 
 \section{Introduction}
@@ -353,6 +353,68 @@ Three different experiments were conducted to evaluate the influence of
 registration method, atlas set size and resolution, template set size, and
 label fusion method and parameters.
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                         Experiment Rationale 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\subsubsection{Study Method Rationale - An Outline}
+\begin{description}
+\item[ADNI Repeated Random Subsampling Validation] \hfill \\ 
+{\bf Purpose:} to validate robustness of MAGeT accuracy when atlas set is representative 
+of subject set w.r.t. registration method, atlas and template library composition and size, and 
+various fusion methods. Additionally, to choose the best configuration of parameters 
+(under the assumption that performance generalises). 
+\\ \\ 
+{\bf Method:} using a set of 69 ADNI subjects, 13 from each disease category, perform 
+10 rounds of repeated random subsampling to pick atlas library and template library 
+for each parameter setting and then run MAGeT brain to segment non-atlas subjects.
+Also perform multi-atlas and single-atlas segmentation using the same parameter settings
+and atlas library size.
+\\ \\
+{\bf Results:} find significant improvement over multi-atlas performed with the same
+parameters. Also, find smoothed performance is monotonically increasing but asymptotic
+in size of both template and atlas library, with peak performance reached after 15
+templates. \todo{Can we statistically capture "peak" performance?  The point at which 
+gains become statistically insignificant?}
+
+\item[Winterburn Atlas Reliability] \hfill \\
+{\bf Purpose:} validation of reliability of whole hippocampus and hippocampal 
+subregion segmentations.
+\\ \\
+{\bf Method:} we use the Winterburn atlas set, using each high-res atlas in turn 
+to segment a standard-res MR of the same subject and compare the automatic 
+segmentation to the atlas segmentation.  We use a template library consisting 
+of standard-res MRs from the remaining Winterburn atlas subjects plus 11 other 
+standard-res healthy control subjects. 
+\\ \\
+{\bf Results:} TBD 
+
+\item[Winterburn-Atlas ADNI Baseline Segmentation] \hfill \\
+{\bf Purpose:} given that MAGeT is robust and accurate, show MAGeT performance on a real-world task in which atlas set may not be representative of subjects.
+\\ \\
+{\bf Method:} We use best settings from first experiment (ANTS, majority vote, 
+template library of 20), and use Winterburn hi-res atlases to segment all ADNI Baseline 
+images.  Since our segmentation protocol differs from what can be segmented at 
+ADNI resolution a direct comparison is not appropriate.  Instead, we validate by 
+showing how well our segmentation volumes correlate with existing automated/manual 
+segmentation volumes. \todo{Also show disease prediction?}
+\\ \\
+{\bf Results: } 
+
+\item[First Episode SZ Patients Segmentation] \hfill \\ 
+{\bf Purpose:} validate MAGeT's general performance.
+\\ \\
+{\bf Method:} Measure performance on a different disease dataset. We use FEP SZ patients and controls, 
+using two different atlas sets: a manual hippocampal segmentation of patients, and Winterburn 
+atlas set.  We validate the native-atlas set segmentations using Dice's Kappa, 
+and the Winterburn-atlas-set segmentations by correlating volumes. 
+\\ \\
+{\bf Results:} High volume correlation between Winterburn segmentation volumes and ground truth.  (High-ish?) Kappa when using manual segmentations as Atlases. 
+
+\end{description}
+\end{kframe}
+
 \subsubsection{ADNI Validation Experiment}
 
 In this experiment we performed repeated random sub-sampling cross-validation
@@ -604,7 +666,7 @@ FSIQ&79&{\scriptsize  88~}{102 }{\scriptsize 109} \tabularnewline
 
 
 
-\begin{figure}[h]
+\begin{figure}
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
 
@@ -618,4 +680,6 @@ FSIQ&79&{\scriptsize  88~}{102 }{\scriptsize 109} \tabularnewline
   \caption{{\bf First Episode Schizophrenic Patients.} Comparison of total HC volumes for MAGeT against manually rated volumes of}
   \label{SZ_volumes}
 \end{figure}
+
+Some other text here... 
 \end{document}

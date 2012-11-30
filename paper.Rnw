@@ -4,7 +4,9 @@ library(ggplot2)
 library(Hmisc)
 library(reshape2)
 library(ADNIMERGE)
+library(plyr)
 options(digits=3)
+theme_set(theme_bw())
 @
 
 \documentclass{article}
@@ -32,7 +34,7 @@ rely on a large number of such manually segmented atlases that take significant
 time and expertise to produce. We present an algorithm for the automatic
 segmentation of the hippocampus that minimizes the number of atlases needed
 while still achieving similar accuracy to multi-atlas approaches.
-\mc{Finish this... }
+\todo{Finish this... }
 \end{abstract}
 
 \section{Introduction}
@@ -303,6 +305,66 @@ Three different experiments were conducted to evaluate the influence of
 registration method, atlas set size and resolution, template set size, and
 label fusion method and parameters.
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                         Experiment Rationale 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\subsubsection{Study Method Rationale - An Outline}
+\begin{description}
+\item[ADNI Repeated Random Subsampling Validation] \hfill \\ 
+{\bf Purpose:} to show method leads to improved accuracy (over multi-atlas method), and is robust
+w.r.t. registration method, atlas and template library composition and size, and various fusion methods. Additionally, to choose the best configuration of parameters (under the assumption that performance generalises). 
+\\ \\ 
+{\bf Method:} using a set of 69 ADNI subjects, 13 from each disease category, perform 
+10 rounds of repeated random subsampling to pick atlas library and template library 
+for each parameter setting and then run MAGeT brain to segment non-atlas subjects.
+Also perform multi-atlas and single-atlas segmentation using the same parameter settings
+and atlas library size.
+\\ \\
+{\bf Results:} find significant improvement over multi-atlas performed with the same
+parameters. Also, find smoothed performance is monotonically increasing but asymptotic
+in size of both template and atlas library, with peak performance reached after 15
+templates. \todo{Can we statistically capture "peak" performance?  The point at which 
+gains become statistically insignificant?}
+
+\item[Winterburn-Atlas ADNI Baseline Segmentation] \hfill \\
+{\bf Purpose:} given that MAGeT is robust and accurate, show MAGeT performance on 
+a real-world task in which atlas set may not be representative of subjects.
+\\ \\
+{\bf Method:} We use best settings from first experiment (ANTS, majority vote, 
+template library of 20), and use Winterburn hi-res atlases to segment all ADNI Baseline 
+images.  Since our segmentation protocol differs from what can be segmented at 
+ADNI resolution a direct comparison is not appropriate.  Instead, we validate by 
+showing how well our segmentation volumes correlate with existing automated/manual 
+segmentation volumes. \todo{Also show disease prediction?}
+\\ \\
+{\bf Results: } 
+
+
+\item[First Episode SZ Patients Segmentation] \hfill \\ 
+{\bf Purpose:} validate that MAGeT's performance generalises to other diseases.
+\\ \\
+{\bf Method:} Measure performance using best parameter settings on a different disease dataset. We use FEP SZ patients and controls, using two different atlas sets: a manual hippocampal segmentation of patients, and Winterburn atlas set.  We validate the native-atlas set segmentations using Dice's Kappa, and the Winterburn-atlas-set segmentations by correlating volumes. 
+\\ \\
+{\bf Results:} High volume correlation between Winterburn segmentation volumes and ground truth.  (High-ish?) Kappa when using manual segmentations as Atlases. 
+
+
+\item[Winterburn Atlas Reliability] \hfill \\
+{\bf Purpose:} validation of performance on hippocampal subregion segmentation
+\\ \\
+{\bf Method:} we use the Winterburn atlas set, using each high-res atlas in turn 
+to segment a standard-res MR of the same subject and compare the automatic 
+segmentation to the atlas segmentation.  We use a template library consisting 
+of standard-res MRs from the remaining Winterburn atlas subjects plus 11 other 
+standard-res healthy control subjects. 
+\\ \\
+{\bf Results:} TBD 
+
+
+\end{description}
+\end{kframe}
+
 \subsubsection{ADNI Validation Experiment}
 
 In this experiment we performed repeated random sub-sampling cross-validation
@@ -483,16 +545,61 @@ selection to refine atlas set?
 \todo{Kappa against our manual rater is low}
 
 <<ADNI-baseline-volumes-prep,echo=F,cache=T>>=
-data = read.csv('data/ADNI_baseline_volumes.csv')
-unscaled=subset(data,Scaled==0 & Baseline==1 & DX != '')
-attach(unscaled)
-totals = data.frame(LONIUID,L+R,UCSFFSL_L+UCSFSL_R,MAPER_L+MAPER_R,UCSFSNT_L + UCSFSNT_R,SNT_L + SNT_R,DX)
-colnames(totals) <- c("ID","MAGeT","FSL","MAPER","UCSFSNT","SNT","DX")
+yr1   = read.csv("data/ADNI_baseline_volumes/ADNI1_Complete_1Yr_1.5T_11_15_2012.csv")
+mb    = read.csv("data/ADNI_baseline_volumes/ADNI1_1.5T_MAGeT_volumes.csv")
+maper = read.csv("data/ADNI_baseline_volumes/MAPER_volumes.csv")
+snt   = read.csv("data/ADNI_baseline_volumes/UCSFSNTVOL.csv")
+ucsd  = read.csv("data/ADNI_baseline_volumes/UCSDVOL.csv")
+fs    = read.csv("data/ADNI_baseline_volumes/UCSFFSX_02_15_12.csv")
+fsl   = read.csv("data/ADNI_baseline_volumes/ADNI1_1.5T_FSLFIRST_volumes.csv")
+
+
+# recode VISCODE
+
+viscode_levels = list("bl"=1,"bl"=2, "m06"=3,"m12"=4)
+yr1$VISCODE <- as.factor(yr1$Visit)
+levels(yr1$VISCODE) <-viscode_levels
+
+yr1$Scaled_2 <- grepl("Scaled_2", yr1$Description)
+
+subjects = subset(yr1, VISCODE == 'bl' & Scaled_2 == FALSE)
+
+# fetch just the columns we need, and do a little renaming
+mb_pruned     = data.frame(MAGeT_L = mb$Left_Hippo, MAGeT_R = mb$Right_Hippo, Source = mb$SourceImageID)
+maper_pruned  = data.frame(MAPER_L = maper$Left_Hippo, MAPER_R = maper$Right_Hippo, Source = maper$SourceImageID)
+snt_pruned    = data.frame(SNT_L = snt$LEFTHIPPO, SNT_R = snt$RIGHTHIPPO, Source = snt$IMAGEUID)
+ucsd_pruned   = data.frame(RID=ucsd$RID, VISCODE=ucsd$VISCODE, UCSD_L=ucsd$LHIPPOC, UCSD_R=ucsd$RHIPPOC)
+fs_pruned     = subset(fs, TEMPQC != "Fail")
+fs_pruned     = data.frame(FS_L=fs_pruned$ST29SV, FS_R=fs_pruned$ST88SV, Source = fs_pruned$IMAGEUID)
+fsl_pruned    = data.frame(FSL_L=fsl$X17, FSL_R=fsl$X53, Source=fsl$Source)
+
+# diagnoses
+dx = adnimerge[c("DX.bl", "RID", "VISCODE")]
+
+# Now create one data.frame with all the yr1 volume data we have from each datasource
+combined = merge(subjects, mb_pruned   , by.x="Image.Data.ID", by.y="Source", all.x=TRUE)
+combined = merge(combined, maper_pruned, by.x="Image.Data.ID", by.y="Source", all.x=TRUE)  # only Baseline
+combined = merge(combined, snt_pruned  , by.x="Image.Data.ID", by.y="Source", all.x=TRUE)
+combined = merge(combined, ucsd_pruned , by=c("RID", "VISCODE"), all.x =TRUE)              # TODO: this a unique key?
+combined = merge(combined, fs_pruned   , by.x="Image.Data.ID", by.y="Source", all.x=TRUE)
+combined = merge(combined, fsl_pruned  , by.x="Image.Data.ID", by.y="Source", all.x=TRUE)
+combined = merge(combined, dx          , by=c("RID","VISCODE"), all.x=TRUE)
+
+attach(combined)
+vols = data.frame(RID = RID, VISCODE = VISCODE, DX = DX.bl,
+                  MAGeT = MAGeT_L + MAGeT_R, 
+                  MAPER = MAPER_L + MAPER_R, 
+                  SNT   = SNT_L + SNT_R, 
+                  UCSD  = UCSD_L + UCSD_R,
+                  FS    = FS_L + FS_R, 
+                  FSL   = FSL_L + FSL_R)
+write.csv(vols, "data/ADNI_baseline_volumes_combined_volumes.csv")
 @
 
 \begin{figure}[h]
 <<ADNI-baseline-volumes-boxplot,echo=F,fig=T, fig.align='center',dependson='ADNI-baseline-volumes-prep',cache=T>>=
-qplot(DX,value,data=melt(totals,id.vars=c("ID","DX"),measure.vars=c("FSL","MAPER","MAGeT","SNT"),na.rm=T),
+totals = read.csv("data/ADNI_baseline_volumes_combined_volumes.csv")
+qplot(DX,value,data=melt(totals,measure.vars=c("FS", "FSL","UCSD", "MAPER","MAGeT","SNT"),na.rm=T),
       colour=variable,geom="boxplot") + 
         xlab("Diagnosis") + ylab("Total Hippocampal Volume (mm3)")
 
@@ -502,8 +609,8 @@ qplot(DX,value,data=melt(totals,id.vars=c("ID","DX"),measure.vars=c("FSL","MAPER
 \end{figure}
 
 \begin{figure}[h]
-<<ADNI-baseline-volumes-plot,echo=F,fig=T, fig.align='center',dependson='ADNI-baseline-volumes',cache=T>>=
-by_snt_volumes = melt(totals,id.vars=c("ID","SNT"), measure.vars=c("FSL","MAPER","MAGeT"))
+<<ADNI-baseline-volumes-plot,echo=F,fig=T, fig.align='center',dependson='ADNI-baseline-volumes-boxplot',cache=T>>=
+by_snt_volumes = melt(totals, measure.vars=c("FSL","MAPER","MAGeT", "FS", "UCSD"))
 fsl=subset(by_snt_volumes, variable=="FSL")
 maper=subset(by_snt_volumes, variable=="MAPER")
 maget=subset(by_snt_volumes, variable=="MAGeT")
@@ -539,8 +646,8 @@ tab <- summary(DX ~ Age + Gender + Handedness + Education + SES + FSIQ, data=fep
 latex(tab, file="", size="scriptsize", where="h")
 @
 
-\begin{figure}[h]
-<<SZ_volumes,echo=F,fig=T, fig.align='center',dependson='ADNI-baseline-volumes',cache=T>>=
+\begin{figure}
+<<SZ_volumes,echo=F,fig=T, fig.align='center',cache=T>>=
 SZ_volumes=read.csv("data/SZ_volumes_by_method.csv")
 qplot(Manual,MAGeT,data=SZ_volumes) + geom_smooth(method="lm") + 
 #   geom_text(aes(
@@ -554,4 +661,6 @@ qplot(Manual,MAGeT,data=SZ_volumes) + geom_smooth(method="lm") +
   \caption{{\bf First Episode Schizophrenic Patients.} Comparison of total HC volumes for MAGeT against manually rated volumes of}
   \label{SZ_volumes}
 \end{figure}
+
+Some other text here... 
 \end{document}
