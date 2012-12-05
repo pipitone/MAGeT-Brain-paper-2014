@@ -58,12 +58,12 @@
 \newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
 
 \usepackage{alltt}
-\usepackage[margin=1.5in]{geometry}
+\usepackage[margin=1in]{geometry}
 \usepackage{algorithm, color, algpseudocode, amsmath, url, geometry, ctable }
 \usepackage[square,numbers]{natbib}
 \setlength{\marginparwidth}{1.2in}
 \newcommand{\marginnote}[1]{\-\marginpar[\raggedleft\footnotesize #1]{\raggedright\footnotesize #1}}
-\newcommand{\todo}[1]{\marginnote{\textcolor{red}{TODO #1}}}
+\newcommand{\todo}[1]{\begin{kframe}{\textcolor{red}{TODO #1}}\end{kframe}}
 \newcommand{\mc}[1]{\todo{(MC) #1}}
 
 %{\marginpar{ \textcolor{red}{\\ TODO: #1 \\} }
@@ -168,18 +168,20 @@ method that trades off manual segmentation expertise for computational
 processing time while providing sufficient accuracy for clinical and research
 applications.
 
-\section{Materials and Methods}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%                               METHODS
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Methods}
 
 
-explain two registration methods, definitions, fusion methods. 
-compare to each other, and then compare atlas-based, true multi-atlas, naive methods.
-trying to make choices as to the best reg/fusion/
+%%%%%                     MAGeT Brain Algorithm                            %%%%%
 
-evaluations
-described previously in Chakravarty2012. 
-
-\subsection{Segmentation Algorithm}
+\subsection{MAGeT Brain Algorithm}
 \todo{Make sure we explain what MAGeT stands for}
+\todo{reference Chakravarty2012}
 In this paper, we use the term {\it atlas} to mean any manually segmented MR
 image, and the term {\it atlas library} to mean a set of such images.  We use
 the term {\it template} to refer to any MR image, and associated labelling,
@@ -206,43 +208,34 @@ Basic multi-atlas segmentation is then used to produce segmentations for the
 entire set of unlabelled images (including those images used in the template
 library). 
 
-Label fusion is performed by cross-correlation weighted voting, a strategy
-weighted towards an optimal combination of subjects from the template library
-which has been previously shown to improve segmentation
-accuracy \citep{Aljabar2009,Collins2010}. In this method, each template library
-image is ranked in similarity to each unlabelled image by the normalized
-cross-correlation of image intensities after linear registration in a region of
-interest (ROI) generously encompassing the hippocampus.  Only the top ranked
-template library image labels are used in a voxel-wise majority vote. The ROI
-is heuristically defined as the extent of all atlas labels after linear
-registration to the template, dilated by three voxels \citep{Chakravarty2012}.
-
 Source code can be found at \url{http://github.com/pipitone/MAGeTbrain}.
 
 \begin{algorithm}
-\caption{Pseudocode for the MAGeT Brain algorithm}
-\label{pseudocodesdf}
-\begin{algorithmic}
-\Function{MultiAtlas}{Templates, Subjects}
-  \ForAll{$subject$}
-    \ForAll{$template$}
-      \State propagate all labels for template to subject space
-      \State store subject labels
-    \EndFor
-    \State fuse subject labels
-  \EndFor
-\EndFunction
-\\
-\Function {MAGeTBrain}{Subjects, Atlases, n}
-  \For{$i = 1 \to n$}
-    \State choose a subject to be used as a template
-    \State propagate labels from each atlas to template space
-    \State store the template with all of its labels
-  \EndFor
-  \State MultiAtlas(Templates, Subjects)
-\EndFunction
-\end{algorithmic}
+  \scriptsize
+  \caption{Pseudocode for the MAGeT Brain algorithm}
+  \label{pseudocodesdf}
+  \begin{algorithmic}
+    \Function{MultiAtlas}{Templates, Subjects}
+      \ForAll{$subject$}
+        \ForAll{$template$}
+          \State propagate all labels for template to subject space
+          \State store subject labels
+        \EndFor
+        \State fuse subject labels
+      \EndFor
+    \EndFunction
+    \\
+    \Function {MAGeTBrain}{Subjects, Atlases, n}
+      \For{$i = 1 \to n$}
+        \State choose a subject to be used as a template
+        \State propagate labels from each atlas to template space
+        \State store the template with all of its labels
+      \EndFor
+      \State MultiAtlas(Templates, Subjects)
+    \EndFunction
+  \end{algorithmic}
 \end{algorithm}
+
 
 \begin{figure}[h]
   \centering
@@ -250,15 +243,89 @@ Source code can be found at \url{http://github.com/pipitone/MAGeTbrain}.
   \caption{Diagram of the MAGeT Brain algorithm}
 \end{figure}
 
-\subsection{Image Processing and Registration Methods}
+\todo{Note that algorithm does not specify a registration algorithm or fusion 
+method\citep{Chakravarty2012}.  Performance on these is test in experiments}
+
+%%%%%                             Subjects                                 %%%%%
+
+%  Describe subject datasets in general 
+\subsection{Subjects}
+
+\subsubsection{ADNI-1 1.5T Screening}
+\todo{- image characteristics}
+\todo{- describe SNT manual segmentations}
+\todo{- baseline/cross-validation dataset demographics?}
+
+
+% latex.default(cstats, title = title, caption = caption, rowlabel = rowlabel,      col.just = col.just, numeric.dollar = FALSE, insert.bottom = legend,      rowname = lab, dcolumn = dcolumn, extracolheads = extracolheads,      extracolsize = Nsize, ...) 
+%
+{\scriptsize\ctable[caption={ADNI-1 1.5T Screening demographics},label=tab,pos=!tbp,]{lrccccc}{\tnote[]{\noindent {\scriptsize $a$\ }{$b$\ }{\scriptsize $c$\ } represent the lower quartile $a$, the median $b$, and the upper quartile $c$\ for continuous variables.}\tnote[]{$N$\ is the number of non--missing values.}\tnote[]{Numbers after percents are frequencies.}}{\FL
+\multicolumn{1}{l}{}&\multicolumn{1}{c}{N}&\multicolumn{1}{c}{CN}&\multicolumn{1}{c}{EMCI}&\multicolumn{1}{c}{LMCI}&\multicolumn{1}{c}{AD}&\multicolumn{1}{c}{Combined}\NN
+&&\multicolumn{1}{c}{{\scriptsize $N=414$}}&\multicolumn{1}{c}{{\scriptsize $N=279$}}&\multicolumn{1}{c}{{\scriptsize $N=560$}}&\multicolumn{1}{c}{{\scriptsize $N=278$}}&\multicolumn{1}{c}{{\scriptsize $N=1531$}}\ML
+Age~at~baseline~\hfill\tiny{Years}&1531&{\scriptsize 70.9~}{74.0 }{\scriptsize 78.4} &{\scriptsize 66.0~}{71.0 }{\scriptsize 76.2} &{\scriptsize 69.4~}{74.3 }{\scriptsize 79.4} &{\scriptsize 70.9~}{75.9 }{\scriptsize 80.9} &{\scriptsize 69.6~}{74.0 }{\scriptsize 79.2} \NN
+Sex~:~Female&1531&50\%~{\scriptsize~(206)}&44\%~{\scriptsize~(123)}&38\%~{\scriptsize~(215)}&45\%~{\scriptsize~(125)}&44\%~{\scriptsize~(669)}\NN
+Education&1531&{\scriptsize 14.0~}{16.0 }{\scriptsize 18.0} &{\scriptsize 14.0~}{16.0 }{\scriptsize 18.0} &{\scriptsize 14.0~}{16.0 }{\scriptsize 18.0} &{\scriptsize 12.0~}{16.0 }{\scriptsize 17.8} &{\scriptsize 14.0~}{16.0 }{\scriptsize 18.0} \NN
+Ethnicity~:~Unknown&1531&~1\%~{\scriptsize~(~~~4)}&~1\%~{\scriptsize~(~~~2)}&~1\%~{\scriptsize~(~~~4)}&~1\%~{\scriptsize~(~~~3)}&~1\%~{\scriptsize~(~~13)}\NN
+~~~~Not~Hisp/Latino&&96\%~{\scriptsize~(~398)}&95\%~{\scriptsize~(~265)}&96\%~{\scriptsize~(~540)}&96\%~{\scriptsize~(~267)}&96\%~{\scriptsize~(1470)}\NN
+~~~~Hisp/Latino&&~3\%~{\scriptsize~(~~12)}&~4\%~{\scriptsize~(~~12)}&~3\%~{\scriptsize~(~~16)}&~3\%~{\scriptsize~(~~~8)}&~3\%~{\scriptsize~(~~48)}\NN
+CDR-SB&1531&{\scriptsize 0.0~}{0.0 }{\scriptsize 0.0} &{\scriptsize 0.5~}{1.0 }{\scriptsize 1.5} &{\scriptsize 1.0~}{1.5 }{\scriptsize 2.0} &{\scriptsize 3.5~}{4.5 }{\scriptsize 5.0} &{\scriptsize 0.0~}{1.0 }{\scriptsize 2.5} \NN
+ADAS~13&1511&{\scriptsize  6.0~}{ 9.0 }{\scriptsize 12.0} &{\scriptsize  8.0~}{12.0 }{\scriptsize 16.0} &{\scriptsize 14.3~}{18.7 }{\scriptsize 23.0} &{\scriptsize 24.0~}{29.0 }{\scriptsize 34.0} &{\scriptsize 10.0~}{15.3 }{\scriptsize 23.0} \NN
+MMSE&1531&{\scriptsize 29.0~}{29.0 }{\scriptsize 30.0} &{\scriptsize 28.0~}{29.0 }{\scriptsize 30.0} &{\scriptsize 26.0~}{27.0 }{\scriptsize 29.0} &{\scriptsize 21.2~}{23.0 }{\scriptsize 25.0} &{\scriptsize 26.0~}{28.0 }{\scriptsize 29.0} \LL
+}}
+
+
+
+\todo{Check table only includes 1.5T from the Screening}
+
+\subsubsection{SZ First Episode Patients}
+\todo{image characteristics, demographics}
+
+% latex.default(cstats, title = title, caption = caption, rowlabel = rowlabel,      col.just = col.just, numeric.dollar = FALSE, insert.bottom = legend,      rowname = lab, dcolumn = dcolumn, extracolheads = extracolheads,      extracolsize = Nsize, ...) 
+%
+\begin{table}[!tbp]
+\scriptsize
+\caption{Schizophrenia First Episode Patient Demographics\label{tab}} 
+\begin{center}
+\begin{tabular}{lrc}
+\hline\hline
+\multicolumn{1}{l}{}&\multicolumn{1}{c}{N}&\multicolumn{1}{c}{FEP}\tabularnewline
+&&\multicolumn{1}{c}{{\scriptsize $N=81$}}\tabularnewline
+\hline
+Age&80&{\scriptsize 21~}{23 }{\scriptsize 26} \tabularnewline
+Gender~:~M&81&63\%~{\scriptsize~(51)}\tabularnewline
+Handedness~:~ambi&81&~6\%~{\scriptsize~(~5)}\tabularnewline
+~~~~left&&~5\%~{\scriptsize~(~4)}\tabularnewline
+~~~~right&&89\%~{\scriptsize~(72)}\tabularnewline
+Education&81&{\scriptsize 11~}{13 }{\scriptsize 15} \tabularnewline
+SES~:~lower&81&31\%~{\scriptsize~(25)}\tabularnewline
+~~~~middle&&54\%~{\scriptsize~(44)}\tabularnewline
+~~~~upper&&15\%~{\scriptsize~(12)}\tabularnewline
+FSIQ&79&{\scriptsize  88~}{102 }{\scriptsize 109} \tabularnewline
+\hline
+\end{tabular}
+\end{center}
+\noindent {\scriptsize $a$\ }{$b$\ }{\scriptsize $c$\ } represent the lower quartile $a$, the median $b$, and the upper quartile $c$\ for continuous variables.\\$N$\ is the number of non--missing values.\\Numbers after percents are frequencies.\end{table}
+
+
+
+
+
+
+
+%%%%%                       Image pre-processing                           %%%%%
+
+\subsection{Image pre-processing}
 
 Before images were registered, the N3 algorithm [16] is first used to minimize
 the intensity nonuniformity in each of the atlases and unlabeled subject
-images. In this work we investigated the performance of two registration
-methods.  
+images.   
+
+
+%%%%%                       Registration Methods                           %%%%%
+
+\subsection{Registration}
 
 \subsubsection{Automatic Normalization and Image Matching and Anatomical Labeling (ANIMAL)}
-
 The ANIMAL algorithm carries out Image registration is in two phases. In the
 first, a 12-parameter linear transformation (3 translations, rotations, scales,
 shears) is estimated between images using an algorithm that maximizes the
@@ -273,12 +340,12 @@ FWHM. The final transformation is a set of local translations defined on a bed
 of equally spaced nodes that were estimated through the optimization of the
 correlation coefficient. 
 
-For the purposes of this work we used the
-regularization parameters optimized in Robbins et al. \citep{Robbins2004}. It
-should be noted that the MAGeT brain algorithm is not dependent on this, or
-any, particular choice of registration method \citep{Chakravarty2012}.
+For the purposes of this work we used the regularization parameters optimized 
+in Robbins et al. \citep{Robbins2004}. 
 
-\todo{should add the MNI website here; also we should add the parameters we used somewhere}
+\todo{link to MNI website here}
+\todo{command line}
+
 
 \subsubsection{Automatic Normalization Tools (ANTS)}
 
@@ -292,10 +359,24 @@ and the objective function are regularized with a Gaussian kernel at each level
 of the hierarchy. The ANTs algorithm is freely available
 \url{http://www.picsl.upenn.edu/ANTS/}. We used an implementation of the ANTS
 algorithm compatible with the MINC data format, mincANTS
-\url{https://github.com/vfonov/mincANTS} \todo{(same here we should add the
-parameters we used).}
+\url{https://github.com/vfonov/mincANTS}.
 
-\subsection{Label Fusion Methods}
+We used the following command line when running the ANTS command, 
+\begin{verbatim}
+  mincANTS 3 -m PR[target_file.mnc,source_file.mnc,1,4] 
+   --number-of-affine-iterations 10000x10000x10000x10000x10000 
+   --affine-gradient-descent-option 0.5x0.95x1.e-4x1.e-4
+   --use-Histogram-Matching --MI-option 32x16000
+   -r Gauss[3,0] -t SyN[0.5] -i 100x100x100x20
+   -o transformation.xfm
+ \end{verbatim}
+These settings were adapted from the "reasonable starting point" given in the
+ANTS manual. \todo{reference manual?}
+
+
+%%%%%                           Label Fusion                               %%%%%
+
+\subsection{Label Fusion}
 
 Label fusion is term given to the process of combining the information from
 several candidate labellings for an MR image into a single labelling.  In this
@@ -309,29 +390,31 @@ all candidate labellings.  Ties are broken arbitrarily.
 
 \subsubsection{Cross-correlation Weighted Majority Vote}
 
-Labels are propagated from only those template library images which most
-similar to the subject.  A voxel-wise majority vote is carried out from the
-labels from the top n ranked template library images, where n is parameter set
-by the user. 
+An optimal combination of subjects from the template library has previously been
+shown to improve segmentation accuracy \citep{Aljabar2009,Collins2010}.  In this
+method, each template library image is ranked in similarity to each unlabelled 
+image by the normalized cross-correlation (CC) of image intensities after linear
+registration, over a region of interest (ROI) generously encompassing the 
+hippocampus.  Only the top ranked
+template library image labels are used in a voxel-wise majority vote. The ROI
+is heuristically defined as the extent of all atlas labels after linear
+registration to the template, dilated by three voxels \citep{Chakravarty2012}.  
+The number of top ranked template library image labels is a configurable parameter.
 
-Similarity between a subject and a template image is measured using normalized
-cross-correlation of intensity values, over a region of interest defined on
-each template, after the subject has been linearly registered to the template.
-The heuristic used for defining a meaningful region of interest for each
-template is to use the extent of all the propagated labellings from each atlas
-(after linear registration only) and then dilating this region by three voxels.
+The {\tt xcorr\_vol utility} from the ANIMAL toolkit is used to calculate the 
+cross-correlation similarity measure.  
  
-The utility to calculate the cross-correlation similarity measure is
-implemented as part of the ANIMAL toolkit. \todo{(ANIMAL or MINC)}
-
 \subsubsection{Normalised Mutual Information Weighted Majority Vote}
+ 
+This method is similar to cross-correlation weighted voting 
+except that image similarity is calculated by the normalised 
+mutual information score over the region of interest. \todo{reference?}
+ 
+ 
+The {\tt itk\_similarity} utility from the EZMinc toolkit is used to calculate 
+the normalised mutual information measure.
 
-This label fusion method is identical to the above process except a normalised
-mutual information score is used over the region of interest between a template
-and subject instead of cross-correlation.  
-
-The utility to calculate the normalised mutual information measure is
-implemented as part of the EZMinc package (based on ITK NMI routine).
+%%%%%                        Goodness-of-fit                               %%%%%
 
 \subsection{Goodness-of-fit}
 
@@ -347,201 +430,218 @@ gold standard and $b+c$ is the sum of the voxels uniquely identified by either
 the automatically generated candidate segmentation or the gold-standard.
 \todo{I would do this after you define the experiments}
 
-\subsection{Data and Experiments}
-
-Three different experiments were conducted to evaluate the influence of
-registration method, atlas set size and resolution, template set size, and
-label fusion method and parameters.
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%                         Experiment Rationale 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
-\subsubsection{Study Method Rationale - An Outline}
-\begin{description}
-\item[ADNI Repeated Random Subsampling Validation] \hfill \\ 
-{\bf Purpose:} to validate robustness of MAGeT accuracy when atlas set is representative 
-of subject set w.r.t. registration method, atlas and template library composition and size, and 
-various fusion methods. Additionally, to choose the best configuration of parameters 
-(under the assumption that performance generalises). 
-\\ \\ 
-{\bf Method:} using a set of 69 ADNI subjects, 13 from each disease category, perform 
-10 rounds of repeated random subsampling to pick atlas library and template library 
-for each parameter setting and then run MAGeT brain to segment non-atlas subjects.
-Also perform multi-atlas and single-atlas segmentation using the same parameter settings
-and atlas library size.
-\\ \\
-{\bf Results:} find significant improvement over multi-atlas performed with the same
-parameters. Also, find smoothed performance is monotonically increasing but asymptotic
-in size of both template and atlas library, with peak performance reached after 15
-templates. \todo{Can we statistically capture "peak" performance?  The point at which 
-gains become statistically insignificant?}
+%%%%%                            Experiments                               %%%%%
 
-\item[Winterburn Atlas Reliability] \hfill \\
-{\bf Purpose:} validation of reliability of whole hippocampus and hippocampal 
-subregion segmentations.
-\\ \\
-{\bf Method:} we use the Winterburn atlas set, using each high-res atlas in turn 
-to segment a standard-res MR of the same subject and compare the automatic 
-segmentation to the atlas segmentation.  We use a template library consisting 
-of standard-res MRs from the remaining Winterburn atlas subjects plus 11 other 
-standard-res healthy control subjects. 
-\\ \\
-{\bf Results:} TBD 
+\subsection{Experiments}
 
-\item[Winterburn-Atlas ADNI Baseline Segmentation] \hfill \\
-{\bf Purpose:} given that MAGeT is robust and accurate, show MAGeT performance on a real-world task in which atlas set may not be representative of subjects.
-\\ \\
-{\bf Method:} We use best settings from first experiment (ANTS, majority vote, 
-template library of 20), and use Winterburn hi-res atlases to segment all ADNI Baseline 
-images.  Since our segmentation protocol differs from what can be segmented at 
-ADNI resolution a direct comparison is not appropriate.  Instead, we validate by 
-showing how well our segmentation volumes correlate with existing automated/manual 
-segmentation volumes. \todo{Also show disease prediction?}
-\\ \\
-{\bf Results: } 
+Experiments were performed to assess the performance of MAGeT brain with various 
+parameter settings as well as on diverse datasets.  In each experiment we contrast 
+the performance of MAGeT brain with that standard single- and multi-atlas 
+segmentations derived from the same atlas library. 
 
-\item[First Episode SZ Patients Segmentation] \hfill \\ 
-{\bf Purpose:} validate MAGeT's general performance.
-\\ \\
-{\bf Method:} Measure performance on a different disease dataset. We use FEP SZ patients and controls, 
-using two different atlas sets: a manual hippocampal segmentation of patients, and Winterburn 
-atlas set.  We validate the native-atlas set segmentations using Dice's Kappa, 
-and the Winterburn-atlas-set segmentations by correlating volumes. 
-\\ \\
-{\bf Results:} High volume correlation between Winterburn segmentation volumes and ground truth.  (High-ish?) Kappa when using manual segmentations as Atlases. 
+%%%%%
+%%%%%                 Experiments: ADNI-1 cross-validationn               %%%%%
+%%%%%
+\subsubsection{ADNI-1 cross-validation}
 
-\end{description}
-\end{kframe}
+To test the accuracy of the MAGeT brain algorithm with different parameter 
+settings, repeated random sub-sampling cross-validation (RRSCV) was performed
+on a subset of the ADNI-1 dataset.
 
-\subsubsection{ADNI Validation Experiment}
-
-In this experiment we performed repeated random sub-sampling cross-validation
-of the MAGeT algorithm with a pool of 69 images and labels from the ADNI
-dataset.  The images are T1-weighted \todo{<insert description of scan/machine
-types>}.  The hippocampal labels are provided as part of the ADNI dataset, and
-are produced \todo{<insert description of SNT labellings>}.  The parameters we
-varied, and the ranges over which we varied are listed in \todo{table}.  We
-performed 10 validations per parameter combination.  In each validation trial,
-a random sample of subjects were chosen from the pool without replacement as
-the atlas set, whereas the template set was chosen randomly with replacement.   
-
-\begin{table}
-    \begin{tabular}{l|l}
-        Parameter           & Values tested                                                      \\ \hline
-        Number of Templates & 3 to 20                                                            \\ 
-        Number of Atlases   & 3 to 9                                                             \\ 
-        Registration Method & ANTS or ANIMAL                                                     \\ 
-        Label Fusion Method & majority vote, cross-correlation weighted vote, NMI weighted vote. 
-    \end{tabular}
-\end{table}
-
-We used the following parameters for ANTS, during registration: 
-\begin{verbatim}
-  mincANTS 3 -m PR[target_file.mnc,source_file.mnc,1,4] 
-   --number-of-affine-iterations 10000x10000x10000x10000x10000 
-   --affine-gradient-descent-option 0.5x0.95x1.e-4x1.e-4
-   --use-Histogram-Matching --MI-option 32x16000
-   -r Gauss[3,0] -t SyN[0.5] -i 100x100x100x20
-   -o transformation.xfm
- \end{verbatim}
-These settings were adapted from the "reasonable starting point" given in the
-ANTS manual. \todo{<rationale?>}
-
-For the purposes of this work we used the regularization parameters optimized
-in Robbins et al.[15]. \todo{right? (but added a second layer).}
-
-\todo{multi-atlas comparison, "naive" comparison}
-
-\subsubsection{Winterburn High-resolution Hippocampal Atlas - ADNI Validation}
-
-In this experiment we explored using the MAGeT brain algorithm with the
-Winterburn high-resolution atlases to segment 21 randomly chosen MR images from
-the ADNI dataset (seven each of healthy, MCI and AD subjects).  The Winterburn
-atlases are digital segmentations of the hippocampus in five  in-vivo 300u
-isotropic T1-weighted MR scans, and include subfield segmentations for the
-cornus ammonis (CA) 1, CA4, dentate gyrus, subiculum, and CA 2 and 3 combined.
-Subjects in the Winterburn atlases range in age from 29-57 years (mean age of
-37), and include two males and three females.  
-
-Since hippocampal segmentation protocols differ between the ADNI labels and
-Winterburn atlases, this poses a problem for direct similarity comparisons
-between labels produced by MAGeT brain and the ADNI labels.  \todo{explain why
-we did(n't) resegment the ADNI images with a the low-res protocol.} To evaluate
-the performance of MAGeT brain, we compared classification accuracy of subjects
-by diagnosis based on hippocampal volume using both the SMT labels and our
-produced labels.  \todo{description of validation -- rms {\tt validate} or
-t-test: contrast with QDA or LDA (Coupe 2011) used in LOOCV}
+{\bf Dataset evaluated.} 69 1.5T images were randomly selected from the 
+{\em ADNI1:Screening 1.5T} standardized dataset.  Demographics for this subset 
+are shown in Table X\todo{FIXME: table reference}. 
 
 
 % latex.default(cstats, title = title, caption = caption, rowlabel = rowlabel,      col.just = col.just, numeric.dollar = FALSE, insert.bottom = legend,      rowname = lab, dcolumn = dcolumn, extracolheads = extracolheads,      extracolsize = Nsize, ...) 
 %
-{\scriptsize\ctable[caption={Descriptive Statistics by Baseline Dx},label=tab,rotate]{lccccc}{\tnote[]{\noindent {\scriptsize $a$\ }{$b$\ }{\scriptsize $c$\ } represent the lower quartile $a$, the median $b$, and the upper quartile $c$\ for continuous variables.}\tnote[]{Numbers after percents are frequencies.}\tnote[]{\indent Tests used:}\tnote[]{\textsuperscript{\normalfont 1}Kruskal-Wallis test; \textsuperscript{\normalfont 2}Pearson test}}{\FL
-\multicolumn{1}{l}{}&\multicolumn{1}{c}{CN}&\multicolumn{1}{c}{LMCI}&\multicolumn{1}{c}{AD}&\multicolumn{1}{c}{Combined}&\multicolumn{1}{c}{Test Statistic}\NN
-&\multicolumn{1}{c}{{\scriptsize $N=23$}}&\multicolumn{1}{c}{{\scriptsize $N=23$}}&\multicolumn{1}{c}{{\scriptsize $N=23$}}&\multicolumn{1}{c}{{\scriptsize $N=69$}}&\ML
-Age~at~baseline~\hfill\tiny{Years}&{\scriptsize 72.2~}{75.5 }{\scriptsize 78.5} &{\scriptsize 71.0~}{77.1 }{\scriptsize 81.4} &{\scriptsize 71.7~}{77.8 }{\scriptsize 81.8} &{\scriptsize 71.5~}{76.6 }{\scriptsize 81.3} &$ F_{2,66}=0.15 ,~ P=0.862 ^{1} $\NN
-Sex~:~Female&43\%~{\scriptsize~(10)}&43\%~{\scriptsize~(10)}&43\%~{\scriptsize~(10)}&43\%~{\scriptsize~(30)}&$ \chi^{2}_{2}=0 ,~ P=1 ^{2} $\NN
-Education&{\scriptsize 16.0~}{16.0 }{\scriptsize 18.0} &{\scriptsize 15.0~}{16.0 }{\scriptsize 18.0} &{\scriptsize 12.0~}{16.0 }{\scriptsize 16.5} &{\scriptsize 14.0~}{16.0 }{\scriptsize 18.0} &$ F_{2,66}=3.44 ,~ P=0.038 ^{1} $\NN
-Marital~status~at~baseline~:~Married&74\%~{\scriptsize~(17)}&87\%~{\scriptsize~(20)}&87\%~{\scriptsize~(20)}&83\%~{\scriptsize~(57)}&$ \chi^{2}_{4}=3.04 ,~ P=0.551 ^{2} $\NN
-~~~~Widowed&22\%~{\scriptsize~(~5)}&13\%~{\scriptsize~(~3)}&13\%~{\scriptsize~(~3)}&16\%~{\scriptsize~(11)}&\NN
-~~~~Divorced&~4\%~{\scriptsize~(~1)}&~0\%~{\scriptsize~(~0)}&~0\%~{\scriptsize~(~0)}&~1\%~{\scriptsize~(~1)}&\NN
-~~~~Never~married&~0\%~{\scriptsize~(~0)}&~0\%~{\scriptsize~(~0)}&~0\%~{\scriptsize~(~0)}&~0\%~{\scriptsize~(~0)}&\NN
-~~~~Unknown&~0\%~{\scriptsize~(~0)}&~0\%~{\scriptsize~(~0)}&~0\%~{\scriptsize~(~0)}&~0\%~{\scriptsize~(~0)}&\NN
-Ethnicity~:~Unknown&~~0\%~{\scriptsize~(~0)}&~~0\%~{\scriptsize~(~0)}&~~0\%~{\scriptsize~(~0)}&~~0\%~{\scriptsize~(~0)}&$^{2}$\NN
-~~~~Not~Hisp/Latino&100\%~{\scriptsize~(23)}&100\%~{\scriptsize~(23)}&100\%~{\scriptsize~(23)}&100\%~{\scriptsize~(69)}&\NN
-~~~~Hisp/Latino&~~0\%~{\scriptsize~(~0)}&~~0\%~{\scriptsize~(~0)}&~~0\%~{\scriptsize~(~0)}&~~0\%~{\scriptsize~(~0)}&\NN
-Race~:~Am~Indian/Alaskan&~~0\%~{\scriptsize~(~0)}&~~0\%~{\scriptsize~(~0)}&~~0\%~{\scriptsize~(~0)}&~~0\%~{\scriptsize~(~0)}&$ \chi^{2}_{2}=5.61 ,~ P=0.061 ^{2} $\NN
-~~~~Asian&~~0\%~{\scriptsize~(~0)}&~~0\%~{\scriptsize~(~0)}&~~0\%~{\scriptsize~(~0)}&~~0\%~{\scriptsize~(~0)}&\NN
-~~~~Hawaiian/Other~PI&~~0\%~{\scriptsize~(~0)}&~~0\%~{\scriptsize~(~0)}&~~0\%~{\scriptsize~(~0)}&~~0\%~{\scriptsize~(~0)}&\NN
-~~~~Black&~17\%~{\scriptsize~(~4)}&~~4\%~{\scriptsize~(~1)}&~~0\%~{\scriptsize~(~0)}&~~7\%~{\scriptsize~(~5)}&\NN
-~~~~White&~83\%~{\scriptsize~(19)}&~96\%~{\scriptsize~(22)}&100\%~{\scriptsize~(23)}&~93\%~{\scriptsize~(64)}&\NN
-~~~~More~than~one&~~0\%~{\scriptsize~(~0)}&~~0\%~{\scriptsize~(~0)}&~~0\%~{\scriptsize~(~0)}&~~0\%~{\scriptsize~(~0)}&\NN
-~~~~Unknown&~~0\%~{\scriptsize~(~0)}&~~0\%~{\scriptsize~(~0)}&~~0\%~{\scriptsize~(~0)}&~~0\%~{\scriptsize~(~0)}&\NN
-CDR-SB&{\scriptsize 0.00~}{0.00 }{\scriptsize 0.00} &{\scriptsize 0.75~}{1.50 }{\scriptsize 1.50} &{\scriptsize 4.00~}{4.50 }{\scriptsize 5.00} &{\scriptsize 0.00~}{1.50 }{\scriptsize 4.00} &$ F_{2,66}=294 ,~ P<0.001 ^{1} $\NN
-ADAS~13&{\scriptsize  4.67~}{ 5.67 }{\scriptsize 12.34} &{\scriptsize 14.34~}{16.00 }{\scriptsize 20.50} &{\scriptsize 23.83~}{29.00 }{\scriptsize 31.66} &{\scriptsize 10.00~}{16.00 }{\scriptsize 25.33} &$ F_{2,66}=110 ,~ P<0.001 ^{1} $\NN
-MMSE&{\scriptsize 28.5~}{29.0 }{\scriptsize 30.0} &{\scriptsize 25.0~}{27.0 }{\scriptsize 28.0} &{\scriptsize 21.0~}{23.0 }{\scriptsize 24.0} &{\scriptsize 24.0~}{27.0 }{\scriptsize 29.0} &$ F_{2,66}=94.2 ,~ P<0.001 ^{1} $\LL
+{\scriptsize\ctable[caption={ADNI-1 cross-validation subset demographics},label=tab,pos=!tbp,]{lcccc}{\tnote[]{\noindent {\scriptsize $a$\ }{$b$\ }{\scriptsize $c$\ } represent the lower quartile $a$, the median $b$, and the upper quartile $c$\ for continuous variables.}\tnote[]{Numbers after percents are frequencies.}}{\FL
+\multicolumn{1}{l}{}&\multicolumn{1}{c}{CN}&\multicolumn{1}{c}{LMCI}&\multicolumn{1}{c}{AD}&\multicolumn{1}{c}{Combined}\NN
+&\multicolumn{1}{c}{{\scriptsize $N=23$}}&\multicolumn{1}{c}{{\scriptsize $N=23$}}&\multicolumn{1}{c}{{\scriptsize $N=23$}}&\multicolumn{1}{c}{{\scriptsize $N=69$}}\ML
+Age~at~baseline~\hfill\tiny{Years}&{\scriptsize 72.2~}{75.5 }{\scriptsize 78.5} &{\scriptsize 71.0~}{77.1 }{\scriptsize 81.4} &{\scriptsize 71.7~}{77.8 }{\scriptsize 81.8} &{\scriptsize 71.5~}{76.6 }{\scriptsize 81.3} \NN
+Sex~:~Female&43\%~{\scriptsize~(10)}&43\%~{\scriptsize~(10)}&43\%~{\scriptsize~(10)}&43\%~{\scriptsize~(30)}\NN
+Education&{\scriptsize 16.0~}{16.0 }{\scriptsize 18.0} &{\scriptsize 15.0~}{16.0 }{\scriptsize 18.0} &{\scriptsize 12.0~}{16.0 }{\scriptsize 16.5} &{\scriptsize 14.0~}{16.0 }{\scriptsize 18.0} \NN
+Ethnicity~:~Unknown&~~0\%~{\scriptsize~(~0)}&~~0\%~{\scriptsize~(~0)}&~~0\%~{\scriptsize~(~0)}&~~0\%~{\scriptsize~(~0)}\NN
+~~~~Not~Hisp/Latino&100\%~{\scriptsize~(23)}&100\%~{\scriptsize~(23)}&100\%~{\scriptsize~(23)}&100\%~{\scriptsize~(69)}\NN
+~~~~Hisp/Latino&~~0\%~{\scriptsize~(~0)}&~~0\%~{\scriptsize~(~0)}&~~0\%~{\scriptsize~(~0)}&~~0\%~{\scriptsize~(~0)}\NN
+CDR-SB&{\scriptsize 0.00~}{0.00 }{\scriptsize 0.00} &{\scriptsize 0.75~}{1.50 }{\scriptsize 1.50} &{\scriptsize 4.00~}{4.50 }{\scriptsize 5.00} &{\scriptsize 0.00~}{1.50 }{\scriptsize 4.00} \NN
+ADAS~13&{\scriptsize  4.67~}{ 5.67 }{\scriptsize 12.34} &{\scriptsize 14.34~}{16.00 }{\scriptsize 20.50} &{\scriptsize 23.83~}{29.00 }{\scriptsize 31.66} &{\scriptsize 10.00~}{16.00 }{\scriptsize 25.33} \NN
+MMSE&{\scriptsize 28.5~}{29.0 }{\scriptsize 30.0} &{\scriptsize 25.0~}{27.0 }{\scriptsize 28.0} &{\scriptsize 21.0~}{23.0 }{\scriptsize 24.0} &{\scriptsize 24.0~}{27.0 }{\scriptsize 29.0} \LL
 }}
 
 
 
 
-\todo{For minctracc -- we registered to TAL}
 
+{\bf Atlas and template libary.}  Atlases consisted of images taken from the 
+dataset, with corresponding manual labels provided by SNT.  Atlas library size
+was varied from 3 to 9 images.  The remaining images were segmented, with the 
+template library size varying from 3 to 20 images.  Template library images were
+selected randomly from the images to be segmented. 
+
+{\bf Registration method.}  Both the ANTS and ANIMAL registration methods were 
+used.
+\todo{In ANIMAL, images aligned to TAL space}
+
+{\bf Label fusion.} Majority vote, Cross-correlation weighted majority vote, and
+Normalized Mutual Information weighted majority vote are used.  With the 
+weighted majority vote fusion methods, the number of top labels used in the 
+fusion was varied from 3 to 20 images.
+
+{\bf Evaluation.}  Repeated random sub-sampling cross-validation (RRSCV) 
+consists of repeated trials in which items from the dataset are randomly assigned to a training set or validation set. In each trial, performance on the validation set is measured, and then averaged across all trials. 
+
+We performed RRSCV on each combination of parameters listed above: atlas library size, template library size, registration method, and label fusion method.  We performed 10 trials per parameter combination.  In each validation trial, the training set consisted of the images used as atlases, and the validation set consisted of the images to be segmented. The MAGeT brain algorithm and the basic multi-atlas segmentation procedure were applied to segment the images in the validation set.  Additionally, in each trial, the single-atlas segmentation was obtained for each atlas-template.  
+
+The gold-standard for the segmentation accuracy of images in the validation set was the SNT manual labels.
+
+
+\todo{ number of registrations/comparisions }
+
+
+%%%%%
+%%%%%               Experiments: ADNI-1 Screening Validation               %%%%%
+%%%%%
+\subsubsection{ADNI-1 Screening Validation}
+
+To test the accuracy of MAGeT brain on a real-world task we segment the entire
+ADNI-1 dataset using an atlas set that is not representative of the subject set.
+
+{\bf Dataset evaluated.} All images from the {\em ADNI1:Screening 1.5T} 
+standardized dataset.
+
+{\bf Atlas and template libary.} The atlas library consisted of the entire 
+Winterburn atlas set.  The Winterburn atlases are digital segmentations of the
+hippocampus in five in-vivo 300u isotropic T1-weighted MR scans, and include 
+subfield segmentations for the cornus ammonis (CA) 1, CA4, dentate gyrus, 
+subiculum, and CA 2 and 3 combined. Subjects in the Winterburn atlases range in 
+age from 29-57 years (mean age of 37), and include two males and three females.  
+
+The template library consisted of 21 randomly selected images from the ADNI1 
+data dataset (7 healthy, MCI and AD subjects).  
+
+{\bf Registration method.}  - ANTS as it performed best in the cross-validation
+experiment. \todo{how to reference results whilst still in Methods?}
+
+{\bf Label fusion.} Majority vote, as it is simpliest to run and performed 
+equally well in cross-validation experiment.
+
+{\bf Evaluation.}
+
+Since hippocampal segmentation protocols differ between the ADNI labels and
+Winterburn atlases, this poses a problem for direct similarity comparisons
+between labels produced by MAGeT brain and the ADNI labels.  \todo{explain why
+we did(n't) resegment the ADNI images with a the low-res protocol.} 
+
+To evaluate the performance of MAGeT brain, we correlate our segmentation
+volumes with manual segmentation volumes, as well as with hippocampal volumes
+of established automated segmentation methods.
+
+Additionally, we compared classification accuracy of subjects
+by diagnosis based on hippocampal volume using both the SMT labels and our
+produced labels.  \todo{description of validation -- rms {\tt validate} or
+t-test: contrast with QDA or LDA (Coupe 2011) used in LOOCV}
+
+
+%%%%%
+%%%%%          Experiments: SZ First Episode Patient Validation           %%%%%
+%%%%%
+\subsubsection{SZ First Episode Patient Validation}
+ To validate that MAGeT's performance generalises to other diseases.
+Measure performance using best parameter settings on a different disease dataset.
+
+{\bf Dataset evaluated.} SZ First Episode Patients
+
+{\bf Atlas and template libary.} two different atlas sets: a manual hippocampal
+segmentation of patients, and Winterburn atlas set.  
+
+{\bf Registration method.} ANTS.
+
+{\bf Label fusion.} Majority vote.
+
+{\bf Evaluation.} We validate the FEP-atlas segmentations using Dice's Kappa,
+and the Winterburn-atlas segmentations by correlating volumes. 
+
+
+%%%%%
+%%%%%              Experiments: Winterburn Atlases Validation              %%%%%
+%%%%%
+\subsubsection{Winterburn Atlases Validation}
+{\bf Dataset evaluated.} T1 BRAVO scans of the same subjects included in the 
+Winterburn atlas set.  These scans are taken within .... weeks of the scans for 
+the Winterburn atlases.
+
+{\bf Atlas and template libary.} Atlas library is Winterburn T1 atlases.  
+Template library consists of all five T1 BRAVOs, plus 15 T1 healthy control images.
+
+{\bf Registration method.} ANTS
+
+{\bf Label fusion.} Majority vote.
+
+{\bf Evaluation.}  Leave one out cross-validation (LOOCV) in which all five
+subjects are segmented in separate runs of MAGeT brain.  In each run, the subject
+to be segmented is excluded from the Atlas library (so only four atlases are used).
+
+Segmentation accuracy is judged by difference in hippocampal volume.
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%                               Results
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Results}
-\subsubsection{A2A}
 
-Kappa vs. Number of templates: 
-Smoothing line fitted using GAM (generalised additive model) from R with defaults from ggplot2 (formula: y ~ s(x, bs = "cs"))
+%%%%%
+%%%%%                  Results: ADNI-1 cross-validationn                   %%%%%
+%%%%%
+\subsubsection{ADNI-1 Cross-Validation}
+
+ - find significant improvement over multi-atlas performed with the same
+  parameters. Also, find smoothed performance is monotonically increasing but asymptotic
+  in size of both template and atlas library, with peak performance reached after 15
+  templates. \todo{Can we statistically capture "peak" performance?  The point at which 
+  gains become statistically insignificant?}
+
+\begin{figure}
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
 
-{\centering \includegraphics[width=\maxwidth]{figure/a2a_facet} 
+{\centering \includegraphics[width=\maxwidth]{figure/ADNI1_cross_validation_means} 
 
 }
 
 
 \end{knitrout}
 
+  \caption{Comparison of MAGeT performance on ADNI-1 subset.  Smoothing line fitted using GAM (generalised additive model) from R with defaults from ggplot2 (formula: y ~ s(x, bs = "cs"))}
+  \label{ADNI1_cross_validation_means}
+\end{figure}
 
+\begin{figure}
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
 
-{\centering \includegraphics[width=\maxwidth]{figure/a2a_facet_mameans} 
+{\centering \includegraphics[width=\maxwidth]{figure/ADN1-cross-validation-MA-difference} 
 
 }
 
 
 \end{knitrout}
 
+  \caption{Difference in mean Kappa between MAGeT brain and multi-atlas}
+  \label{ADNI1_cross_validation_MA_difference}
+\end{figure}
 
 
-Kappa minus multi-atlas mean vs. Number of Templates
 
 Multi-atlas means:
 
 
-% latex.default(merge(a_ma_means, t_ma_means, by = "num_atlases"),      colheads = c("Atlases", "ANTS", "ANIMAL"), file = "") 
+% latex.default(merge(a_ma_means, t_ma_means, by = "num_atlases"),      colheads = c("Atlases", "ANTS", "ANIMAL"), file = "", dec = 2) 
 %
 \begin{table}[!tbp]
 \begin{center}
@@ -549,13 +649,13 @@ Multi-atlas means:
 \hline\hline
 \multicolumn{1}{l}{merge}&\multicolumn{1}{c}{Atlases}&\multicolumn{1}{c}{ANTS}&\multicolumn{1}{c}{ANIMAL}\tabularnewline
 \hline
-1&$3$&$0.805414417498623$&$0.764266832660852$\tabularnewline
-2&$4$&$0.793646605043623$&$0.752420649183594$\tabularnewline
-3&$5$&$0.823292141139203$&$0.785546924392891$\tabularnewline
-4&$6$&$0.815578947302174$&$0.778345910844141$\tabularnewline
-5&$7$&$0.831936342756014$&$0.797761650124922$\tabularnewline
-6&$8$&$0.826298462726884$&$0.792443538092187$\tabularnewline
-7&$9$&$0.836877632304638$&$0.804568318173359$\tabularnewline
+1&$3.00$&$0.81$&$0.76$\tabularnewline
+2&$4.00$&$0.79$&$0.75$\tabularnewline
+3&$5.00$&$0.82$&$0.79$\tabularnewline
+4&$6.00$&$0.82$&$0.78$\tabularnewline
+5&$7.00$&$0.83$&$0.80$\tabularnewline
+6&$8.00$&$0.83$&$0.79$\tabularnewline
+7&$9.00$&$0.84$&$0.80$\tabularnewline
 \hline
 \end{tabular}
 \end{center}
@@ -634,37 +734,7 @@ selection to refine atlas set?
 \end{figure}
 
 \subsubsection{First Episode Schizophrenic patients}
-
-
-% latex.default(cstats, title = title, caption = caption, rowlabel = rowlabel,      col.just = col.just, numeric.dollar = FALSE, insert.bottom = legend,      rowname = lab, dcolumn = dcolumn, extracolheads = extracolheads,      extracolsize = Nsize, ...) 
-%
-\begin{table}[h]
-\scriptsize
-\caption{Descriptive Statistics by DX\label{tab}} 
-\begin{center}
-\begin{tabular}{lrc}
-\hline\hline
-\multicolumn{1}{l}{}&\multicolumn{1}{c}{N}&\multicolumn{1}{c}{FEP}\tabularnewline
-&&\multicolumn{1}{c}{{\scriptsize $N=81$}}\tabularnewline
-\hline
-Age&80&{\scriptsize 21~}{23 }{\scriptsize 26} \tabularnewline
-Gender~:~M&81&63\%~{\scriptsize~(51)}\tabularnewline
-Handedness~:~ambi&81&~6\%~{\scriptsize~(~5)}\tabularnewline
-~~~~left&&~5\%~{\scriptsize~(~4)}\tabularnewline
-~~~~right&&89\%~{\scriptsize~(72)}\tabularnewline
-Education&81&{\scriptsize 11~}{13 }{\scriptsize 15} \tabularnewline
-SES~:~lower&81&31\%~{\scriptsize~(25)}\tabularnewline
-~~~~middle&&54\%~{\scriptsize~(44)}\tabularnewline
-~~~~upper&&15\%~{\scriptsize~(12)}\tabularnewline
-FSIQ&79&{\scriptsize  88~}{102 }{\scriptsize 109} \tabularnewline
-\hline
-\end{tabular}
-\end{center}
-\noindent {\scriptsize $a$\ }{$b$\ }{\scriptsize $c$\ } represent the lower quartile $a$, the median $b$, and the upper quartile $c$\ for continuous variables.\\$N$\ is the number of non--missing values.\\Numbers after percents are frequencies.\end{table}
-
-
-
-
+High volume correlation between Winterburn segmentation volumes and ground truth.  (High-ish?) Kappa when using manual segmentations as Atlases. 
 
 \begin{figure}
 \begin{knitrout}
