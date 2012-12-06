@@ -1,1 +1,422 @@
-/projects/jp/hc_growth/data/ADNI1_Complete_1Yr_3T_11_15_2012.csv
+"Image Data ID",Subject,Group,Sex,Age,Visit,Modality,Description,Type,"Acq Date",Format,Downloaded
+32777,005_S_0324,Patient,F,75,2,MRI,"MPR-R; GradWarp; B1 Correction; N3; Scaled",Processed,2006/04/21,NiFTI,
+32785,005_S_0448,Patient,M,86,2,MRI,"MPR-R; GradWarp; B1 Correction; N3; Scaled",Processed,2006/05/22,NiFTI,
+32817,005_S_0572,Patient,M,79,2,MRI,"MPR-R; GradWarp; B1 Correction; N3; Scaled",Processed,2006/07/31,NiFTI,
+33041,100_S_0015,Patient,M,82,3,MRI,"MPR-R; ; N3; Scaled",Processed,2006/05/02,NiFTI,
+34190,027_S_0403,Patient,M,76,2,MRI,"MPR-R; GradWarp; B1 Correction; N3; Scaled",Processed,2006/05/08,NiFTI,
+35021,018_S_0369,Patient,M,77,3,MRI,"MPR; ; N3; Scaled",Processed,2006/10/31,NiFTI,
+35024,018_S_0406,Patient,M,78,2,MRI,"MPR; ; N3; Scaled",Processed,2006/06/26,NiFTI,
+35029,018_S_0450,Patient,M,69,2,MRI,"MPR; ; N3; Scaled",Processed,2006/06/23,NiFTI,
+35467,005_S_0324,Patient,F,76,3,MRI,"MPR-R; GradWarp; B1 Correction; N3; Scaled",Processed,2006/10/31,NiFTI,
+37190,018_S_0369,Patient,M,76,2,MRI,"MPR; ; N3; Scaled",Processed,2006/05/11,NiFTI,
+40281,136_S_0196,Patient,F,79,3,MRI,"MPR; ; N3; Scaled",Processed,2006/10/23,NiFTI,
+40657,002_S_0413,Patient,F,76,2,MRI,"MPR; ; N3; Scaled",Processed,2006/05/19,NiFTI,
+40749,002_S_0954,Patient,F,70,2,MRI,"MPR; ; N3; Scaled",Processed,2006/11/08,NiFTI,
+40840,002_S_1070,Patient,M,74,2,MRI,"MPR; ; N3; Scaled",Processed,2006/12/18,NiFTI,
+45126,002_S_0559,Patient,M,79,2,MRI,"MPR; ; N3; Scaled",Processed,2006/06/27,NiFTI,
+47065,027_S_0403,Patient,M,77,3,MRI,"MPR-R; GradWarp; B1 Correction; N3; Scaled",Processed,2006/10/26,NiFTI,
+47085,027_S_0417,Patient,M,80,3,MRI,"MPR-R; GradWarp; B1 Correction; N3; Scaled",Processed,2006/11/14,NiFTI,
+47545,027_S_0404,Patient,F,88,3,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2006/11/22,NiFTI,
+48918,126_S_0606,Patient,F,69,3,MRI,"MPR-R; GradWarp; B1 Correction; N3; Scaled",Processed,2007/01/31,NiFTI,
+51902,023_S_0030,Patient,F,81,3,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2006/04/13,NiFTI,
+51934,023_S_0031,Patient,F,78,2,MRI,"MPR-R; GradWarp; B1 Correction; N3; Scaled",Processed,2005/10/28,NiFTI,
+51989,023_S_0078,Patient,F,77,3,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2006/07/11,NiFTI,
+52013,023_S_0078,Patient,F,77,4,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/01/11,NiFTI,
+52049,023_S_0139,Patient,F,67,4,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/02/15,NiFTI,
+52093,023_S_0376,Patient,M,71,3,MRI,"MPR-R; GradWarp; B1 Correction; N3; Scaled",Processed,2006/10/19,NiFTI,
+52098,023_S_0625,Patient,M,77,3,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/02/27,NiFTI,
+53823,116_S_0649,Patient,M,87,3,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/02/21,NiFTI,
+59190,012_S_0689,Patient,M,64,3,MRI,"MPR; ; N3; Scaled",Processed,2007/01/10,NiFTI,
+59214,012_S_1009,Patient,M,76,2,MRI,"MPR; ; N3; Scaled",Processed,2006/11/03,NiFTI,
+60050,002_S_1070,Patient,M,74,3,MRI,"MPR-R; ; N3; Scaled",Processed,2007/06/07,NiFTI,
+78796,012_S_1292,Patient,M,77,3,MRI,"MPR; ; N3; Scaled",Processed,2007/09/12,NiFTI,
+78841,016_S_1326,Patient,M,67,3,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/09/28,NiFTI,
+79141,005_S_0572,Patient,M,79,3,MRI,"MPR-R; GradWarp; B1 Correction; N3; Scaled",Processed,2006/12/27,NiFTI,
+79139,018_S_0633,Patient,M,84,3,MRI,"MPR; ; N3; Scaled",Processed,2007/01/19,NiFTI,
+79135,002_S_1261,Patient,F,72,3,MRI,"MPR; ; N3; Scaled",Processed,2007/08/30,NiFTI,
+79123,002_S_0559,Patient,M,80,3,MRI,"MPR; ; N3; Scaled",Processed,2006/12/12,NiFTI,
+79080,136_S_1227,Patient,F,65,3,MRI,"MPR; ; N3; Scaled",Processed,2007/09/11,NiFTI,
+63475,100_S_0015,Patient,M,82,4,MRI,"MPR-R; ; N3; Scaled",Processed,2006/10/16,NiFTI,
+63565,127_S_0260,Patient,F,80,4,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/05/08,NiFTI,
+63583,127_S_0393,Patient,F,87,4,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/06/06,NiFTI,
+63743,130_S_0969,Patient,M,71,3,MRI,"MPR; ; N3; Scaled",Processed,2007/05/07,NiFTI,
+64077,023_S_0604,Patient,M,88,4,MRI,"MPR-R; GradWarp; B1 Correction; N3; Scaled",Processed,2007/06/11,NiFTI,
+64551,002_S_0413,Patient,F,77,4,MRI,"MPR; ; N3; Scaled",Processed,2007/06/01,NiFTI,
+64681,023_S_0061,Patient,F,78,3,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2006/06/15,NiFTI,
+64750,002_S_1018,Patient,F,71,3,MRI,"MPR; ; N3; Scaled",Processed,2007/06/14,NiFTI,
+64800,023_S_0376,Patient,M,72,4,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/03/20,NiFTI,
+64818,023_S_0855,Patient,M,76,3,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/03/15,NiFTI,
+64827,023_S_0916,Patient,M,80,3,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/04/24,NiFTI,
+64849,023_S_0963,Patient,M,73,3,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/04/04,NiFTI,
+64995,023_S_0926,Patient,F,72,3,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/04/03,NiFTI,
+65268,002_S_1268,Patient,M,83,2,MRI,"MPR-R; ; N3; Scaled",Processed,2007/03/07,NiFTI,
+65514,130_S_0886,Patient,F,72,3,MRI,"MPR; ; N3; Scaled",Processed,2007/04/11,NiFTI,
+65561,002_S_1261,Patient,F,71,2,MRI,"MPR; ; N3; Scaled",Processed,2007/02/27,NiFTI,
+65662,051_S_1072,Patient,F,60,2,MRI,"MPR-R; GradWarp; B1 Correction; N3; Scaled",Processed,2007/01/29,NiFTI,
+65874,002_S_1280,Patient,F,71,2,MRI,"MPR; ; N3; Scaled",Processed,2007/02/27,NiFTI,
+65952,018_S_0425,Patient,M,87,4,MRI,"MPR; ; N3; Scaled",Processed,2007/06/15,NiFTI,
+66009,027_S_0307,Patient,M,80,4,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/05/01,NiFTI,
+66740,136_S_0196,Patient,F,79,4,MRI,"MPR; ; N3; Scaled",Processed,2007/05/07,NiFTI,
+66754,136_S_0300,Patient,M,57,3,MRI,"MPR; ; N3; Scaled",Processed,2006/11/13,NiFTI,
+66768,136_S_0300,Patient,M,58,4,MRI,"MPR; ; N3; Scaled",Processed,2007/05/29,NiFTI,
+66773,136_S_0426,Patient,M,80,3,MRI,"MPR; ; N3; Scaled",Processed,2006/11/20,NiFTI,
+66787,136_S_0426,Patient,M,81,4,MRI,"MPR; ; N3; Scaled",Processed,2007/06/04,NiFTI,
+66801,136_S_0429,Patient,M,63,3,MRI,"MPR; ; N3; Scaled",Processed,2006/12/18,NiFTI,
+66987,027_S_0835,Patient,M,73,3,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/03/22,NiFTI,
+67147,002_S_0954,Patient,F,70,3,MRI,"MPR; ; N3; Scaled",Processed,2007/05/03,NiFTI,
+67174,023_S_0331,Patient,F,66,4,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/03/19,NiFTI,
+67261,127_S_0844,Patient,F,86,3,MRI,"MPR-R; GradWarp; B1 Correction; N3; Scaled",Processed,2007/05/16,NiFTI,
+67377,018_S_0425,Patient,M,87,3,MRI,"MPR; ; N3; Scaled",Processed,2006/12/12,NiFTI,
+67380,027_S_0403,Patient,M,77,4,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/05/14,NiFTI,
+67677,005_S_0602,Patient,M,71,3,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/02/06,NiFTI,
+67697,018_S_0406,Patient,M,79,4,MRI,"MPR; ; N3; Scaled",Processed,2007/06/08,NiFTI,
+67781,136_S_0086,Patient,F,81,4,MRI,"MPR; ; N3; Scaled",Processed,2007/05/01,NiFTI,
+67889,005_S_0448,Patient,M,86,3,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2006/12/08,NiFTI,
+67899,005_S_0553,Patient,M,85,3,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/01/04,NiFTI,
+69136,136_S_0184,Patient,F,79,4,MRI,"MPR-R; ; N3; Scaled",Processed,2007/03/20,NiFTI,
+78677,002_S_1280,Patient,F,71,13,MRI,"MPR; ; N3; Scaled",Processed,2007/10/10,NiFTI,
+69469,018_S_0450,Patient,M,69,3,MRI,"MPR; ; N3; Scaled",Processed,2006/12/08,NiFTI,
+70611,005_S_0324,Patient,F,76,4,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/05/09,NiFTI,
+70680,018_S_0369,Patient,M,77,4,MRI,"MPR; ; N3; Scaled",Processed,2007/04/24,NiFTI,
+70687,023_S_1126,Patient,M,81,2,MRI,"MPR-R; GradWarp; B1 Correction; N3; Scaled",Processed,2006/12/13,NiFTI,
+71302,005_S_0448,Patient,M,87,4,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/05/30,NiFTI,
+71312,005_S_0553,Patient,M,86,4,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/06/14,NiFTI,
+71351,012_S_1009,Patient,M,76,3,MRI,"MPR; ; N3; Scaled",Processed,2007/05/30,NiFTI,
+71451,018_S_0633,Patient,M,84,4,MRI,"MPR; ; N3; Scaled",Processed,2007/07/17,NiFTI,
+72352,127_S_0622,Patient,F,76,4,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/06/27,NiFTI,
+72405,037_S_0501,Patient,M,79,4,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/07/11,NiFTI,
+72427,067_S_0290,Patient,M,77,4,MRI,"MPR-R; GradWarp; B1 Correction; N3; Scaled",Processed,2007/06/15,NiFTI,
+72805,116_S_0392,Patient,F,86,4,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/06/15,NiFTI,
+72873,126_S_0606,Patient,F,70,4,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/07/30,NiFTI,
+73073,023_S_0625,Patient,M,77,4,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/07/16,NiFTI,
+73127,051_S_1131,Patient,M,87,3,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/07/16,NiFTI,
+73347,032_S_0677,Patient,M,72,4,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/07/19,NiFTI,
+73538,005_S_0814,Patient,F,72,3,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/04/05,NiFTI,
+73600,023_S_1190,Patient,F,77,3,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/07/17,NiFTI,
+73895,012_S_1321,Patient,M,83,2,MRI,"MPR; ; N3; Scaled",Processed,2007/03/12,NiFTI,
+73937,027_S_1081,Patient,M,85,3,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/08/16,NiFTI,
+74203,005_S_0602,Patient,M,72,4,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/08/08,NiFTI,
+74231,016_S_1117,Patient,F,70,3,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/08/02,NiFTI,
+74315,037_S_1225,Patient,M,77,3,MRI,"MPR-R; GradWarp; B1 Correction; N3; Scaled",Processed,2007/08/20,NiFTI,
+74659,012_S_0689,Patient,M,65,4,MRI,"MPR; ; N3; Scaled",Processed,2007/07/19,NiFTI,
+74691,012_S_1292,Patient,M,76,2,MRI,"MPR; ; N3; Scaled",Processed,2007/03/19,NiFTI,
+75029,007_S_1206,Patient,M,74,3,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/08/21,NiFTI,
+75042,032_S_1169,Patient,F,73,3,MRI,"MPR-R; GradWarp; B1 Correction; N3; Scaled",Processed,2007/08/24,NiFTI,
+75327,130_S_0423,Patient,M,81,4,MRI,"MPR; ; N3; Scaled",Processed,2007/08/20,NiFTI,
+75459,053_S_0507,Patient,F,55,2,MRI,"MPR; ; N3; Scaled",Processed,2006/06/06,NiFTI,
+75471,053_S_0507,Patient,F,56,4,MRI,"MPR; ; N3; Scaled",Processed,2007/06/11,NiFTI,
+75660,094_S_1241,Patient,M,73,3,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/08/23,NiFTI,
+76601,018_S_0450,Patient,M,70,4,MRI,"MPR; ; N3; Scaled",Processed,2007/06/12,NiFTI,
+76658,031_S_1209,Patient,F,73,3,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/07/26,NiFTI,
+77017,007_S_1222,Patient,F,74,3,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/08/28,NiFTI,
+77026,023_S_0855,Patient,M,77,4,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/09/05,NiFTI,
+77044,023_S_1262,Patient,F,73,3,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/09/04,NiFTI,
+79313,016_S_0769,Patient,M,63,4,MRI,"MPR-R; GradWarp; B1 Correction; N3; Scaled",Processed,2007/08/24,NiFTI,
+79577,027_S_1385,Patient,F,70,3,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/09/26,NiFTI,
+79784,037_S_0501,Patient,M,78,2,MRI,"MPR-R; GradWarp; B1 Correction; N3; Scaled",Processed,2006/06/23,NiFTI,
+79943,037_S_1225,Patient,M,77,2,MRI,"MPR-R; GradWarp; B1 Correction; N3; Scaled",Processed,2007/02/09,NiFTI,
+79989,051_S_1072,Patient,F,61,3,MRI,"MPR-R; GradWarp; B1 Correction; N3; Scaled",Processed,2007/09/14,NiFTI,
+80003,052_S_1251,Patient,F,75,3,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/09/24,NiFTI,
+80132,002_S_0954,Patient,F,70,4,MRI,"MPR; ; N3; Scaled",Processed,2007/10/17,NiFTI,
+80152,023_S_0916,Patient,M,81,4,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/09/28,NiFTI,
+80303,067_S_1253,Patient,F,63,3,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/09/13,NiFTI,
+80370,082_S_1256,Patient,F,72,3,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/10/04,NiFTI,
+80406,094_S_1267,Patient,M,74,3,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/09/24,NiFTI,
+80679,100_S_1286,Patient,F,76,3,MRI,"MPR-R; ; N3; Scaled",Processed,2007/08/30,NiFTI,
+80700,116_S_1249,Patient,F,71,3,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/08/22,NiFTI,
+80965,130_S_1337,Patient,M,72,3,MRI,"MPR; ; N3; Scaled",Processed,2007/09/26,NiFTI,
+81373,018_S_0335,Patient,F,85,4,MRI,"MPR; ; N3; Scaled",Processed,2007/05/22,NiFTI,
+81382,021_S_0332,Patient,M,71,3,MRI,"MPR-R; GradWarp; B1 Correction; N3; Scaled",Processed,2006/10/19,NiFTI,
+81387,021_S_0332,Patient,M,71,4,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/04/19,NiFTI,
+81437,130_S_0449,Patient,F,67,3,MRI,"MPR; ; N3; Scaled",Processed,2007/02/26,NiFTI,
+81856,023_S_0031,Patient,F,78,3,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2006/04/17,NiFTI,
+81874,023_S_0061,Patient,F,78,4,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2006/12/06,NiFTI,
+81905,023_S_0388,Patient,M,72,3,MRI,"MPR-R; GradWarp; B1 Correction; N3; Scaled",Processed,2006/11/06,NiFTI,
+81928,023_S_0604,Patient,M,87,3,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2006/12/12,NiFTI,
+81937,023_S_0926,Patient,F,73,4,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/10/23,NiFTI,
+81981,136_S_0195,Patient,M,81,4,MRI,"MPR; ; N3; Scaled",Processed,2007/03/26,NiFTI,
+82102,002_S_0559,Patient,M,81,13,MRI,"MPR-R; ; N3; Scaled",Processed,2007/10/18,NiFTI,
+82143,016_S_1121,Patient,F,57,3,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/07/02,NiFTI,
+82171,023_S_0331,Patient,F,65,3,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2006/10/03,NiFTI,
+82205,023_S_0963,Patient,M,74,4,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/10/11,NiFTI,
+82223,027_S_0835,Patient,M,74,4,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/09/26,NiFTI,
+82509,051_S_1331,Patient,F,77,2,MRI,"MPR-R; GradWarp; B1 Correction; N3; Scaled",Processed,2007/04/26,NiFTI,
+82556,100_S_0190,Patient,M,80,4,MRI,"MPR; ; N3; Scaled",Processed,2007/05/10,NiFTI,
+82651,127_S_0844,Patient,F,86,4,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/10/26,NiFTI,
+82686,130_S_0449,Patient,F,68,4,MRI,"MPR; ; N3; Scaled",Processed,2007/08/27,NiFTI,
+82700,130_S_0956,Patient,F,65,4,MRI,"MPR; ; N3; Scaled",Processed,2007/11/01,NiFTI,
+82705,136_S_0579,Patient,F,66,3,MRI,"MPR; ; N3; Scaled",Processed,2007/01/08,NiFTI,
+83512,116_S_0649,Patient,M,88,4,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/08/08,NiFTI,
+83530,130_S_0505,Patient,M,80,3,MRI,"MPR; ; N3; Scaled",Processed,2007/04/09,NiFTI,
+83549,136_S_0429,Patient,M,64,4,MRI,"MPR; ; N3; Scaled",Processed,2007/06/18,NiFTI,
+83554,136_S_0579,Patient,F,66,4,MRI,"MPR; ; N3; Scaled",Processed,2007/06/25,NiFTI,
+83780,094_S_1293,Patient,M,78,3,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/09/19,NiFTI,
+83806,130_S_0956,Patient,F,64,3,MRI,"MPR; ; N3; Scaled",Processed,2007/04/16,NiFTI,
+85469,005_S_0814,Patient,F,72,4,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/11/27,NiFTI,
+87518,023_S_1046,Patient,M,72,3,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/05/29,NiFTI,
+86030,005_S_0572,Patient,M,80,4,MRI,"MPR-R; GradWarp; B1 Correction; N3; Scaled",Processed,2007/07/09,NiFTI,
+86231,002_S_1070,Patient,M,75,4,MRI,"MPR; ; N3; Scaled",Processed,2007/12/10,NiFTI,
+86309,016_S_0769,Patient,M,63,3,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/03/21,NiFTI,
+86368,027_S_1082,Patient,F,70,3,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/06/04,NiFTI,
+86377,027_S_1082,Patient,F,71,4,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/12/05,NiFTI,
+86402,067_S_0290,Patient,M,76,3,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/02/09,NiFTI,
+86411,067_S_0607,Patient,F,79,3,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/03/28,NiFTI,
+86801,037_S_0501,Patient,M,79,3,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/01/05,NiFTI,
+87106,031_S_1066,Patient,M,74,4,MRI,"MPR-R; GradWarp; B1 Correction; N3; Scaled",Processed,2007/12/14,NiFTI,
+87528,023_S_1247,Patient,F,73,3,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/08/02,NiFTI,
+87547,027_S_0404,Patient,F,89,4,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/05/16,NiFTI,
+87556,027_S_1277,Patient,M,87,3,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/08/21,NiFTI,
+87565,027_S_1387,Patient,M,86,3,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/10/26,NiFTI,
+87739,116_S_0382,Patient,F,77,4,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/06/13,NiFTI,
+88077,127_S_0260,Patient,F,79,3,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2006/11/02,NiFTI,
+88159,136_S_0184,Patient,F,79,3,MRI,"MPR; ; N3; Scaled",Processed,2006/09/06,NiFTI,
+88164,136_S_0195,Patient,M,80,3,MRI,"MPR; ; N3; Scaled",Processed,2006/10/02,NiFTI,
+88270,023_S_1046,Patient,M,73,4,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/11/06,NiFTI,
+88318,130_S_0423,Patient,M,80,3,MRI,"MPR; ; N3; Scaled",Processed,2007/02/12,NiFTI,
+88372,023_S_1190,Patient,F,78,4,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2008/01/08,NiFTI,
+88403,027_S_0307,Patient,M,79,3,MRI,"MPR-R; GradWarp; B1 Correction; N3; Scaled",Processed,2006/10/20,NiFTI,
+88540,037_S_0303,Patient,M,85,3,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2006/10/20,NiFTI,
+89071,023_S_1126,Patient,M,81,3,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/06/22,NiFTI,
+89124,067_S_0290,Patient,M,75,2,MRI,"MPR-R; GradWarp; B1 Correction; N3; Scaled",Processed,2006/06/01,NiFTI,
+89644,116_S_0382,Patient,F,76,3,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2006/11/30,NiFTI,
+89653,116_S_0392,Patient,F,85,3,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2006/12/04,NiFTI,
+89666,116_S_0487,Patient,M,77,3,MRI,"MPR-R; GradWarp; B1 Correction; N3; Scaled",Processed,2006/12/22,NiFTI,
+89764,116_S_0752,Patient,F,83,3,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/02/16,NiFTI,
+89933,023_S_0031,Patient,F,79,4,MRI,"MPR-R; GradWarp; B1 Correction; N3; Scaled",Processed,2006/10/30,NiFTI,
+90026,023_S_0963,Patient,M,73,2,MRI,"MPR-R; GradWarp; B1 Correction; N3; Scaled",Processed,2006/10/17,NiFTI,
+90578,053_S_0507,Patient,F,56,3,MRI,"MPR; ; N3; Scaled",Processed,2006/12/11,NiFTI,
+90866,016_S_1117,Patient,F,70,4,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/12/21,NiFTI,
+90907,031_S_0830,Patient,M,71,3,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/04/03,NiFTI,
+90951,032_S_0677,Patient,M,72,3,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/04/03,NiFTI,
+90989,032_S_1169,Patient,F,72,2,MRI,"MPR-R; GradWarp; B1 Correction; N3; Scaled",Processed,2007/01/24,NiFTI,
+91085,116_S_0752,Patient,F,83,4,MRI,"MPR-R; GradWarp; B1 Correction; N3; Scaled",Processed,2007/08/08,NiFTI,
+91096,116_S_1232,Patient,F,73,3,MRI,"MPR-R; GradWarp; B1 Correction; N3; Scaled",Processed,2007/08/01,NiFTI,
+91113,127_S_0622,Patient,F,75,3,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2006/12/13,NiFTI,
+91168,130_S_0505,Patient,M,81,4,MRI,"MPR; ; N3; Scaled",Processed,2007/10/10,NiFTI,
+91173,130_S_0886,Patient,F,72,4,MRI,"MPR; ; N3; Scaled",Processed,2007/10/10,NiFTI,
+91703,023_S_1247,Patient,F,74,4,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2008/01/29,NiFTI,
+91708,037_S_1225,Patient,M,78,4,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2008/02/11,NiFTI,
+91833,051_S_1131,Patient,M,88,4,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2008/02/05,NiFTI,
+91864,052_S_1250,Patient,F,74,4,MRI,"MPR-R; GradWarp; B1 Correction; N3; Scaled",Processed,2008/01/25,NiFTI,
+91912,116_S_1232,Patient,F,73,4,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2008/01/30,NiFTI,
+91921,116_S_1249,Patient,F,72,4,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2008/02/06,NiFTI,
+91990,128_S_1088,Patient,M,89,4,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2008/02/04,NiFTI,
+92157,018_S_0335,Patient,F,84,3,MRI,"MPR; ; N3; Scaled",Processed,2006/11/28,NiFTI,
+92205,031_S_1209,Patient,F,73,4,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2008/02/08,NiFTI,
+92226,002_S_1268,Patient,M,83,3,MRI,"MPR; ; N3; Scaled",Processed,2007/09/21,NiFTI,
+92316,012_S_1009,Patient,M,77,4,MRI,"MPR; ; N3; Scaled",Processed,2007/11/26,NiFTI,
+92351,136_S_0086,Patient,F,81,3,MRI,"MPR-R; ; N3; Scaled",Processed,2006/10/30,NiFTI,
+92363,130_S_0969,Patient,M,71,4,MRI,"MPR; ; N3; Scaled",Processed,2007/11/07,NiFTI,
+92420,116_S_0487,Patient,M,78,4,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/06/18,NiFTI,
+92434,012_S_1321,Patient,M,84,3,MRI,"MPR; ; N3; Scaled",Processed,2007/09/20,NiFTI,
+92441,018_S_0406,Patient,M,79,3,MRI,"MPR; ; N3; Scaled",Processed,2006/12/05,NiFTI,
+92444,031_S_0830,Patient,M,72,4,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/09/17,NiFTI,
+92619,128_S_1148,Patient,F,71,4,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2008/01/17,NiFTI,
+92682,031_S_1066,Patient,M,73,3,MRI,"MPR-R; GradWarp; B1 Correction; N3; Scaled",Processed,2007/05/29,NiFTI,
+94432,027_S_1081,Patient,M,86,4,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2008/02/11,NiFTI,
+94458,027_S_1277,Patient,M,87,4,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2008/02/18,NiFTI,
+94476,032_S_1169,Patient,F,73,4,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2008/01/17,NiFTI,
+94554,051_S_1072,Patient,F,61,4,MRI,"MPR-R; GradWarp; B1 Correction; N3; Scaled",Processed,2008/02/19,NiFTI,
+94563,051_S_1123,Patient,F,77,4,MRI,"MPR-R; GradWarp; B1 Correction; N3; Scaled",Processed,2008/02/18,NiFTI,
+94579,052_S_1250,Patient,F,74,3,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/09/05,NiFTI,
+94789,082_S_0928,Patient,F,84,4,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/10/18,NiFTI,
+94820,100_S_0190,Patient,M,80,3,MRI,"MPR; ; N3; Scaled",Processed,2006/11/16,NiFTI,
+94863,023_S_1126,Patient,M,81,4,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/11/28,NiFTI,
+94881,051_S_1331,Patient,F,77,3,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/11/06,NiFTI,
+96034,007_S_1206,Patient,M,74,4,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2008/02/22,NiFTI,
+96052,007_S_1222,Patient,F,75,4,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2008/02/22,NiFTI,
+96239,016_S_1121,Patient,F,57,4,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/12/21,NiFTI,
+96312,100_S_1286,Patient,F,77,4,MRI,"MPR; ; N3; Scaled",Processed,2008/02/11,NiFTI,
+97022,002_S_1018,Patient,F,72,4,MRI,"MPR; ; N3; Scaled",Processed,2007/12/07,NiFTI,
+97069,032_S_1101,Patient,F,72,4,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/12/06,NiFTI,
+99095,082_S_1256,Patient,F,73,4,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2008/03/03,NiFTI,
+99260,051_S_1123,Patient,F,77,3,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/11/06,NiFTI,
+99265,136_S_1227,Patient,F,66,4,MRI,"MPR; ; N3; Scaled",Processed,2008/03/06,NiFTI,
+101432,023_S_0388,Patient,M,72,4,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/04/17,NiFTI,
+101541,027_S_1385,Patient,F,71,4,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2008/03/26,NiFTI,
+101566,027_S_1387,Patient,M,87,4,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2008/03/13,NiFTI,
+101719,052_S_1251,Patient,F,75,4,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2008/03/10,NiFTI,
+101760,094_S_1267,Patient,M,74,4,MRI,"MPR-R; GradWarp; B1 Correction; N3; Scaled",Processed,2008/03/24,NiFTI,
+101765,094_S_1293,Patient,M,78,4,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2008/03/17,NiFTI,
+101909,127_S_0393,Patient,F,87,3,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2006/11/21,NiFTI,
+101972,130_S_1337,Patient,M,72,4,MRI,"MPR; ; N3; Scaled",Processed,2008/03/10,NiFTI,
+102085,094_S_1241,Patient,M,73,4,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2008/03/06,NiFTI,
+102675,016_S_1326,Patient,M,67,4,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2008/03/31,NiFTI,
+103276,023_S_1262,Patient,F,74,4,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2008/04/02,NiFTI,
+103301,012_S_1292,Patient,M,77,4,MRI,"MPR; ; N3; Scaled",Processed,2008/03/25,NiFTI,
+104466,012_S_1321,Patient,M,84,4,MRI,"MPR; ; N3; Scaled",Processed,2008/03/19,NiFTI,
+104471,002_S_1280,Patient,F,72,4,MRI,"MPR; ; N3; Scaled",Processed,2008/03/25,NiFTI,
+106507,067_S_1253,Patient,F,64,4,MRI,"MPR-R; GradWarp; B1 Correction; N3; Scaled",Processed,2008/05/13,NiFTI,
+132220,002_S_1261,Patient,F,72,4,MRI,"MPR; ; N3; Scaled",Processed,2008/05/27,NiFTI,
+108422,002_S_1268,Patient,M,84,4,MRI,"MPR; ; N3; Scaled",Processed,2008/05/22,NiFTI,
+109546,082_S_0928,Patient,F,84,3,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/06/14,NiFTI,
+118675,002_S_0413,Patient,F,76,2,MRI,"MPR; ; N3; Scaled_2",Processed,2006/05/19,NiFTI,
+118679,002_S_0559,Patient,M,79,2,MRI,"MPR; ; N3; Scaled_2",Processed,2006/06/27,NiFTI,
+118694,002_S_0954,Patient,F,70,2,MRI,"MPR; ; N3; Scaled_2",Processed,2006/11/08,NiFTI,
+118773,018_S_0369,Patient,M,76,2,MRI,"MPR; ; N3; Scaled_2",Processed,2006/05/11,NiFTI,
+118776,023_S_0030,Patient,F,81,3,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled_2",Processed,2006/04/13,NiFTI,
+118839,023_S_0376,Patient,M,71,3,MRI,"MPR-R; GradWarp; B1 Correction; N3; Scaled_2",Processed,2006/10/19,NiFTI,
+118841,023_S_0058,Patient,M,71,3,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled_2",Processed,2006/06/13,NiFTI,
+118842,023_S_0031,Patient,F,78,3,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled_2",Processed,2006/04/17,NiFTI,
+118846,023_S_0031,Patient,F,79,4,MRI,"MPR-R; GradWarp; B1 Correction; N3; Scaled_2",Processed,2006/10/30,NiFTI,
+118848,023_S_0031,Patient,F,78,2,MRI,"MPR-R; GradWarp; B1 Correction; N3; Scaled_2",Processed,2005/10/28,NiFTI,
+118851,023_S_0376,Patient,M,72,4,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled_2",Processed,2007/03/20,NiFTI,
+118852,023_S_0058,Patient,M,71,4,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled_2",Processed,2006/12/19,NiFTI,
+118855,023_S_0061,Patient,F,78,3,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled_2",Processed,2006/06/15,NiFTI,
+118858,023_S_0061,Patient,F,78,4,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled_2",Processed,2006/12/06,NiFTI,
+118863,023_S_0078,Patient,F,77,3,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled_2",Processed,2006/07/11,NiFTI,
+118864,023_S_0388,Patient,M,72,3,MRI,"MPR-R; GradWarp; B1 Correction; N3; Scaled_2",Processed,2006/11/06,NiFTI,
+118867,023_S_0078,Patient,F,77,4,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled_2",Processed,2007/01/11,NiFTI,
+118871,023_S_0388,Patient,M,72,4,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled_2",Processed,2007/04/17,NiFTI,
+118881,023_S_0916,Patient,M,80,3,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled_2",Processed,2007/04/24,NiFTI,
+118901,023_S_0926,Patient,F,72,3,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled_2",Processed,2007/04/03,NiFTI,
+118904,023_S_0963,Patient,M,73,2,MRI,"MPR-R; GradWarp; B1 Correction; N3; Scaled_2",Processed,2006/10/17,NiFTI,
+118906,023_S_0963,Patient,M,73,3,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled_2",Processed,2007/04/04,NiFTI,
+118909,023_S_1046,Patient,M,72,3,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled_2",Processed,2007/05/29,NiFTI,
+118916,023_S_1126,Patient,M,81,2,MRI,"MPR-R; GradWarp; B1 Correction; N3; Scaled_2",Processed,2006/12/13,NiFTI,
+118918,023_S_1126,Patient,M,81,3,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled_2",Processed,2007/06/22,NiFTI,
+118924,023_S_1262,Patient,F,73,2,MRI,"MPR-R; GradWarp; B1 Correction; N3; Scaled_2",Processed,2007/02/28,NiFTI,
+118998,023_S_0625,Patient,M,77,3,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled_2",Processed,2007/02/27,NiFTI,
+119000,023_S_0855,Patient,M,76,3,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled_2",Processed,2007/03/15,NiFTI,
+119001,023_S_0331,Patient,F,66,4,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled_2",Processed,2007/03/19,NiFTI,
+119006,023_S_0604,Patient,M,88,4,MRI,"MPR-R; GradWarp; B1 Correction; N3; Scaled_2",Processed,2007/06/11,NiFTI,
+119007,023_S_0139,Patient,F,66,3,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled_2",Processed,2006/07/28,NiFTI,
+119008,023_S_0331,Patient,F,65,3,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled_2",Processed,2006/10/03,NiFTI,
+119009,023_S_0604,Patient,M,87,3,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled_2",Processed,2006/12/12,NiFTI,
+119026,023_S_0604,Patient,M,87,2,MRI,"MPR-R; GradWarp; B1 Correction; N3; Scaled_2",Processed,2006/06/20,NiFTI,
+119146,053_S_0507,Patient,F,55,2,MRI,"MPR; ; N3; Scaled_2",Processed,2006/06/06,NiFTI,
+119148,053_S_0507,Patient,F,56,3,MRI,"MPR; ; N3; Scaled_2",Processed,2006/12/11,NiFTI,
+119158,053_S_0507,Patient,F,56,4,MRI,"MPR; ; N3; Scaled_2",Processed,2007/06/11,NiFTI,
+119201,067_S_0290,Patient,M,75,2,MRI,"MPR-R; GradWarp; B1 Correction; N3; Scaled_2",Processed,2006/06/01,NiFTI,
+119685,136_S_0086,Patient,F,80,2,MRI,"MPR; ; N3; Scaled_2",Processed,2006/05/08,NiFTI,
+119712,136_S_0184,Patient,F,78,2,MRI,"MPR; ; N3; Scaled_2",Processed,2006/03/27,NiFTI,
+119714,136_S_0184,Patient,F,79,3,MRI,"MPR; ; N3; Scaled_2",Processed,2006/09/06,NiFTI,
+119718,136_S_0194,Patient,F,81,2,MRI,"MPR; ; N3; Scaled_2",Processed,2006/04/24,NiFTI,
+119721,136_S_0195,Patient,M,80,2,MRI,"MPR; ; N3; Scaled_2",Processed,2006/04/04,NiFTI,
+119723,136_S_0195,Patient,M,80,3,MRI,"MPR; ; N3; Scaled_2",Processed,2006/10/02,NiFTI,
+119725,136_S_0196,Patient,F,78,2,MRI,"MPR; ; N3; Scaled_2",Processed,2006/05/01,NiFTI,
+119729,136_S_0300,Patient,M,57,2,MRI,"MPR-R; ; N3; Scaled_2",Processed,2006/06/07,NiFTI,
+119731,136_S_0426,Patient,M,80,2,MRI,"MPR; ; N3; Scaled_2",Processed,2006/05/30,NiFTI,
+119733,136_S_0429,Patient,M,63,2,MRI,"MPR; ; N3; Scaled_2",Processed,2006/06/27,NiFTI,
+119735,136_S_0579,Patient,F,66,2,MRI,"MPR-R; ; N3; Scaled_2",Processed,2006/07/10,NiFTI,
+120544,051_S_1331,Patient,F,78,4,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2008/07/07,NiFTI,
+122703,136_S_0194,Patient,F,81,3,MRI,"MPR; ; N3; Scaled",Processed,2006/10/16,NiFTI,
+122721,027_S_0417,Patient,M,81,4,MRI,"MPR-R; GradWarp; B1 Correction; N3; Scaled",Processed,2007/05/30,NiFTI,
+128346,002_S_0413,Patient,F,77,3,MRI,"MPR; ; N3; Scaled_2",Processed,2006/11/15,NiFTI,
+138580,023_S_0030,Patient,F,81,4,MRI,"MPR-R; GradWarp; B1 Correction; N3; Scaled",Processed,2006/10/12,NiFTI,
+138627,023_S_0926,Patient,F,72,2,MRI,"MPR-R; GradWarp; B1 Correction; N3; Scaled",Processed,2006/10/16,NiFTI,
+138792,031_S_0830,Patient,M,71,2,MRI,"MPR-R; GradWarp; B1 Correction; N3; Scaled",Processed,2006/09/21,NiFTI,
+138797,032_S_1101,Patient,F,71,3,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/05/23,NiFTI,
+138806,037_S_0303,Patient,M,85,4,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/04/25,NiFTI,
+138844,067_S_0607,Patient,F,79,4,MRI,"MPR-R; GradWarp; B1 Correction; N3; Scaled",Processed,2007/08/13,NiFTI,
+138858,128_S_1088,Patient,M,89,3,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/07/18,NiFTI,
+138867,128_S_1148,Patient,F,70,3,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/07/16,NiFTI,
+138885,136_S_0194,Patient,F,82,4,MRI,"MPR; ; N3; Scaled",Processed,2007/04/02,NiFTI,
+139891,018_S_0425,Patient,M,86,2,MRI,"MPR; ; N3; Scaled",Processed,2006/06/19,NiFTI,
+69118,128_S_1148,Patient,F,70,2,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/01/16,NiFTI,2012/02/11
+90614,128_S_1088,Patient,M,88,2,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/01/18,NiFTI,2012/02/11
+83521,127_S_0844,Patient,F,85,2,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2006/11/09,NiFTI,2012/02/11
+74496,127_S_0622,Patient,F,75,2,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2006/06/29,NiFTI,2012/02/11
+38790,127_S_0393,Patient,F,86,2,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2006/05/24,NiFTI,2012/02/11
+34371,127_S_0260,Patient,F,79,2,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2006/05/01,NiFTI,2012/02/11
+38887,126_S_0606,Patient,F,69,2,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2006/08/14,NiFTI,2012/02/11
+63517,116_S_0752,Patient,F,82,2,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2006/09/08,NiFTI,2012/02/11
+63508,116_S_0649,Patient,M,87,2,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2006/09/08,NiFTI,2012/02/11
+53802,116_S_0382,Patient,F,76,2,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2006/06/13,NiFTI,2012/02/11
+87748,094_S_1293,Patient,M,77,2,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/03/19,NiFTI,2012/02/11
+75503,094_S_1267,Patient,M,73,2,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/03/22,NiFTI,2012/02/11
+65414,094_S_1241,Patient,M,72,2,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/02/22,NiFTI,2012/02/11
+80880,082_S_1256,Patient,F,72,2,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/02/23,NiFTI,2012/02/11
+109533,082_S_0928,Patient,F,83,2,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2006/10/16,NiFTI,2012/02/11
+87150,067_S_1253,Patient,F,63,2,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/03/30,NiFTI,2012/02/11
+119204,067_S_0607,Patient,F,78,2,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled_2",Processed,2006/08/18,NiFTI,2012/02/11
+89123,067_S_0607,Patient,F,78,2,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2006/08/18,NiFTI,2012/02/11
+34866,067_S_0607,Patient,F,78,2,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2006/08/18,NiFTI,2012/02/11
+62272,052_S_1251,Patient,F,74,2,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/03/09,NiFTI,2012/02/11
+62261,052_S_1250,Patient,F,73,2,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/02/28,NiFTI,2012/02/11
+64929,051_S_1131,Patient,M,87,2,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/01/18,NiFTI,2012/02/11
+58054,051_S_1123,Patient,F,76,2,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/02/06,NiFTI,2012/02/11
+64116,037_S_0303,Patient,M,84,2,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2006/05/03,NiFTI,2012/02/11
+90976,032_S_1101,Patient,F,71,2,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/01/25,NiFTI,2012/02/11
+90942,032_S_0677,Patient,M,71,2,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2006/10/09,NiFTI,2012/02/11
+90925,031_S_1209,Patient,F,72,2,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/01/31,NiFTI,2012/02/11
+90916,031_S_1066,Patient,M,73,2,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2006/12/04,NiFTI,2012/02/11
+47757,027_S_1387,Patient,M,86,2,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/03/19,NiFTI,2012/02/11
+65374,027_S_1385,Patient,F,70,2,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/03/26,NiFTI,2012/02/11
+47237,027_S_1277,Patient,M,86,2,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/03/01,NiFTI,2012/02/11
+47186,027_S_1082,Patient,F,70,2,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2006/12/13,NiFTI,2012/02/11
+47177,027_S_1081,Patient,M,85,2,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/02/08,NiFTI,2012/02/11
+35653,027_S_0835,Patient,M,73,2,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2006/09/28,NiFTI,2012/02/11
+34213,027_S_0417,Patient,M,80,2,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2006/05/31,NiFTI,2012/02/11
+34195,027_S_0404,Patient,F,88,2,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2006/05/16,NiFTI,2012/02/11
+34168,027_S_0307,Patient,M,79,2,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2006/05/11,NiFTI,2012/02/11
+52138,023_S_1247,Patient,F,73,2,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/02/21,NiFTI,2012/02/11
+118922,023_S_1247,Patient,F,73,2,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled_2",Processed,2007/02/21,NiFTI,2012/02/11
+52129,023_S_1190,Patient,F,77,2,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/01/17,NiFTI,2012/02/11
+118920,023_S_1190,Patient,F,77,2,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled_2",Processed,2007/01/17,NiFTI,2012/02/11
+52107,023_S_1046,Patient,M,72,2,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2006/11/15,NiFTI,2012/02/11
+118908,023_S_1046,Patient,M,72,2,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled_2",Processed,2006/11/15,NiFTI,2012/02/11
+31540,023_S_0916,Patient,M,80,2,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2006/09/29,NiFTI,2012/02/11
+118880,023_S_0916,Patient,M,80,2,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled_2",Processed,2006/09/29,NiFTI,2012/02/11
+118987,023_S_0855,Patient,M,76,2,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled_2",Processed,2006/09/18,NiFTI,2012/02/11
+31518,023_S_0855,Patient,M,76,2,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2006/09/18,NiFTI,2012/02/11
+119032,023_S_0625,Patient,M,76,2,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled_2",Processed,2006/07/12,NiFTI,2012/02/11
+31500,023_S_0625,Patient,M,76,2,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2006/07/12,NiFTI,2012/02/11
+118856,023_S_0388,Patient,M,71,2,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled_2",Processed,2006/05/04,NiFTI,2012/02/11
+31446,023_S_0388,Patient,M,71,2,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2006/05/04,NiFTI,2012/02/11
+31392,023_S_0376,Patient,M,71,2,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2006/04/28,NiFTI,2012/02/11
+118882,023_S_0376,Patient,M,71,2,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled_2",Processed,2006/04/28,NiFTI,2012/02/11
+66018,023_S_0331,Patient,F,65,2,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2006/04/12,NiFTI,2012/02/11
+119018,023_S_0331,Patient,F,65,2,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled_2",Processed,2006/04/12,NiFTI,2012/02/11
+118972,023_S_0139,Patient,F,66,2,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled_2",Processed,2006/02/06,NiFTI,2012/02/11
+31313,023_S_0139,Patient,F,66,2,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2006/02/06,NiFTI,2012/02/11
+118862,023_S_0078,Patient,F,76,2,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled_2",Processed,2006/01/12,NiFTI,2012/02/11
+51981,023_S_0078,Patient,F,76,2,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2006/01/12,NiFTI,2012/02/11
+31107,023_S_0061,Patient,F,77,2,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2005/12/20,NiFTI,2012/02/11
+118854,023_S_0061,Patient,F,77,2,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled_2",Processed,2005/12/20,NiFTI,2012/02/11
+30968,023_S_0058,Patient,M,70,2,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2005/12/12,NiFTI,2012/02/11
+118837,023_S_0058,Patient,M,70,2,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled_2",Processed,2005/12/12,NiFTI,2012/02/11
+31623,023_S_0030,Patient,F,80,2,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2005/10/26,NiFTI,2012/02/11
+118790,023_S_0030,Patient,F,80,2,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled_2",Processed,2005/10/26,NiFTI,2012/02/11
+33484,021_S_0332,Patient,M,70,2,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2006/04/19,NiFTI,2012/02/11
+86345,016_S_1326,Patient,M,66,2,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/04/02,NiFTI,2012/02/11
+86327,016_S_1121,Patient,F,56,2,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/01/11,NiFTI,2012/02/11
+86318,016_S_1117,Patient,F,69,2,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/01/08,NiFTI,2012/02/11
+138391,016_S_0769,Patient,M,62,2,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2006/08/24,NiFTI,2012/02/11
+59986,007_S_1222,Patient,F,74,2,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/02/07,NiFTI,2012/02/11
+74600,005_S_0814,Patient,F,71,2,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2006/09/20,NiFTI,2012/02/11
+32755,005_S_0553,Patient,M,85,2,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2006/06/28,NiFTI,2012/02/11
+40378,136_S_0426,Patient,M,80,2,MRI,"MPR; ; N3; Scaled",Processed,2006/05/30,NiFTI,2012/02/15
+40352,136_S_0300,Patient,M,57,2,MRI,"MPR-R; ; N3; Scaled",Processed,2006/06/07,NiFTI,2012/02/15
+40248,136_S_0194,Patient,F,81,2,MRI,"MPR; ; N3; Scaled",Processed,2006/04/24,NiFTI,2012/02/15
+65520,130_S_1337,Patient,M,72,2,MRI,"MPR; ; N3; Scaled",Processed,2007/03/22,NiFTI,2012/02/15
+39200,130_S_0956,Patient,F,64,2,MRI,"MPR; ; N3; Scaled",Processed,2006/11/06,NiFTI,2012/02/15
+59677,116_S_0487,Patient,M,77,2,MRI,"MPR-R; GradWarp; B1 Correction; N3; Scaled",Processed,2006/08/10,NiFTI,2012/02/15
+53818,116_S_0392,Patient,F,85,2,MRI,"MPR-R; GradWarp; B1 Correction; N3; Scaled",Processed,2006/06/26,NiFTI,2012/02/15
+64862,023_S_1262,Patient,F,73,2,MRI,"MPR-R; GradWarp; B1 Correction; N3; Scaled",Processed,2007/02/28,NiFTI,2012/02/15
+35039,018_S_0633,Patient,M,83,2,MRI,"MPR; ; N3; Scaled",Processed,2006/07/17,NiFTI,2012/02/15
+35014,018_S_0335,Patient,F,84,2,MRI,"MPR; ; N3; Scaled",Processed,2006/05/31,NiFTI,2012/02/15
+59174,012_S_0689,Patient,M,64,2,MRI,"MPR-R; ; N3; Scaled",Processed,2006/07/19,NiFTI,2012/02/15
+40828,002_S_1018,Patient,F,71,2,MRI,"MPR; ; N3; Scaled",Processed,2006/12/18,NiFTI,2012/02/15
+66824,136_S_1227,Patient,F,65,2,MRI,"MPR; ; N3; Scaled",Processed,2007/02/21,NiFTI,2012/02/15
+40404,136_S_0579,Patient,F,66,2,MRI,"MPR-R; ; N3; Scaled",Processed,2006/07/10,NiFTI,2012/02/15
+40392,136_S_0429,Patient,M,63,2,MRI,"MPR; ; N3; Scaled",Processed,2006/06/27,NiFTI,2012/02/15
+40254,136_S_0195,Patient,M,80,2,MRI,"MPR; ; N3; Scaled",Processed,2006/04/04,NiFTI,2012/02/15
+39197,130_S_0505,Patient,M,80,2,MRI,"MPR; ; N3; Scaled",Processed,2006/10/18,NiFTI,2012/02/15
+81434,130_S_0449,Patient,F,67,2,MRI,"MPR-R; ; N3; Scaled",Processed,2006/08/16,NiFTI,2012/02/15
+39104,130_S_0423,Patient,M,80,2,MRI,"MPR-R; ; N3; Scaled",Processed,2006/07/06,NiFTI,2012/02/15
+33114,100_S_0190,Patient,M,79,2,MRI,"MPR; ; N3; Scaled",Processed,2006/05/22,NiFTI,2012/02/15
+40269,136_S_0196,Patient,F,78,2,MRI,"MPR; ; N3; Scaled",Processed,2006/05/01,NiFTI,2012/02/15
+40191,136_S_0184,Patient,F,78,2,MRI,"MPR; ; N3; Scaled",Processed,2006/03/27,NiFTI,2012/02/15
+40172,136_S_0086,Patient,F,80,2,MRI,"MPR; ; N3; Scaled",Processed,2006/05/08,NiFTI,2012/02/15
+39203,130_S_0969,Patient,M,70,2,MRI,"MPR; ; N3; Scaled",Processed,2006/11/06,NiFTI,2012/02/15
+39288,130_S_0886,Patient,F,71,2,MRI,"MPR-R; ; N3; Scaled",Processed,2006/10/16,NiFTI,2012/02/15
+53845,116_S_1249,Patient,F,71,2,MRI,"MPR-R; GradWarp; B1 Correction; N3; Scaled",Processed,2007/03/01,NiFTI,2012/02/15
+53836,116_S_1232,Patient,F,72,2,MRI,"MPR-R; GradWarp; B1 Correction; N3; Scaled",Processed,2007/02/23,NiFTI,2012/02/15
+82571,100_S_1286,Patient,F,76,2,MRI,"MPR; ; N3; Scaled",Processed,2007/03/07,NiFTI,2012/02/15
+33046,100_S_0015,Patient,M,81,2,MRI,"MPR-R; ; N3; Scaled",Processed,2005/10/31,NiFTI,2012/02/15
+32762,005_S_0602,Patient,M,71,2,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2006/07/25,NiFTI,2012/02/24
+59955,007_S_1206,Patient,M,73,2,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2007/01/30,NiFTI,2012/02/24
+30979,023_S_0058,Patient,M,71,3,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2006/06/13,NiFTI,2012/11/15
+31326,023_S_0139,Patient,F,66,3,MRI,"MPR; GradWarp; B1 Correction; N3; Scaled",Processed,2006/07/28,NiFTI,2012/11/15
+31468,023_S_0604,Patient,M,87,2,MRI,"MPR-R; GradWarp; B1 Correction; N3; Scaled",Processed,2006/06/20,NiFTI,2012/11/15
