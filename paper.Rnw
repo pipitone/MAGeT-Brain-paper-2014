@@ -1,4 +1,5 @@
 \SweaveOpts{echo = FALSE, message = FALSE, warning = FALSE, fig.align = 'center', tidy = FALSE, comment = NA, cache = TRUE}
+
 <<loadpackages, results="hide", echo=FALSE, cache=FALSE>>=
 library(ggplot2)
 library(Hmisc)
@@ -9,16 +10,15 @@ options(digits=3)
 theme_set(theme_bw())
 @
 
-\documentclass{article}
+\documentclass[twocolumn]{article}
 \usepackage[margin=1in]{geometry}
 \usepackage{algorithm, color, algpseudocode, amsmath, url, geometry, ctable }
 \usepackage[square,numbers]{natbib}
 \setlength{\marginparwidth}{1.2in}
 \newcommand{\marginnote}[1]{\-\marginpar[\raggedleft\footnotesize #1]{\raggedright\footnotesize #1}}
-\newcommand{\todo}[1]{\begin{kframe}{\textcolor{red}{TODO #1}}\end{kframe}}
-\newcommand{\mc}[1]{\todo{(MC) #1}}
-
-%{\marginpar{ \textcolor{red}{\\ TODO: #1 \\} }
+\newcommand{\comment}[1]{\begin{kframe}{\textcolor{red}{#1}}\end{kframe}}
+\newcommand{\todo}[1]{\comment{TODO #1}}
+\newcommand{\mc}[1]{\comment{MC: #1}}
 \begin{document}
 
 \title{Hippocampal segmentation with MAGeT}
@@ -37,6 +37,9 @@ while still achieving similar accuracy to multi-atlas approaches.
 \todo{Finish this... }
 \end{abstract}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                               INTRODUCTION
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction}
 
 The hippocampus is of particular interest to many researchers because it is
@@ -122,9 +125,7 @@ applications.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%
 %                               METHODS
-%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Methods}
 
@@ -195,8 +196,9 @@ Source code can be found at \url{http://github.com/pipitone/MAGeTbrain}.
   \caption{Diagram of the MAGeT Brain algorithm}
 \end{figure}
 
-\todo{Note that algorithm does not specify a registration algorithm or fusion 
-method\citep{Chakravarty2012}.  Performance on these is test in experiments}
+\todo{Note that our algorithm does not specify a registration algorithm or
+fusion method\citep{Chakravarty2012}.  Performance on options is tested in our
+experiments}
 
 %%%%%                             Subjects                                 %%%%%
 
@@ -204,10 +206,10 @@ method\citep{Chakravarty2012}.  Performance on these is test in experiments}
 \subsection{Subjects}
 
 \subsubsection{ADNI-1 1.5T Screening}
-\todo{- image characteristics}
-\todo{- describe SNT manual segmentations}
-\todo{- baseline/cross-validation dataset demographics?}
+\todo{include image characteristics}
+\todo{describe SNT manual segmentations}
 
+\begin{figure*}
 <<ADNI-1-screening-demographics, echo=F, results="asis",cache=FALSE>>=
 tab <- summary(DX.bl ~ AGE + PTGENDER + PTEDUCAT + PTETHCAT + CDRSB + ADAS13 + MMSE, 
                data = adnimerge, subset = VISCODE == 'bl',   
@@ -216,10 +218,13 @@ tab <- summary(DX.bl ~ AGE + PTGENDER + PTEDUCAT + PTETHCAT + CDRSB + ADAS13 + M
 latex(tab, file="", size="scriptsize",landscape=FALSE, ctable=TRUE,
       caption="ADNI-1 1.5T Screening demographics")
 @
-\todo{Check table only includes 1.5T from the Screening}
+\end{figure*}
+
+\todo{Check demographics table only includes 1.5T from the Screening}
 
 \subsubsection{SZ First Episode Patients}
-\todo{image characteristics, demographics}
+\todo{include image characteristics}
+\begin{figure*}
 <<FEP-SZ-demographics, echo=F, results="asis",cache=FALSE>>=
 fep_sz_demographics = read.csv("data/SZ_demographics.csv", na.strings=c("","."))
 fep_sz_demographics = subset(fep_sz_demographics, Anon <= 81)
@@ -228,7 +233,7 @@ tab <- summary(DX ~ Age + Gender + Handedness + Education + SES + FSIQ,
 latex(tab, file="", size="scriptsize", 
       caption="Schizophrenia First Episode Patient Demographics")
 @
-
+\end{figure*}
 
 
 %%%%%                       Image pre-processing                           %%%%%
@@ -263,8 +268,7 @@ For the purposes of this work we used the regularization parameters optimized
 in Robbins et al. \citep{Robbins2004}. 
 
 \todo{link to MNI website here}
-\todo{command line}
-
+\todo{show command line used}
 
 \subsubsection{Automatic Normalization Tools (ANTS)}
 
@@ -290,7 +294,7 @@ We used the following command line when running the ANTS command,
    -o transformation.xfm
  \end{verbatim}
 These settings were adapted from the "reasonable starting point" given in the
-ANTS manual. \todo{reference manual?}
+ANTS manual. \todo{include a reference to manual?}
 
 
 %%%%%                           Label Fusion                               %%%%%
@@ -327,8 +331,8 @@ cross-correlation similarity measure.
  
 This method is similar to cross-correlation weighted voting 
 except that image similarity is calculated by the normalised 
-mutual information score over the region of interest. \todo{reference?}
- 
+mutual information score over the region of interest. 
+\todo{is there a reference for NMI voting?}
  
 The {\tt itk\_similarity} utility from the EZMinc toolkit is used to calculate 
 the normalised mutual information measure.
@@ -337,22 +341,20 @@ the normalised mutual information measure.
 
 \subsection{Goodness-of-fit}
 
-Each segmentation was evaluated against the 'gold-standard' manual segmentation
-from the dataset using the Dice Kappa ($\kappa$) overlap metric:
+Two segmentation can be compared using the Dice Kappa ($\kappa$) overlap metric:
 
 \begin{equation*} 
 \kappa=\frac{2a}{2a+b+c}
 \end{equation*}
 
-where $a$ is the number of voxels common to the candidate segmentation and the
-gold standard and $b+c$ is the sum of the voxels uniquely identified by either
-the automatically generated candidate segmentation or the gold-standard.
-\todo{I would do this after you define the experiments}
+where $a$ is the number of voxels common to both segmentations and $b+c$ is the
+sum of the voxels uniquely identified by either segmentation.  Using this metric
+we can compare an automatically generated segmentation to a gold-standard
+segmentation.
 
-
-
+%%%%%
 %%%%%                            Experiments                               %%%%%
-
+%%%%%
 \subsection{Experiments}
 
 Experiments were performed to assess the performance of MAGeT brain with various 
@@ -371,8 +373,10 @@ on a subset of the ADNI-1 dataset.
 
 {\bf Dataset evaluated.} 69 1.5T images were randomly selected from the 
 {\em ADNI1:Screening 1.5T} standardized dataset.  Demographics for this subset 
-are shown in Table X\todo{FIXME: table reference}. 
+are shown in Table X
+\todo{FIXME: table reference}. 
 
+\begin{table*}
 <<ADNI-69-demographics, echo=F, results="asis",cache=FALSE>>=
 adni_69_RIDs = c("295","413","619","685","729","782","938","954",
                  "1018","1155","907","981","222","324","448","546",
@@ -390,16 +394,17 @@ tab <- summary(DX.bl ~ AGE + PTGENDER + PTEDUCAT + PTETHCAT + CDRSB + ADAS13 + M
 latex(tab, file="", size="scriptsize",landscape=FALSE, ctable=TRUE,
       caption="ADNI-1 cross-validation subset demographics")
 @
+\end{table*}
 
-
-{\bf Atlas and template libary.}  Atlases consisted of images taken from the 
+{\bf Atlas and template libary.}  Atlases consisted of images taken from the
 dataset, with corresponding manual labels provided by SNT.  Atlas library size
-was varied from 3 to 9 images.  The remaining images were segmented, with the 
+was varied from 3 to 9 images.  The remaining images were segmented, with the
 template library size varying from 3 to 20 images.  Template library images were
 selected randomly from the images to be segmented. 
 
-{\bf Registration method.}  Both the ANTS and ANIMAL registration methods were 
+{\bf Registration method.}  Both the ANTS and ANIMAL registration methods were
 used.
+
 \todo{In ANIMAL, images aligned to TAL space}
 
 {\bf Label fusion.} Majority vote, Cross-correlation weighted majority vote, and
@@ -407,15 +412,24 @@ Normalized Mutual Information weighted majority vote are used.  With the
 weighted majority vote fusion methods, the number of top labels used in the 
 fusion was varied from 3 to 20 images.
 
-{\bf Evaluation.}  Repeated random sub-sampling cross-validation (RRSCV) 
-consists of repeated trials in which items from the dataset are randomly assigned to a training set or validation set. In each trial, performance on the validation set is measured, and then averaged across all trials. 
+{\bf Evaluation.}  Repeated random sub-sampling cross-validation (RRSCV)
+consists of repeated trials in which items from the dataset are randomly
+assigned to a training set or validation set. In each trial, performance on the
+validation set is measured, and then averaged across all trials. 
 
-We performed RRSCV on each combination of parameters listed above: atlas library size, template library size, registration method, and label fusion method.  We performed 10 trials per parameter combination.  In each validation trial, the training set consisted of the images used as atlases, and the validation set consisted of the images to be segmented. The MAGeT brain algorithm and the basic multi-atlas segmentation procedure were applied to segment the images in the validation set.  Additionally, in each trial, the single-atlas segmentation was obtained for each atlas-template.  
+We performed RRSCV on each combination of parameters listed above: atlas library
+size, template library size, registration method, and label fusion method.  We
+performed 10 trials per parameter combination.  In each validation trial, the
+training set consisted of the images used as atlases, and the validation set
+consisted of the images to be segmented. The MAGeT brain algorithm and the basic
+multi-atlas segmentation procedure were applied to segment the images in the
+validation set.  Additionally, in each trial, the single-atlas segmentation was
+obtained for each atlas-template.  
 
-The gold-standard for the segmentation accuracy of images in the validation set was the SNT manual labels.
+The gold-standard for the segmentation accuracy of images in the validation set
+was the SNT manual labels.
 
-
-\todo{ number of registrations/comparisions }
+\todo{ show off the number of registrations/comparisions we did}
 
 
 %%%%%
@@ -439,8 +453,10 @@ age from 29-57 years (mean age of 37), and include two males and three females.
 The template library consisted of 21 randomly selected images from the ADNI1 
 data dataset (7 healthy, MCI and AD subjects).  
 
-{\bf Registration method.}  - ANTS as it performed best in the cross-validation
-experiment. \todo{how to reference results whilst still in Methods?}
+{\bf Registration method.} ANTS, as it performed best in the cross-validation
+experiment. 
+
+\todo{Is it okay to reference results whilst still in Methods?}
 
 {\bf Label fusion.} Majority vote, as it is simpliest to run and performed 
 equally well in cross-validation experiment.
@@ -449,8 +465,10 @@ equally well in cross-validation experiment.
 
 Since hippocampal segmentation protocols differ between the ADNI labels and
 Winterburn atlases, this poses a problem for direct similarity comparisons
-between labels produced by MAGeT brain and the ADNI labels.  \todo{explain why
-we did(n't) resegment the ADNI images with a the low-res protocol.} 
+between labels produced by MAGeT brain and the ADNI labels.  
+
+\todo{explain why we did(n't) resegment the ADNI images with the low-res
+protocol and compare directly like that.} 
 
 To evaluate the performance of MAGeT brain, we correlate our segmentation
 volumes with manual segmentation volumes, as well as with hippocampal volumes
@@ -458,21 +476,25 @@ of established automated segmentation methods.
 
 Additionally, we compared classification accuracy of subjects
 by diagnosis based on hippocampal volume using both the SMT labels and our
-produced labels.  \todo{description of validation -- rms {\tt validate} or
-t-test: contrast with QDA or LDA (Coupe 2011) used in LOOCV}
+produced labels.  
+
+\todo{Include a description of validation process.. Note that we could use rms
+{\tt validate} or t-test: contrast with QDA or LDA (Coupe 2011) used in LOOCV,
+with adni/our segmentations}
 
 
 %%%%%
 %%%%%          Experiments: SZ First Episode Patient Validation           %%%%%
 %%%%%
 \subsubsection{SZ First Episode Patient Validation}
- To validate that MAGeT's performance generalises to other diseases.
-Measure performance using best parameter settings on a different disease dataset.
 
-{\bf Dataset evaluated.} SZ First Episode Patients
-
-{\bf Atlas and template libary.} two different atlas sets: a manual hippocampal
-segmentation of patients, and Winterburn atlas set.  
+{\bf Dataset evaluated.} To validate that MAGeT performance generalises to other
+diseases, we measure the performance using the best parameter settings previous
+found, on a dataset consiting of first episode schizophrenia patients.
+\todo{Refer to the FEP description above... or just include it here}.
+ 
+{\bf Atlas and template libary.} - two different atlas sets: a manual
+hippocampal segmentation of patients, and Winterburn atlas set.  
 
 {\bf Registration method.} ANTS.
 
@@ -486,42 +508,40 @@ and the Winterburn-atlas segmentations by correlating volumes.
 %%%%%              Experiments: Winterburn Atlases Validation              %%%%%
 %%%%%
 \subsubsection{Winterburn Atlases Validation}
-{\bf Dataset evaluated.} T1 BRAVO scans of the same subjects included in the 
+{\bf Dataset evaluated.} - T1 BRAVO scans of the same subjects included in the 
 Winterburn atlas set.  These scans are taken within .... weeks of the scans for 
 the Winterburn atlases.
 
-{\bf Atlas and template libary.} Atlas library is Winterburn T1 atlases.  
+{\bf Atlas and template libary.} - Atlas library is Winterburn T1 atlases.  
 Template library consists of all five T1 BRAVOs, plus 15 T1 healthy control images.
 
 {\bf Registration method.} ANTS
 
 {\bf Label fusion.} Majority vote.
 
-{\bf Evaluation.}  Leave one out cross-validation (LOOCV) in which all five
+{\bf Evaluation.}  - Leave one out cross-validation (LOOCV) in which all five
 subjects are segmented in separate runs of MAGeT brain.  In each run, the subject
 to be segmented is excluded from the Atlas library (so only four atlases are used).
 
 Segmentation accuracy is judged by difference in hippocampal volume.
 
-
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%
 %                               Results
-%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Results}
+\section{Results}
 
 %%%%%
 %%%%%                  Results: ADNI-1 cross-validationn                   %%%%%
 %%%%%
-\subsubsection{ADNI-1 Cross-Validation}
+\subsection{ADNI-1 Cross-Validation}
 
- - find significant improvement over multi-atlas performed with the same
-  parameters. Also, find smoothed performance is monotonically increasing but asymptotic
-  in size of both template and atlas library, with peak performance reached after 15
-  templates. \todo{Can we statistically capture "peak" performance?  The point at which 
-  gains become statistically insignificant?}
+- find significant improvement over multi-atlas performed with the same
+  parameters. Also, find smoothed performance is monotonically increasing but
+  asymptotic in size of both template and atlas library, with peak performance
+  reached after 15 templates. 
+  
+\todo{Can we statistically capture what "peak" performance is?  Something like,
+the point at which gains become statistically insignificant?}
 
 \begin{figure}
 <<ADNI1_cross_validation_means, cache=TRUE, fig=TRUE>>=
@@ -567,7 +587,9 @@ ggplot(all_data, aes(x=num_templates, y=k, colour=as.factor(num_atlases))) +
   scale_colour_hue(name="Atlases") +
   xlab( "Number of Templates" ) + ylab( "Mean Kappa" ) 
 @
-  \caption{Comparison of MAGeT performance on ADNI-1 subset.  Smoothing line fitted using GAM (generalised additive model) from R with defaults from ggplot2 (formula: y ~ s(x, bs = "cs"))}
+  \caption{Comparison of MAGeT performance on ADNI-1 subset.  Smoothing line
+  fitted using GAM (generalised additive model) from R with defaults from
+  ggplot2 (formula: y ~ s(x, bs = "cs"))}
   \label{ADNI1_cross_validation_means}
 \end{figure}
 
@@ -577,7 +599,8 @@ ggplot(all_data, aes(x=num_templates, y=k_minus_ma, colour=as.factor(num_atlases
   facet_grid(method ~ reg_method) + 
   geom_smooth() + 
   scale_colour_hue(name="Atlases") +
-  xlab( "Number of Templates" ) + ylab( "Difference in mean Kappa between voting method and multiatlas" )
+  xlab( "Number of Templates" ) + 
+  ylab( "Difference in mean Kappa between voting method and multiatlas" )
 @
   \caption{Difference in mean Kappa between MAGeT brain and multi-atlas}
   \label{ADNI1_cross_validation_MA_difference}
@@ -585,46 +608,58 @@ ggplot(all_data, aes(x=num_templates, y=k_minus_ma, colour=as.factor(num_atlases
 
 
 
-Multi-atlas means:
-
 <<a2a_multiatlas_means, results="asis",cache=FALSE>>=
-latex(merge(a_ma_means, t_ma_means, by="num_atlases"), colheads=c("Atlases", "ANTS", "ANIMAL"), file="", dec=2)
+latex(merge(a_ma_means, t_ma_means, by="num_atlases"),
+colheads=c("Atlases", "ANTS", "ANIMAL"), file="", dec=2,
+	caption="Multi-atlas means")
 @
-\begin{table}
-    \begin{tabular}{c|c|c}
-        Number of Atlases & ANIMAL Kappa (Jaccard) & ANTS Kappa (Jaccard) \\ \hline
-        3                 & 0.76 (0.63)             & 0.80 (0.69)          \\ 
-        4                 & 0.75 (0.62)             & 0.79 (0.67)          \\ 
-        5                 & 0.79 (0.66)             & 0.82 (0.71)          \\ 
-        6                 & 0.78 (0.65)             & 0.82 (0.70)          \\ 
-        7                 & 0.80 (0.67)             & 0.83 (0.72)          \\ 
-        8                 & 0.79 (0.67)             & 0.83 (0.72)          \\ 
-        9                 & 0.80 (0.68)             & 0.84 (0.73)          \\
-    \end{tabular}
-\end{table}
 
-- more atlases -> better performance
-- larger template library -> better performance, but tails off around 10-15 templates
-- no significant difference between majority or weighted vote methods (haven???t tested this statistically though). 
-- consistently performs better than average naive performance by XXX
-- using ANTS, with a large enough template library (>12) MAGeT brain performs
+%\begin{table}
+%    \begin{tabular}{c|c|c}
+%        Number of Atlases & ANIMAL Kappa (Jaccard) & ANTS Kappa (Jaccard) \\ \hline
+%        3                 & 0.76 (0.63)             & 0.80 (0.69)          \\ 
+%        4                 & 0.75 (0.62)             & 0.79 (0.67)          \\ 
+%        5                 & 0.79 (0.66)             & 0.82 (0.71)          \\ 
+%        6                 & 0.78 (0.65)             & 0.82 (0.70)          \\ 
+%        7                 & 0.80 (0.67)             & 0.83 (0.72)          \\ 
+%        8                 & 0.79 (0.67)             & 0.83 (0.72)          \\ 
+%        9                 & 0.80 (0.68)             & 0.84 (0.73)          \\
+%    \end{tabular}
+%\end{table}
+
+Ideas:
+\begin{itemize}
+\item more atlases -> better performance
+\item  larger template library -> better performance, but tails off around 10-15 templates
+\item  no significant difference between majority or weighted vote methods (haven???t tested this statistically though). 
+\item  consistently performs better than average naive performance by XXX
+\item  using ANTS, with a large enough template library (>12) MAGeT brain performs
   better than the average multi-atlas approach with the same number of atlases.
   using ANIMAL, 5 or more atlases needed before boost seen. 
-- more atlases -> smaller template library required to improve on average multi-atlas performance
-- discuss variance?  best/worst case? --how often do we expect random template library selection to work decently
+\item  more atlases -> smaller template library required to improve on average multi-atlas performance
+\item  discuss variance?  best/worst case? --how often do we expect random template library selection to work decently
+\end{itemize}
 
-\todo{cost (in registrations) / benefit trade off graph:  show number of registrations per Kappa?  or hours of manual labour per Kappa?)}
+\todo{show cost (in registrations) / benefit tradec off graph:  show number of
+registrations per Kappa?  or hours of manual labour per Kappa?)}
 
-\subsubsection{Winterburn Atlas Segmentation of ADNI Baseline Images}
+%%%%%
+%%%%%                  Results: ADNI-1 Screening Validation               %%%%%
+%%%%%
+\subsection{ADNI-1 Screen Validation}
 
-- A2A shows that if atlas population strongly(?) represents subject set
-  variability, then free choice from atlas population will produce improvements
+
+Ideas: 
+\begin{itemize}
+\item  A2A shows that if atlas population strongly(?) represents subject set
+variability, then free choice from atlas population will produce improvements
 (we know this b/c of extensive validation trials). 
-- what about in the case where atlas population doesn???t strongly represent
-  subject set variability (e.g. a priori atlas set)?  then, we can use atlas
-selection to refine atlas set? 
+\item  what about in the case where atlas population doesn???t strongly
+represent subject set variability (e.g. a priori atlas set)?  then, we can use
+atlas selection to refine atlas set? 
+\end{itemize}
 
-\todo{Kappa against our manual rater is low}
+\todo{Kappa against our manual rater is low... explain that}
 
 <<ADNI-baseline-volumes-prep,echo=F,cache=T>>=
 yr1   = read.csv("data/ADNI_baseline_volumes/ADNI1_Complete_1Yr_1.5T_11_15_2012.csv")
@@ -635,9 +670,7 @@ ucsd  = read.csv("data/ADNI_baseline_volumes/UCSDVOL.csv")
 fs    = read.csv("data/ADNI_baseline_volumes/UCSFFSX_02_15_12.csv")
 fsl   = read.csv("data/ADNI_baseline_volumes/ADNI1_1.5T_FSLFIRST_volumes.csv")
 
-
 # recode VISCODE
-
 viscode_levels = list("bl"=1,"bl"=2, "m06"=3,"m12"=4)
 yr1$VISCODE <- as.factor(yr1$Visit)
 levels(yr1$VISCODE) <-viscode_levels
@@ -675,12 +708,11 @@ vols = data.frame(RID = RID, VISCODE = VISCODE, DX = DX.bl,
                   UCSD  = UCSD_L + UCSD_R,
                   FS    = FS_L + FS_R, 
                   FSL   = FSL_L + FSL_R)
-write.csv(vols, "data/ADNI_baseline_volumes_combined_volumes.csv")
 @
 
 \begin{figure}[h]
 <<ADNI-baseline-volumes-boxplot,echo=F,fig=T, fig.align='center',dependson='ADNI-baseline-volumes-prep',cache=T>>=
-totals = read.csv("data/ADNI_baseline_volumes_combined_volumes.csv")
+totals = vols
 qplot(DX,value,data=melt(totals,measure.vars=c("FS", "FSL","UCSD", "MAPER","MAGeT","SNT"),na.rm=T),
       colour=variable,geom="boxplot") + 
         xlab("Diagnosis") + ylab("Total Hippocampal Volume (mm3)")
@@ -715,12 +747,17 @@ qplot(SNT,value,data=by_snt_volumes,
     xlab("Total Hippocampal Volume (Manual Segmentation)") + 
     ylab("Total Hippocampal Volume (Automatic Segmentation)")
 @
-  \caption{{\bf ADNI Baseline cohort.} Comparison of HC volumes by FreeSurfer (FSF), MAGeT brain (MAGeT), MAPER, and manual (SNT).}
+  \caption{{\bf ADNI Baseline cohort.} Comparison of HC volumes by FreeSurfer
+  (FSF), MAGeT brain (MAGeT), MAPER, and manual (SNT).}
   \label{ADNI-baseline-volumes-plot}
 \end{figure}
 
-\subsubsection{First Episode Schizophrenic patients}
-High volume correlation between Winterburn segmentation volumes and ground truth.  (High-ish?) Kappa when using manual segmentations as Atlases. 
+%%%%%
+%%%%%             Results: First Episode Patient Validation          %%%%%
+%%%%%
+\subsection{First Episode Schizophrenic Patients}
+High volume correlation between Winterburn segmentation volumes and ground
+truth.  (High-ish?) Kappa when using manual segmentations as Atlases. 
 
 \begin{figure}
 <<SZ_volumes,echo=F,fig=T, fig.align='center',cache=T>>=
@@ -734,9 +771,26 @@ qplot(Manual,MAGeT,data=SZ_volumes) + geom_smooth(method="lm") +
     ylab("Total Hippocampal Volume (MAGeT Segmentation)")
 
 @
-  \caption{{\bf First Episode Schizophrenic Patients.} Comparison of total HC volumes for MAGeT against manually rated volumes of}
+  \caption{{\bf First Episode Schizophrenic Patients.} Comparison of total
+  HC volumes for MAGeT against manually rated Hippocampal volumes}
   \label{SZ_volumes}
 \end{figure}
 
-Some other text here... 
+%%%%%
+%%%%%              Experiments: Winterburn Atlases Validation              %%%%%
+%%%%%
+\subsection{Winterburn Atlases Validation}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                Discussion
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Discussion}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                               Conclusion 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Conclusion}
+
+\bibliographystyle{plain}
+\bibliography{references}
 \end{document}
