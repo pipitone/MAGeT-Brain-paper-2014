@@ -1,6 +1,7 @@
 RSCRIPT:=R
 
 paper.pdf: paper.tex 
+	sed -i -e 's#\\begin{table}#\\begin{table*}#g' -e 's#\\end{table}#\\end{table*}#g' paper.tex
 	pdflatex paper.tex
 	bibtex paper.aux
 	pdflatex paper.tex

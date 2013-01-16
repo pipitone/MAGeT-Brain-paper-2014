@@ -14,11 +14,18 @@ theme_set(theme_bw())
 \usepackage[margin=1in]{geometry}
 \usepackage{algorithm, color, algpseudocode, amsmath, url, geometry, ctable }
 \usepackage[square,numbers]{natbib}
+
+%draft mode
+\usepackage[colorlinks]{hyperref}
+\usepackage[colorinlistoftodos, textwidth=4cm, shadow]{todonotes}
+\usepackage[displaymath, tightpage]{preview}
+
 \setlength{\marginparwidth}{1.2in}
-\newcommand{\marginnote}[1]{\-\marginpar[\raggedleft\footnotesize #1]{\raggedright\footnotesize #1}}
-\newcommand{\comment}[1]{\begin{kframe}{\textcolor{red}{#1}}\end{kframe}}
-\newcommand{\todo}[1]{\comment{TODO #1}}
-\newcommand{\mc}[1]{\comment{MC: #1}}
+
+%\newcommand{\marginnote}[1]{\-\marginpar[\raggedleft\footnotesize #1]{\raggedright\footnotesize #1}}
+%\newcommand{\comment}[1]{\begin{kframe}{\textcolor{red}{#1}}\end{kframe}}
+%\newcommand{\todo}[1]{\comment{TODO #1}}
+%\newcommand{\mc}[1]{\comment{MC: #1}}
 \begin{document}
 
 \title{Hippocampal segmentation with MAGeT}
@@ -34,7 +41,7 @@ rely on a large number of such manually segmented atlases that take significant
 time and expertise to produce. We present an algorithm for the automatic
 segmentation of the hippocampus that minimizes the number of atlases needed
 while still achieving similar accuracy to multi-atlas approaches.
-\todo{Finish this... }
+\todo[inline]{Finish this... }
 \end{abstract}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -135,6 +142,7 @@ applications.
 \subsection{MAGeT Brain Algorithm}
 \todo{Make sure we explain what MAGeT stands for}
 \todo{reference Chakravarty2012}
+
 In this paper, we use the term {\it atlas} to mean any manually segmented MR
 image, and the term {\it atlas library} to mean a set of such images.  We use
 the term {\it template} to refer to any MR image, and associated labelling,
@@ -143,23 +151,31 @@ a set of such images.  An atlas library may be used as a template library but,
 as we will discuss, a template library may also be composed of images with
 computer generated labellings. 
 
-The segmentation approach we propose is best understood as an extension of
-basic multi-atlas segmentation \citep{Collins2010}.  In multi-atlas segmentation,
-an atlas library and unlabelled MR images are given as input.  Every atlas
-image is nonlinearly registered to each unlabelled image, and then each atlas'
-labels are propagated via the resulting transformations.  These labels are then
-fused to produce a single, definitive segmentation by some label fusion method
-(e.g.  voxel-wise majority vote). 
+The simplest form of multi-atlas segmentation combines labellings derived from
+several atlases by way of label fusion\citep{Collins2010}.  We will refer to
+this as {\em basic multi-atlas segmentation}.  The primary steps are as
+follows.  An atlas library and unlabelled MR images are given as input.  Each
+atlas image is nonlinearly registered to each unlabelled image, and then each
+atlas' labels are propagated via the resulting transformations.  The resulting
+labels are fused to produce a single, definitive segmentation by some label
+fusion method (for exampl, by voxel-wise majority voting). 
 
-Our extension adds a preliminary stage in which a template library is
-constructed from input images, and used in place of an atlas library in the
-standard multi-atlas-based method.  To create the template library, labels from
-each atlas image are propagated to each template library image via the
-transformation resulting from a non-linear registration between pair of images.
-As a result, each template library image has a label from each atlas.
-Basic multi-atlas segmentation is then used to produce segmentations for the
-entire set of unlabelled images (including those images used in the template
-library). 
+The segmentation approach we propose is best understood as an extension of
+MAGeT brain adds a preliminary stage to this process in which the template
+library is constructed rather than given as input.  As before, MAGeT brain
+accepts an atlas library and unlabelled MR images as input.  Images for the
+template library are selected from 
+
+To create the template library, labels from each atlas image are propagated to each template
+library image via the transformation resulting from a non-linear registration
+between pair of images.  As a result, each template library image has a label
+from each atlas.  Basic multi-atlas segmentation is then used to produce
+segmentations for the entire set of unlabelled images (including those images
+used in the template library). 
+
+\todo{Note that our algorithm does not specify a registration algorithm or
+fusion method\citep{Chakravarty2012}.  Performance on options is tested in our
+experiments}
 
 Source code can be found at \url{http://github.com/pipitone/MAGeTbrain}.
 
@@ -168,7 +184,7 @@ Source code can be found at \url{http://github.com/pipitone/MAGeTbrain}.
   \caption{Pseudocode for the MAGeT Brain algorithm}
   \label{pseudocodesdf}
   \begin{algorithmic}
-    \Function{MultiAtlas}{Templates, Subjects}
+    \Function{BasicMultiAtlasSegmentation}{Templates, Subjects}
       \ForAll{$subject$}
         \ForAll{$template$}
           \State propagate all labels for template to subject space
@@ -196,10 +212,6 @@ Source code can be found at \url{http://github.com/pipitone/MAGeTbrain}.
   \caption{Diagram of the MAGeT Brain algorithm}
 \end{figure}
 
-\todo{Note that our algorithm does not specify a registration algorithm or
-fusion method\citep{Chakravarty2012}.  Performance on options is tested in our
-experiments}
-
 %%%%%                             Subjects                                 %%%%%
 
 %  Describe subject datasets in general 
@@ -209,31 +221,27 @@ experiments}
 \todo{include image characteristics}
 \todo{describe SNT manual segmentations}
 
-\begin{figure*}
 <<ADNI-1-screening-demographics, echo=F, results="asis",cache=FALSE>>=
 tab <- summary(DX.bl ~ AGE + PTGENDER + PTEDUCAT + PTETHCAT + CDRSB + ADAS13 + MMSE, 
                data = adnimerge, subset = VISCODE == 'bl',   
                method = "reverse", test=FALSE, overall=TRUE)
 
-latex(tab, file="", size="scriptsize",landscape=FALSE, ctable=TRUE,
-      caption="ADNI-1 1.5T Screening demographics")
+latex(tab, file="", size="scriptsize",  caption="ADNI-1 1.5T Screening demographics")
 @
-\end{figure*}
 
 \todo{Check demographics table only includes 1.5T from the Screening}
 
 \subsubsection{SZ First Episode Patients}
 \todo{include image characteristics}
-\begin{figure*}
+
 <<FEP-SZ-demographics, echo=F, results="asis",cache=FALSE>>=
 fep_sz_demographics = read.csv("data/SZ_demographics.csv", na.strings=c("","."))
 fep_sz_demographics = subset(fep_sz_demographics, Anon <= 81)
 tab <- summary(DX ~ Age + Gender + Handedness + Education + SES + FSIQ,
                data=fep_sz_demographics, method = "reverse", test = FALSE)
-latex(tab, file="", size="scriptsize", 
+latex(tab, file="", size="scriptsize", ctable=FALSE,
       caption="Schizophrenia First Episode Patient Demographics")
 @
-\end{figure*}
 
 
 %%%%%                       Image pre-processing                           %%%%%
@@ -285,6 +293,7 @@ algorithm compatible with the MINC data format, mincANTS
 \url{https://github.com/vfonov/mincANTS}.
 
 We used the following command line when running the ANTS command, 
+{\small
 \begin{verbatim}
   mincANTS 3 -m PR[target_file.mnc,source_file.mnc,1,4] 
    --number-of-affine-iterations 10000x10000x10000x10000x10000 
@@ -293,6 +302,7 @@ We used the following command line when running the ANTS command,
    -r Gauss[3,0] -t SyN[0.5] -i 100x100x100x20
    -o transformation.xfm
  \end{verbatim}
+}
 These settings were adapted from the "reasonable starting point" given in the
 ANTS manual. \todo{include a reference to manual?}
 
@@ -376,7 +386,6 @@ on a subset of the ADNI-1 dataset.
 are shown in Table X
 \todo{FIXME: table reference}. 
 
-\begin{table*}
 <<ADNI-69-demographics, echo=F, results="asis",cache=FALSE>>=
 adni_69_RIDs = c("295","413","619","685","729","782","938","954",
                  "1018","1155","907","981","222","324","448","546",
@@ -391,10 +400,9 @@ tab <- summary(DX.bl ~ AGE + PTGENDER + PTEDUCAT + PTETHCAT + CDRSB + ADAS13 + M
                data = adnimerge, subset = VISCODE == 'bl' & RID %in% adni_69_RIDs, 
                method = "reverse", test=FALSE, overall=TRUE)
 
-latex(tab, file="", size="scriptsize",landscape=FALSE, ctable=TRUE,
+latex(tab, file="", size="scriptsize",landscape=FALSE, ctable=FALSE,
       caption="ADNI-1 cross-validation subset demographics")
 @
-\end{table*}
 
 {\bf Atlas and template libary.}  Atlases consisted of images taken from the
 dataset, with corresponding manual labels provided by SNT.  Atlas library size
