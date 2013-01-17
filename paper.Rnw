@@ -10,7 +10,7 @@ options(digits=3)
 theme_set(theme_bw())
 @
 
-\documentclass[twocolumn]{article}
+\documentclass{article}
 \usepackage[margin=1in]{geometry}
 \usepackage{algorithm, color, algpseudocode, amsmath, url, geometry, ctable }
 \usepackage[square,numbers]{natbib}
@@ -70,7 +70,7 @@ segmentation protocol \citep{Jack2011}.
 
 Compounding each of these problems is the significant neuroanatomical
 variability in the hippocampus throughout the course of aging, development, and
-neuropsychiatric disorders \citep{Mouiha2011}.  Additionally, it may be
+neuropsychiatric disorders \citep{Mouiha2011b}.  Additionally, it may be
 necessary to use several different hippocampal definitions or, in fact, make
 specific modifications in the course of research. For example, Poppenk et al.
 \citep{Poppenk2011} found that subdividing the hippocampus into anterior and
@@ -80,6 +80,27 @@ manual segmentation of the hippocampus is a necessary technique, to researchers
 or clinicians who do not have access to the needed human expertise its use may
 be infeasible.  
 
+%  Automated methods 
+%
+%  Heckemann2006 - 
+%  Heckemann2011 -  Automatic morphometry in AD and MCI 
+%    - (MAPER). multi-atlas. 30 atlases, entire ADNI screening  
+%  Collins2010 - .. seg of HC and AM by augmenting ANIMAL
+%    - multi-atlas 80 atlases, atlas selection (NMI)
+%  Aljabar2009 - atlas selection and effect on accuracy
+%    - 
+%  Leung2010 - X-sectional and longitudinal HC vol in MCI, AD
+%    - (MAPS), multi-atlas + STAPLE. 55 atlases. baseline+1yr of ADNI seg.
+%    - atrophy rates
+%  Lotjonen2010 - Fast and robust
+%    - IBSR/ADNI.  
+%
+%
+%  Hippocampal Volume
+%
+%  Mouiha2011b - Hippocampal atrophy rates in AD
+%    - compare SNT vs FreeSurfer on ADNI
+%
 Automated segmentation techniques overcome the need for human expertise by
 performing segmentations computationally.  A popular class of automated
 methods, {\it multi-atlas-based segmentation}, rely on a set of expertly
@@ -101,7 +122,7 @@ study or be suited to answer the research questions at hand.
 In this paper we propose an automated segmentation method to address the above
 issues of existing multi-atlas-based methods. Principally, our method aims to
 dramatically reduce the number of manually labelled atlases needed (under 10).
-This is achieved by using the small atlas library to boot-strap a much larger
+This is achieved by using the small atlas library to bootstrap a much larger
 "template library", which is then used to segment the subjects in a similar
 fashion to basic multi-atlas segmentation. This approach has the additional
 advantage of using the unique subject population on hand to initialize the
@@ -464,7 +485,7 @@ data dataset (7 healthy, MCI and AD subjects).
 {\bf Registration method.} ANTS, as it performed best in the cross-validation
 experiment. 
 
-\todo{Is it okay to reference results whilst still in Methods?}
+\todo{okay to reference results whilst still in Methods?}
 
 {\bf Label fusion.} Majority vote, as it is simpliest to run and performed 
 equally well in cross-validation experiment.
@@ -490,6 +511,10 @@ produced labels.
 {\tt validate} or t-test: contrast with QDA or LDA (Coupe 2011) used in LOOCV,
 with adni/our segmentations}
 
+\todo{Also consider self-consistency (i.e. Kappa of same subject at different
+field strengths) a la Heckemann2011}
+
+\todo{Also: group differences, expecting separation}
 
 %%%%%
 %%%%%          Experiments: SZ First Episode Patient Validation           %%%%%
