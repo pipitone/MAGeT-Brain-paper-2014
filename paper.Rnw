@@ -70,15 +70,17 @@ segmentation protocol \citep{Jack2011}.
 
 Compounding each of these problems is the significant neuroanatomical
 variability in the hippocampus throughout the course of aging, development, and
-neuropsychiatric disorders \citep{Mouiha2011b}.  Additionally, it may be
-necessary to use several different hippocampal definitions or, in fact, make
-specific modifications in the course of research. For example, Poppenk et al.
+neuropsychiatric disorders \citep{Mouiha2011b}.  The result is that existing
+hippocampal atlases available to a researcher may not accurately represent
+neuroanatomy of a specific population under study.  Additionally, in the course
+of a research or clinical study, it may be necessary to make adjustments to
+hippocampal definition as a means of hypothesis testing.  For example, Poppenk
 \citep{Poppenk2011} found that subdividing the hippocampus into anterior and
 posterior regions resulted in a predictive relationship between volume
-difference of those regions and recollection memory performance.  Thus, while
-manual segmentation of the hippocampus is a necessary technique, to researchers
-or clinicians who do not have access to the needed human expertise its use may
-be infeasible.  
+difference of those regions and recollection memory performance.  Making
+modifications to an set of atlas library segmentations may require the same
+level of expertise and manual effort needed to create the segmentations from
+scratch.  
 
 %  Automated methods 
 %
@@ -94,62 +96,69 @@ be infeasible.
 %    - atrophy rates
 %  Lotjonen2010 - Fast and robust
 %    - IBSR/ADNI.  
-%
-%
-%  Hippocampal Volume
-%
 %  Mouiha2011b - Hippocampal atrophy rates in AD
 %    - compare SNT vs FreeSurfer on ADNI
 %
 Automated segmentation techniques overcome the need for human expertise by
 performing segmentations computationally.  A popular class of automated
-methods, {\it multi-atlas-based segmentation}, rely on a set of expertly
-labeled neuroanatomical atlases. Each atlas is warped to fit a subject's
-neuroanatomy using nonlinear registration
-techniques \citep{Collins1995,Klein2009}.  Atlas labels are then transformed by
-this warping and a {\it label fusion} technique, such as voxel-wise voting, is
-used to merge the competing label definitions from each atlas into a final
-segmentation for a subject.  
+methods, {\it multi-atlas-based segmentation}, use a series of expertly
+segmented MRIs (an atlas library) to act as templates against which a target
+image is labelled
+\cite{Aljabar2009,Collins2010,Heckemann2011,Leung2010,Lotjonen2010,Leung2010,Wolz2010}.
+In the basic method, each atlas is warped to fit a subject's neuroanatomy using
+nonlinear registration techniques \citep{Collins1995,Klein2009}.  Atlas labels
+are then transformed by this warping and a {\it label fusion} technique, such
+as voxel-wise voting, is used to merge the competing label definitions from
+each atlas into a final segmentation for a subject.  
 
-Many descriptions of multi-atlas-based segmentation algorithms report relying
-on an atlas library containing anywhere between 30 and 80 expertly labeled
-brains \citep{Heckemann2011,Collins2010,Aljabar2009,Leung2010,Lotjonen2010}.  As
-noted, the production of an atlas library requires significant manual effort,
-and is limited since the choice of atlases or segmentation protocol may not
-reflect the underlying neuroanatomical variability of the population under
-study or be suited to answer the research questions at hand.
+Many descriptions of multi-atlas-based hippocampal segmentation algorithms
+report relying on an atlas library containing anywhere between 30 and 80
+expertly labeled images
+\citep{Heckemann2011,Collins2010,Aljabar2009,Leung2010,Lotjonen2010} in order
+to achieve performance approach that of a manual rater.  As already noted, the
+production of an atlas library requires significant manual effort and
+expertise, as does the modification of an existing atlas library in order to
+better suit a target population or investigate a specific research hypothesis.
+Therefore, in this paper we tackle the problem of producing accurate
+segmentations using small numbers of manually segmented atlases. 
 
-In this paper we propose an automated segmentation method to address the above
-issues of existing multi-atlas-based methods. Principally, our method aims to
-dramatically reduce the number of manually labelled atlases needed (under 10).
-This is achieved by using the small atlas library to bootstrap a much larger
-"template library", which is then used to segment the subjects in a similar
-fashion to basic multi-atlas segmentation. This approach has the additional
-advantage of using the unique subject population on hand to initialize the
-segmentation process and improve accuracy.
+In this paper we propose an extension to the basic multi-atlas-based
+segmentation scheme to address this issue.  Principally, we explore the
+possibility of using a small atlas library to bootstrap a much larger
+\emph{template library} composed of images taken from the target population.
+The template library is then used to segment the subjects in a similar fashion
+to basic multi-atlas segmentation: by label propagation and label fusion.  This
+intuition driving this approach is to leverage the unique neuroanatomy of
+subject population on hand to initialize the segmentation process and improve
+accuracy over direct propagation from the atlas library to unlabelled subjects.
 
 The essential insight of generating a template library is not new.  Heckemann
-\citep{Heckemann2006} compared generating a template library from a single atlas
-to standard multi-atlas segmentation and found poor performance and so deemed
-the approach as inviable.  The LEAP algorithm \citep{Wolz2010} proceeds by
-iteratively segmenting the unlabelled image most similar to the atlas library
-images and then incorporating the now-labelled image into the atlas library,
-but requires 30 starting atlases.  The novelty of our method is to demonstrate
-the possibility of producing comparable segmentation accuracy to these and
-other multi-atlas-based methods while using significantly fewer manually
-created atlases.
+\citep{Heckemann2006} briefly explored "indirect" segmentation by taking a
+single atlas and propagating those labels to intermediate subjects before
+fusing them in a target image space.  Heckemann compared indirect single-atlas
+segmentation to direct multi-atlas segmentation found the indirect approach
+performed worse.  In this paper we continue the same line of investigation but
+explore the performance when using multiple atlases, as well as several
+different registration and fusion methods.
 
-In our previous work \citep{Chakravarty2012}, we applied MAGeT brain to
+The LEAP algorithm \citep{Wolz2010} is another example of indirect segmentation
+previously explored.  LEAP proceeds by iteratively segmenting unlabelled images
+most similar to the atlas library images and then incorporating the
+now-labelled images into the atlas library for future iterations.  30 manually
+labelled atlases are required to start the process.  The novelty explored in
+our current work is demonstrate the viability of acheiving comparable
+segmentation accuracy while using significantly fewer manually created atlases.
+
+In previous work \citep{Chakravarty2012}, we applied MAGeT brain to
 segmentation of the human striatum, globus pallidus, and thalamus using a
 single histologically-derived atlas. The main contribution of this paper is to
-extend our approach to the human hippocampus and perform a thorough validation
-over a range of atlas and template library sizes, which was not done in our
-previous work.  Due to the small number of atlases required, our method can
-easily accommodate different hippocampal definitions. Our aim is not to improve
-on segmentation accuracy beyond existing methods, but instead to provide a
-method that trades off manual segmentation expertise for computational
-processing time while providing sufficient accuracy for clinical and research
-applications.
+extend our approach to the human hippocampus - a much more difficult structure
+to segment -- and perform a thorough validation over a range of atlas and
+template library sizes, registration methods, and fusion methods.  Our aim in
+this work is not necessarily to improve on segmentation accuracy beyond
+existing methods, but instead to provide a method that trades off manual
+segmentation expertise and time for computational processing time while still
+providing sufficient accuracy for clinical and research applications.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
