@@ -29,7 +29,8 @@ theme_set(theme_bw())
 \begin{document}
 
 \title{Hippocampal segmentation with MAGeT}
-\author{Pipitone J., Winterburn J., Lerch J., Pruessner J., Lepage M., Voineskos A., Chakravarty M.M., and the Alzheimer's Disease Neuroimaging Initiative}
+\author{Pipitone J., Winterburn J., Lerch J., Pruessner J., Lepage M., Voineskos
+A., Chakravarty M.M., and the Alzheimer's Disease Neuroimaging Initiative}
 \maketitle
 
 \begin{abstract}
@@ -129,15 +130,18 @@ segmentation scheme to address this issue.  Principally, we explore the
 possibility of using a small atlas library to bootstrap a much larger
 \emph{template library} composed of images taken from the target population.
 The template library is then used to segment the subjects in a similar fashion
-to basic multi-atlas segmentation: by label propagation and label fusion.  This
-intuition driving this approach is to leverage the unique neuroanatomy of
-subject population on hand to initialize the segmentation process and improve
-accuracy over direct propagation from the atlas library to unlabelled subjects.
+to basic multi-atlas segmentation: by label propagation and label fusion.  We
+call our approach MAGeT brain: {\em m}ultiple {\em a}utomatically {\em
+ge}nerated {\em t}emplate {\em brain} segmentation. The intuition driving this
+approach is that by generating a template library we leverage the unique
+neuroanatomy of subject population on hand to initialize the segmentation
+process and improve accuracy over direct propagation from the atlas library to
+unlabelled subjects while also using fewer manually segmented atlases. 
 
-The essential insight of generating a template library is not new.  Heckemann
+The insight of generating a template library is not new.  Heckemann
 \citep{Heckemann2006} briefly explored "indirect" segmentation by taking a
-single atlas and propagating those labels to intermediate subjects before
-fusing them in a target image space.  Heckemann compared indirect single-atlas
+single atlas and propagating those labels to intermediate subjects before fusing
+them in a target image space.  Heckemann compared indirect single-atlas
 segmentation to direct multi-atlas segmentation found the indirect approach
 performed worse.  In this paper we continue the same line of investigation but
 explore the performance when using multiple atlases, as well as several
@@ -151,16 +155,17 @@ labelled atlases are required to start the process.  The novelty explored in
 our current work is demonstrate the viability of acheiving comparable
 segmentation accuracy while using significantly fewer manually created atlases.
 
-In previous work \citep{Chakravarty2012}, we applied MAGeT brain to
-segmentation of the human striatum, globus pallidus, and thalamus using a
-single histologically-derived atlas. The main contribution of this paper is to
-extend our approach to the human hippocampus - a much more difficult structure
-to segment -- and perform a thorough validation over a range of atlas and
-template library sizes, registration methods, and fusion methods.  Our aim in
-this work is not necessarily to improve on segmentation accuracy beyond
-existing methods, but instead to provide a method that trades off manual
-segmentation expertise and time for computational processing time while still
-providing sufficient accuracy for clinical and research applications.
+In previous work \citep{Chakravarty2012}, we applied MAGeT brain to segmentation
+of the human striatum, globus pallidus, and thalamus using a single
+histologically-derived atlas. The contribution of the present work is to extend
+our approach to the human hippocampus and perform a rigorous validation. We
+first conduct an intensive cross-validation of MAGeT on a pool of 69 MRIs from
+the ADNI database, comparing the performance of MAGeT against basic multi-atlas
+segmentation using a range of atlas and template library sizes, registration and
+fusion methods.  We then compare MAGeT segmentations of the entire ADNI
+screening dataset with those of established automated and manual segmentation
+techniques.  Finally, we compare MAGeT segmentations to those of manual
+segmentations from a dataset of first episode schizophrenic patient MRIs. 
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
