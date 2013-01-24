@@ -29,7 +29,7 @@ theme_set(theme_bw())
 \begin{document}
 
 \title{Hippocampal segmentation with MAGeT}
-\author{Jon Pipitone}
+\author{Pipitone J., Winterburn J., Lerch J., Pruessner J., Lepage M., Voineskos A., Chakravarty M.M., and the Alzheimer's Disease Neuroimaging Initiative}
 \maketitle
 
 \begin{abstract}
@@ -41,7 +41,7 @@ rely on a large number of such manually segmented atlases that take significant
 time and expertise to produce. We present an algorithm for the automatic
 segmentation of the hippocampus that minimizes the number of atlases needed
 while still achieving similar accuracy to multi-atlas approaches.
-\todo[inline]{Finish this... }
+\todo[inline]{finish}
 \end{abstract}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -50,16 +50,17 @@ while still achieving similar accuracy to multi-atlas approaches.
 \section{Introduction}
 
 The hippocampus is of particular interest to many researchers because it is
-implicated in forms of brain dysfunction such as Alzheimer's disease and
-schizophrenia, and has functional significance in cognitive processes such as
-learning and memory.  For many research questions involving magnetic resonance
-imaging (MRI) data accurate identification of the hippocampus and its
-subregions is a necessary first step to better understand the individual
-neuroanatomy of subjects.  
+implicated in forms of brain dysfunction such as Alzheimer's
+disease\citep{Sabuncu2011} and schizophrenia\citep{Narr2004,Karnik-Henry2012},
+and has functional significance in cognitive processes such as learning and
+memory\citep{DenHeijer2012,Scoville2000}.  For many research questions
+involving magnetic resonance imaging (MRI) data accurate identification of the
+hippocampus and its subregions is a necessary first step to better understand
+the individual neuroanatomy of subjects.  
 
 Currently, the gold standard for neuroanatomical segmentation is manual
-delineation by an expert human rater.  This is problematic for segmentation of
-the hippocampus for several reasons.  First, manual segmentation takes a
+delineation by an expert human rater.  This is problematic for hippocampal
+segmentation for several reasons.  First, manual segmentation takes a
 significant investment of time and expertise \citep{Hammers2003} which may not
 be readily available to researchers or clinicians.  Second, the amount of data
 produced in neuroimaging experiments increasingly exceeds the capacity for
@@ -70,17 +71,17 @@ segmentation protocol \citep{Jack2011}.
 
 Compounding each of these problems is the significant neuroanatomical
 variability in the hippocampus throughout the course of aging, development, and
-neuropsychiatric disorders \citep{Mouiha2011b}.  The result is that existing
-hippocampal atlases available to a researcher may not accurately represent
-neuroanatomy of a specific population under study.  Additionally, in the course
-of a research or clinical study, it may be necessary to make adjustments to
-hippocampal definition as a means of hypothesis testing.  For example, Poppenk
-\citep{Poppenk2011} found that subdividing the hippocampus into anterior and
-posterior regions resulted in a predictive relationship between volume
-difference of those regions and recollection memory performance.  Making
-modifications to an set of atlas library segmentations may require the same
-level of expertise and manual effort needed to create the segmentations from
-scratch.  
+neuropsychiatric disorders \citep{Mouiha2011b,Sabuncu2011}.  The result is that
+existing hippocampal atlases available to a researcher may not accurately
+represent neuroanatomy of a specific population under study.  Additionally, in
+the course of a research or clinical study, it may be necessary to make
+adjustments to hippocampal definition as a means of hypothesis testing.  For
+example, Poppenk \citep{Poppenk2011} found that subdividing the hippocampus
+into anterior and posterior regions resulted in a predictive relationship
+between volume difference of those regions and recollection memory performance.
+Making modifications to an set of atlas library segmentations may require the
+same level of expertise and manual effort needed to create the segmentations
+from scratch.  
 
 %  Automated methods 
 %
@@ -99,28 +100,29 @@ scratch.
 %  Mouiha2011b - Hippocampal atrophy rates in AD
 %    - compare SNT vs FreeSurfer on ADNI
 %
-Automated segmentation techniques overcome the need for human expertise by
-performing segmentations computationally.  A popular class of automated
-methods, {\it multi-atlas-based segmentation}, use a series of expertly
-segmented MRIs (an atlas library) to act as templates against which a target
-image is labelled
+Fully-automated segmentation techniques overcome the need for human expertise.
+In particular, {\it atlas-based} approaches make use of one or more expertly
+segmented MRIs (the atlas library) as templates to guide the segmentation of a
+query subject's MRI
 \cite{Aljabar2009,Collins2010,Heckemann2011,Leung2010,Lotjonen2010,Leung2010,Wolz2010}.
-In the basic method, each atlas is warped to fit a subject's neuroanatomy using
-nonlinear registration techniques \citep{Collins1995,Klein2009}.  Atlas labels
-are then transformed by this warping and a {\it label fusion} technique, such
-as voxel-wise voting, is used to merge the competing label definitions from
-each atlas into a final segmentation for a subject.  
+The basic strategy is as follows. Each atlas is warped to fit a subject's
+neuroanatomy using nonlinear registration techniques
+\citep{Collins1995,Klein2009}.  Atlas labels are then transformed by this
+warping to the subject's space, and a {\it label fusion} technique, such as
+voxel-wise voting, is used to merge the competing label definitions from each
+atlas into a final segmentation for the subject.  
 
-Many descriptions of multi-atlas-based hippocampal segmentation algorithms
-report relying on an atlas library containing anywhere between 30 and 80
-expertly labeled images
-\citep{Heckemann2011,Collins2010,Aljabar2009,Leung2010,Lotjonen2010} in order
-to achieve performance approach that of a manual rater.  As already noted, the
-production of an atlas library requires significant manual effort and
-expertise, as does the modification of an existing atlas library in order to
-better suit a target population or investigate a specific research hypothesis.
-Therefore, in this paper we tackle the problem of producing accurate
-segmentations using small numbers of manually segmented atlases. 
+Multi-atlas hippocampal segmentation algorithms achieve some of the best
+automated segmentation accuracies to-date, and approach the performance of a
+manual rater
+\citep{Heckemann2011,Collins2010,Aljabar2009,Leung2010,Lotjonen2010}, but rely
+on an atlas library containing anywhere between 30 and 80 expertly labeled
+images to achieve this accuracy.  As already noted, the production of an atlas
+library requires significant manual effort and expertise, as does the
+modification of an existing atlas library in order to better suit a target
+population or investigate a specific research hypothesis.  Therefore, in this
+paper we tackle the problem of producing accurate segmentations using small
+numbers of manually segmented atlases. 
 
 In this paper we propose an extension to the basic multi-atlas-based
 segmentation scheme to address this issue.  Principally, we explore the
