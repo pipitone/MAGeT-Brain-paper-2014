@@ -84,22 +84,31 @@ Making modifications to an set of atlas library segmentations may require the
 same level of expertise and manual effort needed to create the segmentations
 from scratch.  
 
-%  Automated methods 
+% atlas-based methods -> a prior feature based methods?
 %
-%  Heckemann2006 - 
+% - basic multi-atlas method, Collins2010: large atlas library, atlas selection
+% (Aljabar), and label fusion.
+% - Lotjonen, Leung, Heckeman2011 (MAPER) as variations on the theme.
+% - Coutin's use of shape-based priors
+%
+% - multi-atlas with specialised/small atlas libraries
+%   - Fischl - freesurfer, high-resolution atlases + probability priors
+%   - Yuskevitch - 
+%  
 %  Heckemann2011 -  Automatic morphometry in AD and MCI 
 %    - (MAPER). multi-atlas. 30 atlases, entire ADNI screening  
 %  Collins2010 - .. seg of HC and AM by augmenting ANIMAL
 %    - multi-atlas 80 atlases, atlas selection (NMI)
 %  Aljabar2009 - atlas selection and effect on accuracy
-%    - 
 %  Leung2010 - X-sectional and longitudinal HC vol in MCI, AD
 %    - (MAPS), multi-atlas + STAPLE. 55 atlases. baseline+1yr of ADNI seg.
 %    - atrophy rates
 %  Lotjonen2010 - Fast and robust
 %    - IBSR/ADNI.  
+%
 %  Mouiha2011b - Hippocampal atrophy rates in AD
 %    - compare SNT vs FreeSurfer on ADNI
+%
 %
 Fully-automated segmentation techniques overcome the need for human expertise.
 In particular, {\it atlas-based} approaches make use of one or more expertly
