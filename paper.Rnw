@@ -86,35 +86,36 @@ from scratch.
 
 % atlas-based methods -> a prior feature based methods?
 %
-% - basic multi-atlas method, Collins2010: large atlas library, atlas selection
-% (Aljabar), and label fusion.
-% - Lotjonen, Leung, Heckeman2011 (MAPER) as variations on the theme.
-% - Coutin's use of shape-based priors
-%
-% - multi-atlas with specialised/small atlas libraries
-%   - Fischl - freesurfer, high-resolution atlases + probability priors
-%   - Yuskevitch - 
-%  
-%  Heckemann2011 -  Automatic morphometry in AD and MCI 
-%    - (MAPER). multi-atlas. 30 atlases, entire ADNI screening  
+% - basic multi-atlas method, 
 %  Collins2010 - .. seg of HC and AM by augmenting ANIMAL
 %    - multi-atlas 80 atlases, atlas selection (NMI)
 %  Aljabar2009 - atlas selection and effect on accuracy
+% - extensions and practical applications
 %  Leung2010 - X-sectional and longitudinal HC vol in MCI, AD
 %    - (MAPS), multi-atlas + STAPLE. 55 atlases. baseline+1yr of ADNI seg.
 %    - atrophy rates
 %  Lotjonen2010 - Fast and robust
 %    - IBSR/ADNI.  
+% - Coutin's use of shape-based priors
 %
+% - multi-atlas with specialised/small atlas libraries
+%   - Fischl - freesurfer, high-resolution atlases + probability priors
+%   - Yushkevitch - invivo focal HF-MRI 
+%  
+%  Heckemann2011 -  Automatic morphometry in AD and MCI 
+%    - (MAPER). multi-atlas. 30 atlases, entire ADNI screening  
 %  Mouiha2011b - Hippocampal atrophy rates in AD
 %    - compare SNT vs FreeSurfer on ADNI
 %
 %
-Fully-automated segmentation techniques overcome the need for human expertise.
-In particular, {\it atlas-based} approaches make use of one or more expertly
-segmented MRIs (the atlas library) as templates to guide the segmentation of a
-query subject's MRI
-\cite{Aljabar2009,Collins2010,Heckemann2011,Leung2010,Lotjonen2010,Leung2010,Wolz2010}.
+Fully-automated segmentation techniques require no human expertise beyond that
+of an initial configuration.  Multi-atlas automated segmentation algorithms make
+use of a series of expertly segmented MRIs (the atlas library) as models to
+guide the segmentation of a query subject's MRI, and achieve some of the best
+automated hippocampal segmentation accuracies to-date
+
+
+\citep{Aljabar2009,Collins2010,Heckemann2011,Leung2010,Lotjonen2010,Leung2010,Wolz2010}.
 The basic strategy is as follows. Each atlas is warped to fit a subject's
 neuroanatomy using nonlinear registration techniques
 \citep{Collins1995,Klein2009}.  Atlas labels are then transformed by this
@@ -122,10 +123,9 @@ warping to the subject's space, and a {\it label fusion} technique, such as
 voxel-wise voting, is used to merge the competing label definitions from each
 atlas into a final segmentation for the subject.  
 
-Multi-atlas hippocampal segmentation algorithms achieve some of the best
-automated segmentation accuracies to-date, and approach the performance of a
-manual rater
-\citep{Heckemann2011,Collins2010,Aljabar2009,Leung2010,Lotjonen2010}, but rely
+
+
+but rely
 on an atlas library containing anywhere between 30 and 80 expertly labeled
 images to achieve this accuracy.  As already noted, the production of an atlas
 library requires significant manual effort and expertise, as does the
