@@ -211,8 +211,8 @@ indirect segmentation previously explored.  LEAP proceeds by iteratively
 segmenting unlabelled images most similar to the atlas library images and then
 incorporating the labelled images into the atlas library for future iterations.
 The novelty explored in our current work is demonstrate the viability of
-achieving comparable segmentation accuracy while using significantly fewer
-manually created atlases.
+achieving comparable segmentation accuracy using the basic multi-atlas schema
+and using significantly fewer manually created atlases.
 
 In previous work \citep{Chakravarty2012}, we applied MAGeT brain to segmentation
 of the human striatum, globus pallidus, and thalamus using a single
@@ -247,32 +247,33 @@ as we will discuss, a template library may also be composed of images with
 computer generated labellings. 
 
 The simplest form of multi-atlas segmentation combines labellings derived from
-several atlases by way of label fusion\citep{Collins2010}.  We will refer to
+several atlases by way of label fusion \citep{Heckemann2006}.  We will refer to
 this as {\em basic multi-atlas segmentation}.  The primary steps are as
-follows.  An atlas library and unlabelled MR images are given as input.  Each
-atlas image is nonlinearly registered to each unlabelled image, and then each
-atlas' labels are propagated via the resulting transformations.  The resulting
-labels are fused to produce a single, definitive segmentation by some label
-fusion method (for example, by voxel-wise majority voting). 
+follow are: (1) an atlas library and unlabelled MR images are given as input,
+(2) each atlas image is nonlinearly registered to each unlabelled image, (4)
+each atlas' labels are propagated via the resulting transformations to the
+unlabelled image space, and (5) the resulting labels are fused to produce a
+single, definitive segmentation. The particular registration and voting method
+used are left unspecified.
 
-The segmentation approach we propose is best understood as an extension of
-MAGeT brain adds a preliminary stage to this process in which the template
-library is constructed rather than given as input.  As before, MAGeT brain
-accepts an atlas library and unlabelled MR images as input.  Images for the
-template library are selected from 
+The segmentation approach we propose is best understood as an extension of MAGeT
+brain adds a preliminary stage to this process in which the template library is
+constructed rather than given as input.  As before, MAGeT brain accepts an atlas
+library and unlabelled MR subject images as input.  Template library images are
+selected from subject images.  The choice of subjects used in the template
+library can be made to reflect the neuroanatomy or demographics of the subject
+set as a whole (for instance, by sampling equally from cases and controls).  
 
-To create the template library, labels from each atlas image are propagated to each template
-library image via the transformation resulting from a non-linear registration
-between pair of images.  As a result, each template library image has a label
-from each atlas.  Basic multi-atlas segmentation is then used to produce
-segmentations for the entire set of unlabelled images (including those images
-used in the template library). 
+To create the template library, labels from each atlas image are propagated to
+each template library image via the transformation resulting from a non-linear
+registration between pair of images.  As a result, each template library image
+has a label from each atlas.  Basic multi-atlas segmentation is then used to
+produce segmentations for the entire set of unlabelled images (including those
+images used in the template library). Figure X describes the MAGeT brain
+algorithm in pseudocode. 
 
-\todo{Note that our algorithm does not specify a registration algorithm or
-fusion method\citep{Chakravarty2012}.  Performance on options is tested in our
-experiments}
-
-Source code can be found at \url{http://github.com/pipitone/MAGeTbrain}.
+\footnote{Source code can be found at
+\url{http://github.com/pipitone/MAGeTbrain}.}
 
 \begin{algorithm}
   \scriptsize
@@ -316,6 +317,61 @@ Source code can be found at \url{http://github.com/pipitone/MAGeTbrain}.
 \todo{include image characteristics}
 \todo{describe SNT manual segmentations}
 
+Clinical, demographic and pre-processed T1-weighted MRI used in this paper were
+downloaded by the authors from the ADNI1 database (adni.loni.ucla.edu) from
+between March 2012 and August 2012. 
+
+All images were acquired using 1.5T scanners (General Electric Healthcare,
+Philips Medical Systems or Siemens Medical Solutions) at multiple sites from the
+ADNI website.  "Representative imaging parameters were TR = 2400ms, TI = 1000ms,
+TE = 3.5ms, flip angle = 8°, field of view = 240 × 240mm and 160 sagittal
+1.2mm-thick-slices and a 192 × 192 matrix yielding a voxel resolution of 1.25 ×
+1.25 × 1.2 mm3, or 180 sagittal 1.2mm-thick-slices with a 256 × 256 matrix
+resolution of 1.25 × 1.25 × 1.2 mm3, or 180 sagittal 1.2mm-thick-slices with a
+256 × 256 matrix resolution of 1.25 × 1.25 × 1.2 mm3, or 180 sagittal
+1.2mm-thick-slices with a 256 × 256 matrix yielding a voxel resolution of 0.94 ×
+0.94 × 1.2 mm3." The details of the ADNI MR imaging protocol are described in
+\citep{Jack2008a}. The T1-weighted scans that were designated to be the “best”
+after quality control were processed using the standard ADNI image processing
+pipeline, which included post-acquisition correction of gradient warping
+(Jovicich et al., 2006), B1 non-uniformity correction (Narayana et al., 1998)
+depending on the scanner and coil type, intensity non-uniformity correction
+(Sled et al., 1998) and phantom based scaling correction (Gunter et al., 2006) -
+the geometric phantom scan having been acquired with each patient scan.
+
+
+%We downloaded pre-processed baseline and 12-month repeat volumetric T1-weighted
+%MR scans acquired using 1.5T scanners (General Electric Healthcare, Philips
+%Medical Systems or Siemens Medical Solutions) at multiple sites from the ADNI
+%website.  Representative imaging parameters were TR = 2400ms, TI = 1000ms, TE =
+%3.5ms, flip angle = 8°, field of view = 240 × 240mm and 160 sagittal
+%1.2mm-thick-slices and a 192 × 192 matrix yielding a voxel resolution of 1.25 ×
+%1.25 × 1.2 mm3, or 180 sagittal 1.2mm-thick-slices with a 256 × 256 matrix
+%resolution of 1.25 × 1.25 × 1.2 mm3, or 180 sagittal 1.2mm-thick-slices with a
+%256 × 256 matrix resolution of 1.25 × 1.25 × 1.2 mm3, or 180 sagittal
+%1.2mm-thick-slices with a 256 × 256 matrix yielding a voxel resolution of 0.94 ×
+%0.94 × 1.2 mm3. The details of the ADNI MR imaging protocol are described in
+%(Jack, Jr. et al., 2008a), and listed on the ADNI website
+%(http://www.loni.ucla.edu/ADNI/Research/Cores/). The T1-weighted volumetric
+%scans that were designated to be the “best” after quality control were processed
+%using the standard ADNI image processing pipeline, which included
+%post-acquisition correction of gradient warping (Jovicich et al., 2006), B1
+%non-uniformity correction (Narayana et al., 1998) depending on the scanner and
+%coil type, intensity non-uniformity correction (Sled et al., 1998) and phantom
+%based scaling correction (Gunter et al., 2006) - the geometric phantom scan
+%having been acquired with each patient scan.
+%
+%Clinical and demographic data are shown in Tables 1-4. Table 1 shows the
+%demographic data of the 15 randomly-selected subjects (5 control, 5 MCI and 5
+%AD) used for method optimisation.  Table 2 shows the demographic data of the 30
+%randomly-selected subjects (10 control, 10 MCI and 10 AD) used for method
+%validation (note that this subset of 30 subjects was separate from the subset of
+%15 subjects used for method optimisation). Table 3 shows the demographic data of
+%682 subjects (200 control, 335 MCI and 147 AD) in our full dataset. We also
+%sub-divided the MCI subjects into three subgroups (8 reverters, 204 stable and
+%123 converters) based on their follow-up clinical diagnoses determined up to 36
+%months after baseline.  Table 4 shows the demographic data of the MCI subgroups.
+%
 <<ADNI-1-screening-demographics, echo=F, results="asis",cache=FALSE>>=
 tab <- summary(DX.bl ~ AGE + PTGENDER + PTEDUCAT + PTETHCAT + CDRSB + ADAS13 + MMSE, 
                data = adnimerge, subset = VISCODE == 'bl',   
