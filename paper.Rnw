@@ -85,163 +85,134 @@ same level of expertise and manual effort needed to create the segmentations
 from scratch.  
 
 Fully-automated segmentation techniques require no human expertise beyond that
-of an initial configuration.  Multi-atlas automated segmentation algorithms make
-use of a series of expertly segmented MRIs (the atlas library) as models to
-guide the segmentation of a query subject's MRI, and achieve some of the best
-automated hippocampal segmentation accuracies to-date
+of initial setup or training. One broad class of automated approach is that of
+the {\em model-based} approaches which employ models of anatomical feature
+variation to constrain segmentations. In this paper we focus on a subclass known
+as {\em multi-atlas} approaches which make use of a series of expertly segmented
+MRIs (the atlas library) as models to guide the segmentation of a query
+subject's MRI, and achieve some of the best automated hippocampal segmentation
+accuracies to-date. 
 
-The basic strategy is as follows. Each atlas is warped to fit a subject's
-neuroanatomy using nonlinear registration techniques
-\citep{Collins1995,Klein2009}.  Atlas labels are then transformed by this
-warping to the subject's space, and a {\it label fusion} technique, such as
-voxel-wise voting, is used to merge the competing label definitions from each
-atlas into a final segmentation for the subject.  
+The multi-atlas segmentation technique was pioneered by Heckemann et al. with
+the MAPER algorithm \citep{Heckemann2006,Heckemann2011}. The basic strategy is as
+follows. Each atlas is warped to fit a subject's neuroanatomy using nonlinear
+registration techniques \citep{Collins1995,Klein2009}. Atlas labels are then
+transformed by this warping to the subject space and a {\it label fusion}
+technique, such as voxel-wise voting, is used to merge the label definitions
+from each atlas into a definitive segmentation. Typically, an atlas selection
+approach is used to improve accuracy by only using labels from atlases that are
+most similar to a subject image (cross-correlation of image intensities is a
+common similarity metric) \citep{Aljabar2009}. 
 
-\citep{Aljabar2009,Collins2010,Heckemann2011,Leung2010,Lotjonen2010,Leung2010,Wolz2010}.
+% - Warfield2004: STAPLE as an alternative decision fusion technique?
 
-## automated segmentation and the multi-atlas approach
-- automated segmentation techniques require no human intervention
-- model-based automatic segmentation approaches employ models of feature
-  variations as constraints during segmentation. 
-- multi-atlas segmentation techniques use many atlases and perform well
-- basic multi-atlas methods were pioneered by Heckmann et al in the MAPER
-  algorithm Heckemann 2006 and 2010. The strategy is as follows: 
-- individual atlases are treated as classifiers, registration is used to map the
-  classifiers to a subject space, and decision fusion is used to combine
-  expertise from classisfiers. define: atlas library
-- In Heckemann2006 a library of whole brain atlases are used, but Aljabar2009
-  shows that selecting a subset of the atlases most similar (using
-  cross-correlation of image intensities) to a subject and fusing only those
-  labels leads to better performance.  define: atlas selection.
-- Warfield2004: STAPLE as an alternative decision fusion technique?
+Multi-atlas techniques have been applied very successfully to hippocampal
+segmentation. Collins et al. found that with an atlas library of 80 atlas
+images, the use of the ANIMAL nonlinear registration algorithm, the normalised
+mutual information as similarity metric for atlas selection, and majority vote
+for decision fusion they were able to achieve a mean Dice Kappa similarity score
+(DSC) to manual labels of 0.886\citep{Collins2010}. The Alzheimer's Disease
+Neuroimaging Initiative (ADNI) is a commonly used benchmarking dataset of MR
+images of controls and patients with MCI or Alzheimer's (see Methods for more
+information on the ADNI dataset).  Leung et al. tuned a multi-atlas  approach to
+the segmentation of ADNI1 1 year dataset of images and using 55 atlases and the
+STAPLE decision fusion method \citep{Warfield2004} achieved an mean DSC of 0.89
+to the manual segmentations supplied with the ADNI data  \citep{Leung2010}. The
+MAPER whole brain segmentation algorithm (described above), using 30 atlases,
+achieved a mean DSC score of 0.889 on all ADNI1 baseline images
+\citep{Heckemann2011}. In \citep{Lotjonen2012}, the authors use a proprietary
+non-linear registration method based on intensity differences, and
+post-processing step taking into account these intensity differences to tidy up
+fused segmentations. Using images from the ADNI1 baseline dataset, they achieved
+a mean DSC of 0.885 with 30 atlases. With the LEAP algorithm, Wolz et al.
+explored an elegant modification to the basic strategy: the atlas library is
+grown, beginning with a set of manually labelled atlases and successively
+incorporating unlabelled subject images after being labelling using multi-atlas
+techniques\citep{Wolz2010}.  The sequence in which subject images are labelled
+is chosen so that the similarity between the atlas images and the target images
+is minimised at each step, effectively allowing for deformations between very
+dissimilar images to be broken up into sequences of smaller deformations.  With
+an atlas library of 30 MR images, LEAP was used to segment the ADNI1 baseline
+dataset, achieving a mean Dice score of 0.85 with manual segmentations.
 
-## application to  hippocampus
-- There are many applications of multi-atlas techniques to hippocampal
-  segmentation
-- collins2010 apply the multi-atlas approach to hippocampal and amygdala
-  segmentaiton using an atlas library of 80 atlases segmented using a custom
-  protocol (images selected from the ICBM152 dataset), the ANIMAL nonlinear
-  registration algorithm, normalised mutual information for atlas selection, and
-  majority vote for decision fusion, achieves a Dice Kappa similarity of 0.886.
-- Leung2010 (MAPS) uses an atlas library of 55 atlases (segmented using a
-  custom protocol) and STAPLE decision fusion to segment ADNI1 baseline and 12
-  month dataset. After selecting parameters for the best performance on the ADNI
-  dataset, they were able to achieve a Dice Kappa score of 0.89 compared to the
-  manual segmentations supplied with the ADNI data (see Methods for more
-  information on the ADNI dataset). 
-- Heckmann2011 used the MAPER algorithm (described earlier) with 30 atlases  to
-  segment ADNI1 1.5 and 3T baseline images, achieving a mean Dice Kappa
-  similarity score of 0.889. 
-- Lotjonen2012 explored various atlas selection methods, and used a custom
-  non-linear registration method based on intensity differences, with
-  post-processing of fused segmentations taking into account intensity
-  differences to tidy up the segmentations.  They applied this to 60 subjects
-  taken from the ADNI1 baseline dataset, using an atlas library of 30 subjects
-  (also taken from the ADNI1 baseline dataset) and achieved an mean Dice Kappa
-  similarity score of 0.885
-- Wolz2010 - differ significantly from the basic multi-atlas strategy in that
-  the atlas library is grown, starting with a set of manually labelled atlases
-  and successively incorporating unlabelled target images after labelling.
-  The sequence in which target images are labelled is such that the similarity
-  between the atlas images and the target images is minimised at each step,
-  effectively allowing for deformations between very dissimilar images to be
-  broken up into sequences of smaller deformations.  With an atlas library of
-  30 MR images, LEAP was used to segment the ADNI1 baseline dataset, achieving a
-  mean Dice score of 0.85 with manual segmentations.
-
-## specialised automated segmentation techiques of note
-- Fischl 2002 - describe a method which uses a probabilistic atlas of anatomical
-  and tissue classes along with spatial constraints for class labels encoded
-  using a Markov random field model. This forms the basis of FreeSurfer's whole
-  brain segmentation algorithm.
-- Fischl 2009 use a probabilistic atlas of anatomical classes as well as a
-  likelihood model of how those classes translate into MR image intensities.
-  Trained on manual segmentations of high resolution MR images, Bayesian
-  inference is used to classify voxels in an unseen image.  This forms the basis
-  of the FreeSurfer hippocampal subfield segmentation algorithm. 
-- Yushkevitch2010 describe a semi-automated method for hippocampal subfield
-  segmentation of focal T2 images.  The unlabelled MR image must be manually
-  partitioned into 'head', 'body' and 'tail', and then multi-atlas methods are
-  used to segment the image (ANTS registration, and similarity-weighted vote).
-  Finally, an AdaBoost-based bias correction classifier trained on texture,
-  spatial location and segmentation is applied to fix mislabelled voxels.  
-
-## with all of these different methods, how much does the atlas library matter?
-- all of these methods require a sizeable atlas library which, as we've
-  discussed, requires significant effort to create. how much does an atlas
-  library matter for the performance of an automated method?
-- As noted, Aljabar2009's work on atlas selection shows clearly that the
-  composition of the atlas library has a significant effect on accuracy of
-  automated segmentation.
-- what anatomical features play a role here? How does protocol impact?  
-- Carmichael2005 - explores which aspects of the single-atlas strategy matter
-  most: registration, similarity between atlas and gold-standard delineation
-  protocol, and neuroanatomical similarity between the atlas image and subject
-  image. They found that most flexible registration (non-linear) method, atlas
-  segmentation that follows the same protocol as the gold-standard and,
-  importantly for us, an atlas with neuroanatomical features that match the
-  subject image lead to the highest overlap of labels. 
-- Nestor2012 explored the effect of segmentation protocol on automated
-  multi-atlas segmentation performance of the hippocampus in the ADNI1 1 Year
-  dataset, and found that protocols that more inclusive protocols which include
-  dorsal white-matter and posterior anatomy tended to produce higher overlap and
-  better accuracy at distinguishing disease classes. 
-
-## the problem of needing a large atlas library, and the benefit of having a
-   small one
-- time expensive: if you have one atlas from a difficult to obtain source?
-  e.g. histological atlas
-- customising definitions is tough, but necessary to ask research questions
-
-
+While not purely nulti-atlas techniques, there are several important algorithms
+for hippocampal segmentation that inform our approach. The popular FreeSurfer
+application's whole brain segmentation algoritm uses a probabilistic atlas of
+anatomical and tissue classes along with spatial constraints for class labels
+encoded using a Markov random field model \citep{Fischl2002}. When segmenting
+hippocampal subfields, FreeSurfer employs a Bayesian inference algorithm using a
+probabilistic atlas of anatomical classes as a prior, and a likelihood model of
+how those classes translate into MR image intensities, both trained on manual
+segmentations of high resolution MR images \citep{Fischl2009}. Yushkevitch et
+al. describe a semi-automated method for hippocampal subfield segmentation of
+focal T2 images\citep{Yushkevitch2010}.  The unlabelled MR image must be
+manually partitioned into 'head', 'body' and 'tail', and then multi-atlas
+methods are used to segment the image.  Finally, an AdaBoost-based bias
+correction classifier is trained on texture, spatial location, and intensities
+of manual segmentations and is applied to fix mislabelled voxels.  
 %  Chupin's use of shape-based priors 
 %   - Mouiha2011b - Hippocampal atrophy rates in AD: compare SNT vs FreeSurfer
 %     on ADNI
 %
 
-## introducing MAGeT brain for bootstrapping automated hippocampal segmentation
-- MAGeT bootstrapping: tune the template library to your dataset, reduce the
-  number of input atlases you need, with the upshot that with fewer atlases it's
-  that much easier to change definitions in order to test hypothesis
+Aside from the algorithmic choices used in multi-atlas segmentation, it is
+natural to ask about how the features of the atlases themselves impact the
+resulting segmentations. As noted, by choosing atlases ranked most similar to a
+subject image by voxel intensity profile segmentation accuracy is improved,
+suggesting that neuroanatomical similarity plays a role\citep{Aljabar2009}.
+Carmichael et al. explored this directly and found that when using only one
+atlas the important factors leading to improved accuracy are that the atlas have
+neuroanatomical features that match the subject, and that the atlas segmentation
+use the same protocol as the gold-standard \citep{Carmichael2005}. Nestor et al.
+found that hippocampal segmentation protocols that include more dorsal
+white-matter and posterior anatomy tended to produce higher overlap and better
+accuracy at distinguishing disease classes in the ADNI1 1 year dataset
+\citep{Nestor2012}. These results suggest both atlas library neuroanatomy and
+delineation protocol play a significant role in the resulting segmentation.
 
-but rely
-on an atlas library containing anywhere between 30 and 80 expertly labeled
-images to achieve this accuracy.  As already noted, the production of an atlas
-library requires significant manual effort and expertise, as does the
-modification of an existing atlas library in order to better suit a target
-population or investigate a specific research hypothesis.  Therefore, in this
-paper we tackle the problem of producing accurate segmentations using small
-numbers of manually segmented atlases. 
+Considered along with our earlier discussion on the difficulty of producing
+manual segmentations of MR images and the need for adaptable segmentation
+definitions in order to conduct research, this presents a real problem of labour
+and expertise when using existing multi-atlas segmentation methods which rely on
+relatively large atlas libraries (typically between 30 and 80 atlases). Indeed,
+it may be especially prohibitive to use these methods in situations where
+producing a single atlas is challenging (e.g. histology-based atlases, or
+atlases from very high resolution images). In this paper we address the problem
+of producing accurate segmentations using small numbers of manually segmented
+atlases. 
 
-In this paper we propose an extension to the basic multi-atlas-based
-segmentation scheme to address this issue.  Principally, we explore the
+% MAGeT bootstrapping: tune the template library to your dataset, reduce the
+% number of input atlases you need, with the upshot that with fewer atlases it's
+% that much easier to change definitions in order to test hypothesis
+
+Our algorith, called MAGeT brain ({\em M}ultiple {\em A}utomatically {\em
+Ge}nerated {\em T}emplates), is an extension to the basic multi-atlas-based
+segmentation schema\citep{Chakravarty2012}. Principally, we explore the
 possibility of using a small atlas library to bootstrap a much larger
 \emph{template library} composed of images taken from the target population.
 The template library is then used to segment the subjects in a similar fashion
-to basic multi-atlas segmentation: by label propagation and label fusion.  We
-call our approach MAGeT brain: {\em m}ultiple {\em a}utomatically {\em
-ge}nerated {\em t}emplate {\em brain} segmentation. The intuition driving this
-approach is that by generating a template library we leverage the unique
-neuroanatomy of subject population on hand to initialize the segmentation
-process and improve accuracy over direct propagation from the atlas library to
-unlabelled subjects while also using fewer manually segmented atlases. 
+to basic multi-atlas segmentation: by label propagation and label fusion. The
+intuition driving this approach is that by generating a template library we
+leverage the unique neuroanatomy of subject population on hand to initialize the
+segmentation process and improve accuracy over direct propagation from the atlas
+library to unlabelled subjects while also using fewer manually segmented
+atlases. 
 
-The insight of generating a template library is not new.  Heckemann
-\citep{Heckemann2006} briefly explored "indirect" segmentation by taking a
-single atlas and propagating those labels to intermediate subjects before fusing
-them in a target image space.  Heckemann compared indirect single-atlas
-segmentation to direct multi-atlas segmentation found the indirect approach
-performed worse.  In this paper we continue the same line of investigation but
-explore the performance when using multiple atlases, as well as several
+The insight of generating a template library is not new.  Heckemann et al.
+compared "indirect" segmentation -- taking a single atlas and propagating the
+labels to intermediate subjects before fusing them in a target image space -- to
+multi-atlas segmentation and found that the indirect approach performed worse
+\citep{Heckemann2006}. In this paper we continue the same line of investigation
+but explore the performance when using multiple atlases as well as the effect of
 different registration and fusion methods.
 
-The LEAP algorithm \citep{Wolz2010} is another example of indirect segmentation
-previously explored.  LEAP proceeds by iteratively segmenting unlabelled images
-most similar to the atlas library images and then incorporating the
-now-labelled images into the atlas library for future iterations.  30 manually
-labelled atlases are required to start the process.  The novelty explored in
-our current work is demonstrate the viability of acheiving comparable
-segmentation accuracy while using significantly fewer manually created atlases.
+The LEAP algorithm \citep{Wolz2010}, described above, is another example of
+indirect segmentation previously explored.  LEAP proceeds by iteratively
+segmenting unlabelled images most similar to the atlas library images and then
+incorporating the labelled images into the atlas library for future iterations.
+The novelty explored in our current work is demonstrate the viability of
+achieving comparable segmentation accuracy while using significantly fewer
+manually created atlases.
 
 In previous work \citep{Chakravarty2012}, we applied MAGeT brain to segmentation
 of the human striatum, globus pallidus, and thalamus using a single
@@ -254,7 +225,6 @@ fusion methods.  We then compare MAGeT segmentations of the entire ADNI
 screening dataset with those of established automated and manual segmentation
 techniques.  Finally, we compare MAGeT segmentations to those of manual
 segmentations from a dataset of first episode schizophrenic patient MRIs. 
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                               METHODS
@@ -283,7 +253,7 @@ follows.  An atlas library and unlabelled MR images are given as input.  Each
 atlas image is nonlinearly registered to each unlabelled image, and then each
 atlas' labels are propagated via the resulting transformations.  The resulting
 labels are fused to produce a single, definitive segmentation by some label
-fusion method (for exampl, by voxel-wise majority voting). 
+fusion method (for example, by voxel-wise majority voting). 
 
 The segmentation approach we propose is best understood as an extension of
 MAGeT brain adds a preliminary stage to this process in which the template
