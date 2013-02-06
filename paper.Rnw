@@ -1,6 +1,10 @@
-\SweaveOpts{echo = FALSE, message = FALSE, warning = FALSE, fig.align = 'center', tidy = FALSE, comment = NA, cache = TRUE}
 
-<<loadpackages, results="hide", echo=FALSE, cache=FALSE>>=
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Sweave/Knitr init
+<<setup, include=FALSE, cache=FALSE>>=
+opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE, 
+    fig.align = 'center', tidy = FALSE, comment = NA, cache = TRUE)
 library(ggplot2)
 library(Hmisc)
 library(reshape2)
@@ -9,28 +13,30 @@ library(plyr)
 options(digits=3)
 theme_set(theme_bw())
 @
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \documentclass{article}
 \usepackage[margin=1in]{geometry}
-\usepackage{algorithm, color, algpseudocode, amsmath, url, geometry, ctable }
-\usepackage[square,numbers]{natbib}
+\usepackage{algorithm, color, algpseudocode, amsmath, url, geometry, ctable}
+\usepackage[round,authoryear]{natbib}
 
 %draft mode
 \usepackage[colorlinks]{hyperref}
 \usepackage[colorinlistoftodos, textwidth=4cm, shadow]{todonotes}
 \usepackage[displaymath, tightpage]{preview}
-
 \setlength{\marginparwidth}{1.2in}
 
+%notes and TODO formatting
 %\newcommand{\marginnote}[1]{\-\marginpar[\raggedleft\footnotesize #1]{\raggedright\footnotesize #1}}
 %\newcommand{\comment}[1]{\begin{kframe}{\textcolor{red}{#1}}\end{kframe}}
 %\newcommand{\todo}[1]{\comment{TODO #1}}
 %\newcommand{\mc}[1]{\comment{MC: #1}}
 \begin{document}
 
-\title{Hippocampal segmentation with MAGeT}
-\author{Pipitone J., Winterburn J., Lerch J., Pruessner J., Lepage M., Voineskos
-A., Chakravarty M.M., and the Alzheimer's Disease Neuroimaging Initiative}
+\title{Bootstrapping Multi-atlas Hippocampal Segmentation with MAGeT}
+\author{Pipitone J., Winterburn J., Lerch J., Pruessner J., Lepage M., \\ 
+Voineskos A., Chakravarty M.M., and \\ 
+the Alzheimer's Disease Neuroimaging Initiative}
 \maketitle
 
 \begin{abstract}
@@ -256,29 +262,28 @@ unlabelled image space, and (5) the resulting labels are fused to produce a
 single, definitive segmentation. The particular registration and voting method
 used are left unspecified.
 
-The segmentation approach we propose is best understood as an extension of MAGeT
-brain adds a preliminary stage to this process in which the template library is
-constructed rather than given as input.  As before, MAGeT brain accepts an atlas
-library and unlabelled MR subject images as input.  Template library images are
-selected from subject images.  The choice of subjects used in the template
-library can be made to reflect the neuroanatomy or demographics of the subject
-set as a whole (for instance, by sampling equally from cases and controls).  
+The segmentation approach we propose is best understood as an extension of
+multi-atlas segmentation.  MAGeT brain adds a preliminary stage to this process
+in which the template library is constructed rather than given as input.  As
+before, MAGeT brain accepts an atlas library and unlabelled MR subject images as
+input.  Template library images are selected from subject images.  The choice of
+subjects used in the template library can be made to reflect the neuroanatomy or
+demographics of the subject set as a whole (for instance, by sampling equally
+from cases and controls).  
 
 To create the template library, labels from each atlas image are propagated to
 each template library image via the transformation resulting from a non-linear
-registration between pair of images.  As a result, each template library image
-has a label from each atlas.  Basic multi-atlas segmentation is then used to
+registration between pair of images. As a result, each template library image
+has a label from each atlas. Basic multi-atlas segmentation is then used to
 produce segmentations for the entire set of unlabelled images (including those
-images used in the template library). Figure X describes the MAGeT brain
-algorithm in pseudocode. 
-
-\footnote{Source code can be found at
-\url{http://github.com/pipitone/MAGeTbrain}.}
+images used in the template library). Figure \ref{alg:MAGeT} describes the MAGeT
+brain algorithm in pseudocode.  Source code can be found at
+\url{http://github.com/pipitone/MAGeTbrain}.
 
 \begin{algorithm}
   \scriptsize
   \caption{Pseudocode for the MAGeT Brain algorithm}
-  \label{pseudocodesdf}
+  \label{alg:MAGeT}
   \begin{algorithmic}
     \Function{BasicMultiAtlasSegmentation}{Templates, Subjects}
       \ForAll{$subject$}
@@ -310,50 +315,63 @@ algorithm in pseudocode.
 
 %%%%%                             Subjects                                 %%%%%
 
-%  Describe subject datasets in general 
 \subsection{Subjects}
 
 \subsubsection{ADNI1 1.5T Screening Dataset}
-
 Clinical, demographic and pre-processed T1-weighted MRI used in this paper were
 downloaded by the authors from the ADNI1 database (adni.loni.ucla.edu) between
 March 2012 and August 2012. The image dataset download was the "ADNI1:Screening
 1.5T" standardized dataset available from ADNI
-(http://adni.loni.ucla.edu/methods/mri-analysis/adni-standardized-data/)\citep{Wyman2012}.
-This image collection contains uniformly preprocessed images which have been
-designated to be the "best" after quality control.  All images were acquired
-using 1.5T scanners (General Electric Healthcare, Philips Medical Systems or
-Siemens Medical Solutions) at multiple sites using the protocol described in
-\citep{Jack2008a}.  Representative 1.5T imaging parameters were TR = 2400ms, TI
-= 1000ms, TE = 3.5ms, flip angle = $8{\circ}$, field of view = 240 x 240mm, a
-192 x 192 x 166 matrix (x, y, and z directions) yielding a voxel resolution of
-1.25 x 1.25 x 1.2 $mm^3$. Clinical and demographic data are shown in table
-\ref{tab:ADNI1_1.5T_Screening_Dataset_Demographics}. 
+\footnote{
+ \url{http://adni.loni.ucla.edu/methods/mri-analysis/adni-standardized-data/}}
+\citep{Wyman2012}. This image collection contains uniformly preprocessed images
+which have been designated to be the "best" after quality control.  All images
+were acquired using 1.5T scanners (General Electric Healthcare, Philips Medical
+Systems or Siemens Medical Solutions) at multiple sites using the protocol
+described in \citep{Jack2008a}.  Representative 1.5T imaging parameters were TR
+= 2400ms, TI = 1000ms, TE = 3.5ms, flip angle = $8{\circ}$, field of view = 240
+x 240mm, a 192 x 192 x 166 matrix (x, y, and z directions) yielding a voxel
+resolution of 1.25 x 1.25 x 1.2 $mm^3$. Clinical and demographic data are shown
+in table \ref{tab:ADNI1_1.5T_Screening_Dataset_Demographics}. 
 
+For a subset of ADNI1 images, labels of the left and right hippocampi are
+available (herein refered to as SNT labels).  Semi-automated hippocampal
+volumetry was carried out using a commercially available high dimensional brain
+mapping tool (Medtronic Surgical Navigation Technologies, Louisville, CO), that
+has previously been validated and compared to manual tracing of the hippocampus
+\citep{Hsu2002}. Measurement of hippocampal volume is achieved first by placing
+manually 22 control points as local landmarks for the hippocampus on the
+individual brain MRI data: one landmark at the hippocampal head, one at the
+tail, and four per image (i.e., at the superior, inferior, medial and lateral
+boundaries) on five equally spaced images perpendicular to the long axis of the
+hippocampus. Second, fluid image transformation is used to match the individual
+brains to a template brain \citep{Christensen1997}. The pixels corresponding to
+the hippocampus are then labeled and counted to obtain volumes. This method of
+hippocampal voluming has a documented reliability of an intraclass coefficient
+better than .94 \citep{Hsu2002}.
 
 %Representative 3T image parameters were TR = 2300ms, TI = 900ms, TE = 3.0ms,
 %flip angle = $8{\circ}$, field of view = 256 x 240mm, a 256 x 256 x 166 matrix
 %(x, y, and z directions) yielding a voxel resolution of 1.00 x 1.00 x 1.2
 %$mm^3$.
 
-
-\todo{describe SNT manual segmentations}
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ADNI1 Screening Dataset Demographics Table                                  %
 %                                                                             %
-<<ADNI-1-screening-demographics, echo=F, results="asis",cache=FALSE>>=
+<<ADNI1-screening-demographics, echo=F, results="asis",cache=FALSE>>=
+# RID < 2000 ensures only ADNI1 patients
 tab <- summary(DX.bl ~ AGE + PTGENDER + PTEDUCAT + PTETHCAT + CDRSB + ADAS13 +
-               MMSE, data = adnimerge, subset = VISCODE == 'bl',   
+               MMSE, data = adnimerge, subset = VISCODE == 'bl' & RID < 2000,   
                method = "reverse", test=FALSE, overall=TRUE)
-
 latex(tab, file="", size="scriptsize", 
     caption="ADNI1 1.5T Screening dataset demographics",
     title="tab:ADN1_1.5T_Screening_Dataset_Demographics")
 @
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\todo{Check demographics table only includes 1.5T from the Screening}
+
+
+
 
 \subsubsection{SZ First Episode Patients}
 
@@ -379,9 +397,9 @@ latex(tab, file="", size="scriptsize", ctable=FALSE,
 
 \subsection{Image pre-processing}
 
-Before images were registered, the N3 algorithm [16] is first used to minimize
-the intensity nonuniformity in each of the atlases and unlabeled subject
-images.   
+Before images were registered, the N3 algorithm \citep{Sled1998} is first used
+to minimize the intensity nonuniformity in each of the atlases and unlabeled
+subject images.   
 
 
 %%%%%                       Registration Methods                           %%%%%
@@ -433,16 +451,15 @@ Lattice Diameter  &24x24x24 &12x12x12 & 6x6x6    \tabularnewline
 \subsubsection{Automatic Normalization Tools (ANTS)}
 
 ANTs is a diffeomorphic registration algorithm which provides great flexibility
-over the choice of transformation model, objective function, and the
-consistency of the final transformation. The transformation is estimated in a
-hierarchical fashion where the MRI data is subsampled, allowing large
-deformations to be estimated and successively refined at later hierarchical
-stages (where the data is subsampled to a finer grid). The deformation field
-and the objective function are regularized with a Gaussian kernel at each level
-of the hierarchy. The ANTs algorithm is freely available
-\url{http://www.picsl.upenn.edu/ANTS/}. We used an implementation of the ANTS
-algorithm compatible with the MINC data format, mincANTS
-\url{https://github.com/vfonov/mincANTS}.
+over the choice of transformation model, objective function, and the consistency
+of the final transformation. The transformation is estimated in a hierarchical
+fashion where the MRI data is subsampled, allowing large deformations to be
+estimated and successively refined at later hierarchical stages (where the data
+is subsampled to a finer grid). The deformation field and the objective function
+are regularized with a Gaussian kernel at each level of the hierarchy. The ANTs
+algorithm is freely available \url{http://www.picsl.upenn.edu/ANTS/}. We used an
+implementation of the ANTS algorithm compatible with the MINC data format,
+mincANTS \url{https://github.com/vfonov/mincANTS}.
 
 We used the following command line when running the ANTS command, 
 {\small
@@ -456,14 +473,16 @@ We used the following command line when running the ANTS command,
  \end{verbatim}
 }
 These settings were adapted from the "reasonable starting point" given in the
-ANTS manual. \todo{include a reference to manual?}
+ANTS manual 
+\footnote{\url{https://sourceforge.net/projects/advants/files/Documentation/}}.
+
 
 
 %%%%%                           Label Fusion                               %%%%%
 
 \subsection{Label Fusion}
 
-Label fusion is term given to the process of combining the information from
+Label fusion is a term given to the process of combining the information from
 several candidate labellings for an MR image into a single labelling.  In this
 paper we explore the benefits of three different fusion methods. 
 
@@ -480,39 +499,37 @@ shown to improve segmentation accuracy \citep{Aljabar2009,Collins2010}.  In this
 method, each template library image is ranked in similarity to each unlabelled 
 image by the normalized cross-correlation (CC) of image intensities after linear
 registration, over a region of interest (ROI) generously encompassing the 
-hippocampus.  Only the top ranked
-template library image labels are used in a voxel-wise majority vote. The ROI
-is heuristically defined as the extent of all atlas labels after linear
-registration to the template, dilated by three voxels \citep{Chakravarty2012}.  
-The number of top ranked template library image labels is a configurable parameter.
+hippocampus.  Only the top ranked template library image labels are used in a
+voxel-wise majority vote. The ROI is heuristically defined as the extent of all
+atlas labels after linear registration to the template, dilated by three voxels
+\citep{Chakravarty2012}.  The number of top ranked template library image labels
+is a configurable parameter.
 
-The {\tt xcorr\_vol utility} from the ANIMAL toolkit is used to calculate the 
+The {\tt xcorr\_vol} utility from the ANIMAL toolkit is used to calculate the
 cross-correlation similarity measure.  
  
 \subsubsection{Normalised Mutual Information Weighted Majority Vote}
  
-This method is similar to cross-correlation weighted voting 
-except that image similarity is calculated by the normalised 
-mutual information score over the region of interest. 
-\todo{is there a reference for NMI voting?}
- 
-The {\tt itk\_similarity} utility from the EZMinc toolkit is used to calculate 
-the normalised mutual information measure.
+This method is similar to cross-correlation weighted voting except that image
+similarity is calculated by the normalised mutual information score over the
+region of interest\citep{Studholme2001}.  The {\tt itk\_similarity} utility from
+the EZMinc toolkit\footnote{\url{https://github.com/vfonov/EZminc}} is used to
+calculate the normalised mutual information measure between to images.
 
-%%%%%                        Goodness-of-fit                               %%%%%
+%%%%%                        Overlap Measure                               %%%%%
 
-\subsection{Goodness-of-fit}
+\subsection{Overlap Measure}
 
-Two segmentation can be compared using the Dice Kappa ($\kappa$) overlap metric:
+The agreement between two segmentations can assessed using the Dice Similarity
+Coefficient (DSC):
 
 \begin{equation*} 
-\kappa=\frac{2a}{2a+b+c}
+DSC=\frac{2|A \cap B|}{|A| + |B|}
 \end{equation*}
 
-where $a$ is the number of voxels common to both segmentations and $b+c$ is the
-sum of the voxels uniquely identified by either segmentation.  Using this metric
-we can compare an automatically generated segmentation to a gold-standard
-segmentation.
+where $A$ and $B$ are the regions being compared, and the cardinality is the
+volume measured in voxels. Using this measure we can compare an automatically
+generated segmentation to a gold-standard segmentation.
 
 %%%%%
 %%%%%                            Experiments                               %%%%%
@@ -569,11 +586,10 @@ selected randomly from the images to be segmented.
 {\bf Registration method.}  Both the ANTS and ANIMAL registration methods were
 used.
 
-\todo{In ANIMAL, images aligned to TAL space}
 
-{\bf Label fusion.} Majority vote, Cross-correlation weighted majority vote, and
-Normalized Mutual Information weighted majority vote are used.  With the 
-weighted majority vote fusion methods, the number of top labels used in the 
+{\bf Label fusion.} Majority vote, cross-correlation weighted majority vote, and
+Normalized Mutual Information weighted majority vote are used.  With the
+weighted majority vote fusion methods, the number of top labels used in the
 fusion was varied from 3 to 20 images.
 
 {\bf Evaluation.}  Repeated random sub-sampling cross-validation (RRSCV)
@@ -600,7 +616,7 @@ was the SNT manual labels.
 %%%%%               Experiments: ADNI-1 Screening Validation               %%%%%
 %%%%%
 \subsubsection{ADNI-1 Screening Validation}
-
+\todo{comparison across field strengths, a la Heckemann2011?}
 To test the accuracy of MAGeT brain on a real-world task we segment the entire
 ADNI-1 dataset using an atlas set that is not representative of the subject set.
 
@@ -845,6 +861,7 @@ levels(yr1$VISCODE) <-viscode_levels
 
 yr1$Scaled_2 <- grepl("Scaled_2", yr1$Description)
 
+#TODO: include Scaled_2? 
 subjects = subset(yr1, VISCODE == 'bl' & Scaled_2 == FALSE)
 
 # fetch just the columns we need, and do a little renaming
@@ -959,6 +976,6 @@ qplot(Manual,MAGeT,data=SZ_volumes) + geom_smooth(method="lm") +
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Conclusion}
 
-\bibliographystyle{plain}
+\bibliographystyle{plainnat}
 \bibliography{references}
 \end{document}
