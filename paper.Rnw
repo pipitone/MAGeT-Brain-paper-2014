@@ -304,8 +304,8 @@ algorithm in pseudocode.
 
 \begin{figure}[h]
   \centering
-    \includegraphics[width=0.5\textwidth]{figure/MAGeT-figure.png}
-  \caption{Diagram of the MAGeT Brain algorithm}
+  \includegraphics[width=0.5\textwidth]{figure/MAGeT-figure.png}
+  \caption{Diagram of the MAGeT Brain algorithm \label{fig:MAGeT-diagram}}
 \end{figure}
 
 %%%%%                             Subjects                                 %%%%%
@@ -313,86 +313,66 @@ algorithm in pseudocode.
 %  Describe subject datasets in general 
 \subsection{Subjects}
 
-\subsubsection{ADNI-1 1.5T Screening}
-\todo{include image characteristics}
-\todo{describe SNT manual segmentations}
+\subsubsection{ADNI1 1.5T Screening Dataset}
 
 Clinical, demographic and pre-processed T1-weighted MRI used in this paper were
-downloaded by the authors from the ADNI1 database (adni.loni.ucla.edu) from
-between March 2012 and August 2012. 
-
-All images were acquired using 1.5T scanners (General Electric Healthcare,
-Philips Medical Systems or Siemens Medical Solutions) at multiple sites from the
-ADNI website.  "Representative imaging parameters were TR = 2400ms, TI = 1000ms,
-TE = 3.5ms, flip angle = 8°, field of view = 240 × 240mm and 160 sagittal
-1.2mm-thick-slices and a 192 × 192 matrix yielding a voxel resolution of 1.25 ×
-1.25 × 1.2 mm3, or 180 sagittal 1.2mm-thick-slices with a 256 × 256 matrix
-resolution of 1.25 × 1.25 × 1.2 mm3, or 180 sagittal 1.2mm-thick-slices with a
-256 × 256 matrix resolution of 1.25 × 1.25 × 1.2 mm3, or 180 sagittal
-1.2mm-thick-slices with a 256 × 256 matrix yielding a voxel resolution of 0.94 ×
-0.94 × 1.2 mm3." The details of the ADNI MR imaging protocol are described in
-\citep{Jack2008a}. The T1-weighted scans that were designated to be the “best”
-after quality control were processed using the standard ADNI image processing
-pipeline, which included post-acquisition correction of gradient warping
-(Jovicich et al., 2006), B1 non-uniformity correction (Narayana et al., 1998)
-depending on the scanner and coil type, intensity non-uniformity correction
-(Sled et al., 1998) and phantom based scaling correction (Gunter et al., 2006) -
-the geometric phantom scan having been acquired with each patient scan.
+downloaded by the authors from the ADNI1 database (adni.loni.ucla.edu) between
+March 2012 and August 2012. The image dataset download was the "ADNI1:Screening
+1.5T" standardized dataset available from ADNI
+(http://adni.loni.ucla.edu/methods/mri-analysis/adni-standardized-data/)\citep{Wyman2012}.
+This image collection contains uniformly preprocessed images which have been
+designated to be the "best" after quality control.  All images were acquired
+using 1.5T scanners (General Electric Healthcare, Philips Medical Systems or
+Siemens Medical Solutions) at multiple sites using the protocol described in
+\citep{Jack2008a}.  Representative 1.5T imaging parameters were TR = 2400ms, TI
+= 1000ms, TE = 3.5ms, flip angle = $8{\circ}$, field of view = 240 x 240mm, a
+192 x 192 x 166 matrix (x, y, and z directions) yielding a voxel resolution of
+1.25 x 1.25 x 1.2 $mm^3$. Clinical and demographic data are shown in table
+\ref{tab:ADNI1_1.5T_Screening_Dataset_Demographics}. 
 
 
-%We downloaded pre-processed baseline and 12-month repeat volumetric T1-weighted
-%MR scans acquired using 1.5T scanners (General Electric Healthcare, Philips
-%Medical Systems or Siemens Medical Solutions) at multiple sites from the ADNI
-%website.  Representative imaging parameters were TR = 2400ms, TI = 1000ms, TE =
-%3.5ms, flip angle = 8°, field of view = 240 × 240mm and 160 sagittal
-%1.2mm-thick-slices and a 192 × 192 matrix yielding a voxel resolution of 1.25 ×
-%1.25 × 1.2 mm3, or 180 sagittal 1.2mm-thick-slices with a 256 × 256 matrix
-%resolution of 1.25 × 1.25 × 1.2 mm3, or 180 sagittal 1.2mm-thick-slices with a
-%256 × 256 matrix resolution of 1.25 × 1.25 × 1.2 mm3, or 180 sagittal
-%1.2mm-thick-slices with a 256 × 256 matrix yielding a voxel resolution of 0.94 ×
-%0.94 × 1.2 mm3. The details of the ADNI MR imaging protocol are described in
-%(Jack, Jr. et al., 2008a), and listed on the ADNI website
-%(http://www.loni.ucla.edu/ADNI/Research/Cores/). The T1-weighted volumetric
-%scans that were designated to be the “best” after quality control were processed
-%using the standard ADNI image processing pipeline, which included
-%post-acquisition correction of gradient warping (Jovicich et al., 2006), B1
-%non-uniformity correction (Narayana et al., 1998) depending on the scanner and
-%coil type, intensity non-uniformity correction (Sled et al., 1998) and phantom
-%based scaling correction (Gunter et al., 2006) - the geometric phantom scan
-%having been acquired with each patient scan.
-%
-%Clinical and demographic data are shown in Tables 1-4. Table 1 shows the
-%demographic data of the 15 randomly-selected subjects (5 control, 5 MCI and 5
-%AD) used for method optimisation.  Table 2 shows the demographic data of the 30
-%randomly-selected subjects (10 control, 10 MCI and 10 AD) used for method
-%validation (note that this subset of 30 subjects was separate from the subset of
-%15 subjects used for method optimisation). Table 3 shows the demographic data of
-%682 subjects (200 control, 335 MCI and 147 AD) in our full dataset. We also
-%sub-divided the MCI subjects into three subgroups (8 reverters, 204 stable and
-%123 converters) based on their follow-up clinical diagnoses determined up to 36
-%months after baseline.  Table 4 shows the demographic data of the MCI subgroups.
-%
+%Representative 3T image parameters were TR = 2300ms, TI = 900ms, TE = 3.0ms,
+%flip angle = $8{\circ}$, field of view = 256 x 240mm, a 256 x 256 x 166 matrix
+%(x, y, and z directions) yielding a voxel resolution of 1.00 x 1.00 x 1.2
+%$mm^3$.
+
+
+\todo{describe SNT manual segmentations}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% ADNI1 Screening Dataset Demographics Table                                  %
+%                                                                             %
 <<ADNI-1-screening-demographics, echo=F, results="asis",cache=FALSE>>=
-tab <- summary(DX.bl ~ AGE + PTGENDER + PTEDUCAT + PTETHCAT + CDRSB + ADAS13 + MMSE, 
-               data = adnimerge, subset = VISCODE == 'bl',   
+tab <- summary(DX.bl ~ AGE + PTGENDER + PTEDUCAT + PTETHCAT + CDRSB + ADAS13 +
+               MMSE, data = adnimerge, subset = VISCODE == 'bl',   
                method = "reverse", test=FALSE, overall=TRUE)
 
-latex(tab, file="", size="scriptsize",  caption="ADNI-1 1.5T Screening demographics")
+latex(tab, file="", size="scriptsize", 
+    caption="ADNI1 1.5T Screening dataset demographics",
+    title="tab:ADN1_1.5T_Screening_Dataset_Demographics")
 @
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \todo{Check demographics table only includes 1.5T from the Screening}
 
 \subsubsection{SZ First Episode Patients}
+
 \todo{include image characteristics}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% First Episode SZ Demographics Table                                         %
+%                                                                             %
 <<FEP-SZ-demographics, echo=F, results="asis",cache=FALSE>>=
 fep_sz_demographics = read.csv("data/SZ_demographics.csv", na.strings=c("","."))
 fep_sz_demographics = subset(fep_sz_demographics, Anon <= 81)
 tab <- summary(DX ~ Age + Gender + Handedness + Education + SES + FSIQ,
                data=fep_sz_demographics, method = "reverse", test = FALSE)
 latex(tab, file="", size="scriptsize", ctable=FALSE,
-      caption="Schizophrenia First Episode Patient Demographics")
+      caption="Schizophrenia First Episode Patient Demographics",
+      title="tab:SZFEP_Demographics")
 @
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 
 %%%%%                       Image pre-processing                           %%%%%
@@ -408,26 +388,47 @@ images.
 
 \subsection{Registration}
 
-\subsubsection{Automatic Normalization and Image Matching and Anatomical Labeling (ANIMAL)}
-The ANIMAL algorithm carries out Image registration is in two phases. In the
+\subsubsection{Automatic Normalization and Image Matching and Anatomical
+Labeling (ANIMAL)}
+
+The ANIMAL algorithm carries out image registration is in two phases. In the
 first, a 12-parameter linear transformation (3 translations, rotations, scales,
 shears) is estimated between images using an algorithm that maximizes the
-correlation between blurred MR intensities and gradient magnitude over the
-whole brain \citep{Collins}. In the second phase, nonlinear registration is completed using
-the ANIMAL algorithm \citep{Collins1995}: an iterative procedure that estimates a 3D
-deformation field between two MR images. At first, large deformations are
-estimated using blurred version of the input data. These larger deformations
-are then input to subsequent steps where the fit is refined by estimating
-smaller deformations on data blurred with a Gaussian kernel with a smaller
-FWHM. The final transformation is a set of local translations defined on a bed
-of equally spaced nodes that were estimated through the optimization of the
-correlation coefficient. 
+correlation between blurred MR intensities and gradient magnitude over the whole
+brain \citep{Collins}. In the second phase, nonlinear registration is completed
+using the ANIMAL algorithm \citep{Collins1995}: an iterative procedure that
+estimates a 3D deformation field between two MR images. At first, large
+deformations are estimated using blurred version of the input data. These larger
+deformations are then input to subsequent steps where the fit is refined by
+estimating smaller deformations on data blurred with a Gaussian kernel with a
+smaller FWHM. The final transformation is a set of local translations defined on
+a bed of equally spaced nodes that were estimated through the optimization of
+the correlation coefficient.  For the purposes of this work we used the
+regularization parameters optimized in Robbins et al. \citep{Robbins2004},
+displayed in table \ref{tab:ANIMAL_params}. 
 
-For the purposes of this work we used the regularization parameters optimized 
-in Robbins et al. \citep{Robbins2004}. 
-
-\todo{link to MNI website here}
-\todo{show command line used}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% ANIMAL parameters                                                           %
+%                                                                             %
+\begin{table*}[!tbp]
+\scriptsize
+\caption{ANIMAL Registration Parameters\label{tab:ANIMAL_params}} 
+\begin{center}
+\begin{tabular}{l | c c c}
+\hline 
+Parameters        & Stage 1 & Stage 2 & Stage 3  \tabularnewline
+\hline 
+Model Blur (FWHM) &   8     &    8    &   4      \tabularnewline
+Input Blur (FWHM) &   8     &    8    &   4      \tabularnewline
+Iterations        &   30    &    30   &   10     \tabularnewline
+Step              &   8x8x8 &  4x4x4  &   2x2x2  \tabularnewline
+Sub-Lattice       &   6     &    6    &   6      \tabularnewline
+Lattice Diameter  &24x24x24 &12x12x12 & 6x6x6    \tabularnewline
+\hline
+\end{tabular}
+\end{center}
+\end{table*}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsubsection{Automatic Normalization Tools (ANTS)}
 
@@ -534,9 +535,11 @@ on a subset of the ADNI-1 dataset.
 
 {\bf Dataset evaluated.} 69 1.5T images were randomly selected from the 
 {\em ADNI1:Screening 1.5T} standardized dataset.  Demographics for this subset 
-are shown in Table X
-\todo{FIXME: table reference}. 
+are shown in Table \ref{tab:ADNI1_xvalidation_demographics}.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% ADNI1 X-Validation Dataset Demographics Table
+%
 <<ADNI-69-demographics, echo=F, results="asis",cache=FALSE>>=
 adni_69_RIDs = c("295","413","619","685","729","782","938","954",
                  "1018","1155","907","981","222","324","448","546",
@@ -547,13 +550,15 @@ adni_69_RIDs = c("295","413","619","685","729","782","938","954",
                  "328","1095","991","213","159","337","343","642",
                  "753","1109","1217","29","56","1188","1293","149",
                  "382","431","1202")
-tab <- summary(DX.bl ~ AGE + PTGENDER + PTEDUCAT + PTETHCAT + CDRSB + ADAS13 + MMSE, 
-               data = adnimerge, subset = VISCODE == 'bl' & RID %in% adni_69_RIDs, 
-               method = "reverse", test=FALSE, overall=TRUE)
+tab <- summary(DX.bl ~ AGE + PTGENDER + PTEDUCAT + PTETHCAT + CDRSB + ADAS13 +
+               MMSE, data = adnimerge, subset = VISCODE == 'bl' & RID %in%
+               adni_69_RIDs, method = "reverse", test=FALSE, overall=TRUE)
 
 latex(tab, file="", size="scriptsize",landscape=FALSE, ctable=FALSE,
-      caption="ADNI-1 cross-validation subset demographics")
+      caption="ADNI-1 cross-validation subset demographics", 
+      title="tab:ADNI1_xvalidation_demographics")
 @
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 {\bf Atlas and template libary.}  Atlases consisted of images taken from the
 dataset, with corresponding manual labels provided by SNT.  Atlas library size
