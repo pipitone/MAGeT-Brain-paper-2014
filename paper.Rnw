@@ -77,8 +77,9 @@ disputed \citep{Geuze2004}, as evidenced by efforts to create an unified
 segmentation protocol \citep{Jack2011}.  
 
 Compounding each of these problems is the significant neuroanatomical
-variability in the hippocampus throughout the course of aging, development, and
-neuropsychiatric disorders \citep{Mouiha2011b,Sabuncu2011}.  The result is that
+variability in the hippocampus throughout the course of aging, maturation, and
+neuropsychiatric disorders
+\citep{Mouiha2011b,Sabuncu2011,Giedd1998,Gogtay2006,Narr2002}.  The result is that
 existing hippocampal atlases available to a researcher may not accurately
 represent neuroanatomy of a specific population under study.  Additionally, in
 the course of a research or clinical study, it may be necessary to make
@@ -86,9 +87,8 @@ adjustments to hippocampal definition as a means of hypothesis testing.  For
 example, Poppenk \citep{Poppenk2011} found that subdividing the hippocampus
 into anterior and posterior regions resulted in a predictive relationship
 between volume difference of those regions and recollection memory performance.
-Making modifications to an set of atlas library segmentations may require the
-same level of expertise and manual effort needed to create the segmentations
-from scratch.  
+Making such modifications to a set of MRI data segmentations requires additional
+manual effort. 
 
 Fully-automated segmentation techniques require no human expertise beyond that
 of initial setup or training. One broad class of automated approach is that of
@@ -101,14 +101,15 @@ accuracies to-date.
 
 The multi-atlas segmentation technique was pioneered by Heckemann et al. with
 the MAPER algorithm \citep{Heckemann2006,Heckemann2011}. The basic strategy is as
-follows. Each atlas is warped to fit a subject's neuroanatomy using nonlinear
-registration techniques \citep{Collins1995,Klein2009}. Atlas labels are then
-transformed by this warping to the subject space and a {\it label fusion}
-technique, such as voxel-wise voting, is used to merge the label definitions
-from each atlas into a definitive segmentation. Typically, an atlas selection
-approach is used to improve accuracy by only using labels from atlases that are
-most similar to a subject image (cross-correlation of image intensities is a
-common similarity metric) \citep{Aljabar2009}. 
+follows. Each atlas image is fit a subject's neuroanatomy using nonlinear
+registration techniques \citep{Collins1995,Klein2009}. This resulting nonlinear
+transformation is then applied to the atlas labels to bring them into the
+subject space.  Finally, a {\it label fusion} technique, such as voxel-wise
+voting, is used to merge these labels into a definitive segmentation for the
+subject. Typically, an atlas selection approach is used to improve accuracy by
+only using labels from atlases that are most similar to a subject image
+(cross-correlation of image intensities is a common similarity metric)
+\citep{Aljabar2009}. 
 
 % - Warfield2004: STAPLE as an alternative decision fusion technique?
 
@@ -205,7 +206,7 @@ library to unlabelled subjects while also using fewer manually segmented
 atlases. 
 
 The insight of generating a template library is not new.  Heckemann et al.
-compared "indirect" segmentation -- taking a single atlas and propagating the
+compared ``indirect'' segmentation -- taking a single atlas and propagating the
 labels to intermediate subjects before fusing them in a target image space -- to
 multi-atlas segmentation and found that the indirect approach performed worse
 \citep{Heckemann2006}. In this paper we continue the same line of investigation
@@ -216,7 +217,7 @@ The LEAP algorithm \citep{Wolz2010}, described above, is another example of
 indirect segmentation previously explored.  LEAP proceeds by iteratively
 segmenting unlabelled images most similar to the atlas library images and then
 incorporating the labelled images into the atlas library for future iterations.
-The novelty explored in our current work is demonstrate the viability of
+The novelty explored in our current work is to demonstrate the viability of
 achieving comparable segmentation accuracy using the basic multi-atlas schema
 and using significantly fewer manually created atlases.
 
