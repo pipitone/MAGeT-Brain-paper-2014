@@ -90,28 +90,26 @@ manual effort.
 
 Automated segmentation techniques do not require human intervention but do
 require {\it a priori} anatomical information to guide segmentations.  In this
-paper we focus on methods that use manually segmented atlases as anatomical
+paper we focus on methods that use manually segmented MRI atlases as anatomical
 priors, as these methods achieve some of the best automated hippocampal
-segmentation accuracies to-date. This technique was pioneered by []\citep{} with
-single-atlas (or model-based) segmentation.  Volumetric image registration is
-used to estimate a fit between the neuroanatomy of an atlas and subject images.
-Labelling of the subject image is achieved by applying the resulting
-transformation to the atlas labels to bring them into the subject image space
+segmentation accuracies to-date. This technique was first developed using a
+single atlas prior (known as single-atlas, or model-based,
+segmentation)\citep{Haller1997,Csernansky1998}.  Volumetric image registration
+is used to estimate a fit between the neuroanatomy of an atlas and target
+images.  Labelling of the target image is achieved by applying the resulting
+transformation to the atlas labels to bring them into the target image space
 (\{em label propagation}). This method is limited in accuracy by the
-introduction of {methodological} errors in registration and partial volume
-effects in label resampling, and {conceptual} errors introduced when the anatomy
-of the atlas is not representative of the subject.
+introduction of estimation errors in registration and partial volume effects in
+label resampling, and errors introduced when the anatomy of the atlas is
+unrepresentative of the target anatomy.
 
 Multi-atlas segmentation techniques address these limitations by combining
-segmentation information from a series of expertly segmentated atlases
+segmentation information from a series of expertly segmented atlases
 \citep{Heckemann2006,Heckemann2011,Collins2010,Lotjonen2012,Aljabar2009,Leung2010,Wolz2010}.
-Each atlas image is registered to a subject image, and label propagation is
-performed to produce several labellings of the subject image (one from each
+Each atlas image is registered to a target image, and label propagation is
+performed to produce several labellings of the target image (one from each
 atlas). A {\it label fusion} technique, such as voxel-wise voting, is used merge
-these labels into a definitive segmentation for the subject.  
-
-{\em Atlas selection} techniques are often used to filter out atlases dissimilar
-to a subject image in order to reduce {conceptual} errors \citep{Aljabar2009}.
+these labels into a definitive segmentation for the target. 
 
 Multi-atlas methods have been very successfully applied to hippocampal
 segmentation. Collins et al. found near-manual segmentation performance using an
@@ -132,26 +130,25 @@ The MAPER whole brain segmentation algorithm \citep{Heckemann2006,Heckemann2011}
 using 30 atlases, on all ADNI1 baseline images \citep{Heckemann2011}. 
 
 In \citep{Lotjonen2012}, the authors use a proprietary non-linear registration
-method based on intensity differences, and post-processing step taking into
-account these intensity differences to 
-- TODO: explain "tidy up"
-tidy up
-fused segmentations. Using images from the ADNI1 baseline dataset, they achieved
-a mean DSC of 0.885 with 30 atlases. 
+method based on intensity differences, and post-processing step using a graph
+cuts or EM approach with intensity spatial prior models to optimise the fused
+segmentations.  Using images from the ADNI1 baseline dataset and 30 atlases. 
+
+{\em Atlas selection} techniques are often used to filter out atlases dissimilar
+to a target image in order to reduce {conceptual} errors \citep{Aljabar2009}.
 
 The LEAP algorithm, Wolz et al.  is an elegant modification to the basic
 multi-atlas strategy: the atlas library is grown, beginning with a set of
-manually labelled atlases and successively incorporating unlabelled subject
+manually labelled atlases and successively incorporating unlabelled target
 images after being labelling using multi-atlas techniques\citep{Wolz2010}.  The
-sequence in which subject images are labelled is chosen so that the similarity
+sequence in which target images are labelled is chosen so that the similarity
 between the atlas images and the target images is minimised at each step,
 effectively allowing for deformations between very dissimilar images to be
 broken up into sequences of smaller deformations.  With an atlas library of 30
 MR images, LEAP was used to segment the ADNI1 baseline dataset, achieving a mean
 Dice score of 0.85 with manual segmentations.
 
-
-- TODO: "probablistic methods?"
+%- TODO: "probablistic methods?"
 
 While not purely nulti-atlas techniques, there are several important algorithms
 for hippocampal segmentation that inform our approach. The popular FreeSurfer
@@ -176,11 +173,11 @@ of manual segmentations and is applied to fix mislabelled voxels.
 Aside from the algorithmic choices used in multi-atlas segmentation, it is
 natural to ask about how the features of the atlases themselves impact the
 resulting segmentations. As noted, by choosing atlases ranked most similar to a
-subject image by voxel intensity profile segmentation accuracy is improved,
+target image by voxel intensity profile segmentation accuracy is improved,
 suggesting that neuroanatomical similarity plays a role\citep{Aljabar2009}.
 Carmichael et al. explored this directly and found that when using only one
 atlas the important factors leading to improved accuracy are that the atlas have
-neuroanatomical features that match the subject, and that the atlas segmentation
+neuroanatomical features that match the target, and that the atlas segmentation
 use the same protocol as the gold-standard \citep{Carmichael2005}. Nestor et al.
 found that hippocampal segmentation protocols that include more dorsal
 white-matter and posterior anatomy tended to produce higher overlap and better
@@ -208,17 +205,17 @@ Ge}nerated {\em T}emplates), is an extension to the basic multi-atlas-based
 segmentation schema\citep{Chakravarty2012}. Principally, we explore the
 possibility of using a small atlas library to bootstrap a much larger
 \emph{template library} composed of images taken from the target population.
-The template library is then used to segment the subjects in a similar fashion
+The template library is then used to segment the targets in a similar fashion
 to basic multi-atlas segmentation: by label propagation and label fusion. The
 intuition driving this approach is that by generating a template library we
-leverage the unique neuroanatomy of subject population on hand to initialize the
+leverage the unique neuroanatomy of target population on hand to initialize the
 segmentation process and improve accuracy over direct propagation from the atlas
-library to unlabelled subjects while also using fewer manually segmented
+library to unlabelled targets while also using fewer manually segmented
 atlases. 
 
 The insight of generating a template library is not new.  Heckemann et al.
 compared ``indirect'' segmentation -- taking a single atlas and propagating the
-labels to intermediate subjects before fusing them in a target image space -- to
+labels to intermediate targets before fusing them in a target image space -- to
 multi-atlas segmentation and found that the indirect approach performed worse
 \citep{Heckemann2006}. In this paper we continue the same line of investigation
 but explore the performance when using multiple atlases as well as the effect of
@@ -235,67 +232,72 @@ and using significantly fewer manually created atlases.
 In previous work \citep{Chakravarty2012}, we applied MAGeT brain to segmentation
 of the human striatum, globus pallidus, and thalamus using a single
 histologically-derived atlas. The contribution of the present work is to extend
-our approach to the human hippocampus and perform a rigorous validation. We
-first conduct an intensive cross-validation of MAGeT on a pool of 69 MRIs from
-the ADNI database, comparing the performance of MAGeT against basic multi-atlas
-segmentation using a range of atlas and template library sizes, registration and
-fusion methods.  We then compare MAGeT segmentations of the entire ADNI
-screening dataset with those of established automated and manual segmentation
-techniques.  Finally, we compare MAGeT segmentations to those of manual
-segmentations from a dataset of first episode schizophrenic patient MRIs. 
+our approach to the human hippocampus and perform a series of experiments to
+rigorous validate the method. First, we conduct an extensive cross-validation of
+MAGeT and basic multi-atlas segmentation on a subset of the ADNI1 dataset to
+assess the accuracy of MAGeT brain under various parameter settings (number of
+atlases and templates, registration and fusion methods). With the best
+performing parameter configuration discovered above, we estimate MAGeT
+intra-rater reliability by segmenting separately acquired T1 images of the
+atlas subjects. For this experiment, we use the Winterburn atlases: digital
+hippocampal subfield segmentations of five in-vivo high-resolution (300u
+isotropic) T1-weighted MR scans\citep{Winterburn2013}. To validate MAGeT in a
+real world situation, we segment the entire ADNI1 screening dataset and compare
+our segmentations to established automated and manual segmentations.
+Additionally, to ensure MAGeT brain accuracy across disease categories, we also
+compare MAGeT segmentations to manual segmentations of 139 first episode
+schizophrenic patients. 
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                               METHODS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Methods}
 
-
 %%%%%                     MAGeT Brain Algorithm                            %%%%%
 
 \subsection{MAGeT Brain Algorithm}
-We will use the term {\it atlas} to refer to two image volumes: an intensity
-image ({\it atlas image}) and a corresponding manual segmentation image ({\it
-atlas labels}). A {\it subject} image is an intensity image for which we would
-like an segmentation.  The term {\it template} will be used to refer more
-generically to any image and corresponding labelling, manual or computed, when
-it is {\it used as} as a model in the segmentation of another image. In other
-publications, the terms atlas and template are used interchangeably, but in this
-paper we force the distinction to make it clear when an image has a manual
-segmentation.  The terms {\it atlas library} and {\it template library} mean a
-set of such images.   
+In this paper we will be making a distinction between an atlas and a template --
+typically these terms are used roughly interchangeably. The term {\it atlas} is
+taken to refer to two image volumes: an intensity image ({\it atlas image}) and
+a corresponding manual segmentation image ({\it atlas labels}). {\it Template}
+refers more generically to any image and corresponding labelling, manual or
+computed, when it is {\it used as} as a model in the segmentation of another
+image.  The terms {\it atlas library} and {\it template library} mean a set of
+such images. Additionally, we will use the terms {\it target} to refer to an
+intensity image for which we would like an segmentation.
 
 The simplest form of multi-atlas segmentation combines labellings derived from
 several atlases by way of label fusion \citep{Heckemann2006,Heckemann2011}. We
-will refer to this as {\em basic multi-atlas segmentation}, and specific the
-basic schema as: 
-
-    1. an atlas library and set of subject images are given as
-       input, and the atlas library is used as a template library in the
-       following steps; 
-    2. each atlas intensity image is nonlinearly registered to each subject
-       intensity image; 
-    3. label images from each atlas are propagated via the resulting
-       transformations to the subject image space; and 
-    4. the resulting labels are fused to produce a single, definitive
-       segmentation. 
-       
+will refer to this as {\em basic multi-atlas segmentation}. The basic schema as
+for this method is as follows: 
+\begin{itemize}
+\item   An atlas library and set of target images are given as input. The atlas
+        library is used as a template library in the following steps; 
+\item   Each atlas intensity image is nonlinearly registered to each target 
+        intensity image; 
+\item   label images from each atlas are propagated via the resulting
+        transformations to the target image space; and 
+\item   the resulting labels are fused to produce a single, definitive
+        segmentation. 
+\end{itemize}       
 The particular registration and voting method used are left unspecified.
 
-MAGeT brain is best understood as an extension of
-the basic multi-atlas segmentation schema. An additional stage is included in
-which the template library is constructed by labelling a subset of subject
-images, rather than by using the atlas library. The choice of subjects used in
-the template library can be made to reflect the neuroanatomy or demographics of
-the subject set as a whole (for instance, by sampling equally from cases and
-controls). 
+MAGeT brain is best understood as an extension of the basic multi-atlas
+segmentation schema. Additional stages construct the template library by
+labelling a subset of target images, rather than by using the atlas library.
+The choice of targets used in the template library can be made to reflect the
+neuroanatomy or demographics of the target set as a whole (for instance, by
+sampling equally from cases and controls). A truncated version of basic
+multi-atlas segmentation is used to label the template library images; label
+fusion is not performed. Instead, each template image gets a labelling from each
+atlas image. A second round of basic multi-atlas segmentation uses the template
+library to segment the entire set of target images (including those images used
+in the template library). Label fusion in this final step fuses all labels from
+all templates.  Figure \ref{alg:MAGeT} describes the MAGeT brain algorithm in
+pseudocode.  
 
-Labels from each atlas image are propagated to
-each template library image via the transformation resulting from a non-linear
-registration between pair of images. As a result, each template library image
-has a label from each atlas. Basic multi-atlas segmentation is then used to
-produce segmentations for the entire set of unlabelled images (including those
-images used in the template library). Figure \ref{alg:MAGeT} describes the MAGeT
-brain algorithm in pseudocode.  Source code can be found at
+Source code for MAGeT brain can be found at
 \url{http://github.com/pipitone/MAGeTbrain}.
 
 \begin{algorithm}
@@ -304,18 +306,18 @@ brain algorithm in pseudocode.  Source code can be found at
   \label{alg:MAGeT}
   \begin{algorithmic}
     \Function{BasicMultiAtlasSegmentation}{Templates, Subjects}
-      \ForAll{$subject$}
+      \ForAll{$target$}
         \ForAll{$template$}
-          \State propagate all labels for template to subject space
-          \State store subject labels
+          \State propagate all labels for template to target space
+          \State store target labels
         \EndFor
-        \State fuse subject labels
+        \State fuse target labels
       \EndFor
     \EndFunction
     \\
     \Function {MAGeTBrain}{Subjects, Atlases, n}
       \For{$i = 1 \to n$}
-        \State choose a subject to be used as a template
+        \State choose a target to be used as a template
         \State propagate labels from each atlas to template space
         \State store the template with all of its labels
       \EndFor
@@ -325,15 +327,16 @@ brain algorithm in pseudocode.  Source code can be found at
 \end{algorithm}
 
 
-\begin{figure}[h]
-  \centering
-  \includegraphics[width=0.5\textwidth]{figure/MAGeT-figure.png}
-  \caption{Diagram of the MAGeT Brain algorithm \label{fig:MAGeT-diagram}}
-\end{figure}
+%\begin{figure}[h]
+%  \centering
+%  \includegraphics[width=0.5\textwidth]{figure/MAGeT-figure.png}
+%  \caption{Diagram of the MAGeT Brain algorithm \label{fig:MAGeT-diagram}}
+%\end{figure}
 
 %%%%%                             Subjects                                 %%%%%
 
 \subsection{Subjects}
+
 
 \subsubsection{ADNI1 1.5T Screening Dataset}
 Clinical, demographic and pre-processed T1-weighted MRI used in this paper were
@@ -387,10 +390,6 @@ latex(tab, file="", size="scriptsize",
 @
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
-
-
-
 \subsubsection{SZ First Episode Patients}
 
 \todo{include image characteristics}
@@ -409,20 +408,14 @@ latex(tab, file="", size="scriptsize", ctable=FALSE,
 @
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
-
-%%%%%                       Image pre-processing                           %%%%%
-
-\subsection{Image pre-processing}
-
-Before images were registered, the N3 algorithm \citep{Sled1998} is first used
-to minimize the intensity nonuniformity in each of the atlases and unlabeled
-subject images.   
-
-
+c
 %%%%%                       Registration Methods                           %%%%%
 
-\subsection{Registration}
+\subsection{Registration Methods}
+
+Before registration, all images undergo preprocessing with the N3 algorithm
+\citep{Sled1998} to minimize intensity nonuniformity. In our experiments we use
+one of two non-linear image registration methods.
 
 \subsubsection{Automatic Normalization and Image Matching and Anatomical
 Labeling (ANIMAL)}
@@ -495,24 +488,23 @@ ANTS manual
 \footnote{\url{https://sourceforge.net/projects/advants/files/Documentation/}}.
 
 
-
 %%%%%                           Label Fusion                               %%%%%
 
 \subsection{Label Fusion}
 
 Label fusion is a term given to the process of combining the information from
-several candidate labellings for an MR image into a single labelling.  In this
-paper we explore the benefits of three different fusion methods. 
+several candidate labellings for an intensity image into a single labelling.  In
+this paper we explore three different fusion methods. 
 
 \subsubsection{Voxel-wise Majority Vote}
 
-Labels are propagated from all template library images to a subject.  Each
+Labels are propagated from all template library images to a target.  Each
 output voxel is given the most frequent label at that voxel location amongst
 all candidate labellings.  Ties are broken arbitrarily.
 
 \subsubsection{Cross-correlation Weighted Majority Vote}
 
-An optimal combination of subjects from the template library has previously been
+An optimal combination of targets from the template library has previously been
 shown to improve segmentation accuracy \citep{Aljabar2009,Collins2010}.  In this
 method, each template library image is ranked in similarity to each unlabelled 
 image by the normalized cross-correlation (CC) of image intensities after linear
@@ -538,16 +530,18 @@ calculate the normalised mutual information measure between to images.
 
 \subsection{Overlap Measure}
 
-The agreement between two segmentations can assessed using the Dice Similarity
-Coefficient (DSC):
+The Dice similarity index (SI) assesses the agreement between two segmentations.
+It is one of the most widely used measures of segmentation performance, and we
+use it as the basis of comparison throughout this paper.  Additionally, we
+report other commonly used measures:
 
-\begin{equation*} 
-DSC=\frac{2|A \cap B|}{|A| + |B|}
-\end{equation*}
+\begin{itemize}
+ \item \begin{equation*}Similarity index (SI) =\frac{2|A \cap B|}{|A| + |B|}\end{equation*}
+ \item \begin{equation*}Jaccard (J) =\frac{2|A \cap B|}{|A| + |B|}\end{equation*}
+ 
 
 where $A$ and $B$ are the regions being compared, and the cardinality is the
-volume measured in voxels. Using this measure we can compare an automatically
-generated segmentation to a gold-standard segmentation.
+volume measured in voxels. .
 
 %%%%%
 %%%%%                            Experiments                               %%%%%
@@ -636,7 +630,7 @@ was the SNT manual labels.
 \subsubsection{ADNI-1 Screening Validation}
 \todo{comparison across field strengths, a la Heckemann2011?}
 To test the accuracy of MAGeT brain on a real-world task we segment the entire
-ADNI-1 dataset using an atlas set that is not representative of the subject set.
+ADNI-1 dataset using an atlas set that is not representative of the target set.
 
 {\bf Dataset evaluated.} All images from the {\em ADNI1:Screening 1.5T} 
 standardized dataset.
@@ -742,6 +736,7 @@ Segmentation accuracy is judged by difference in hippocampal volume.
   asymptotic in size of both template and atlas library, with peak performance
   reached after 15 templates. 
   
+- True for all parameter settings! (so works generally..)
 \todo{Can we statistically capture what "peak" performance is?  Something like,
 the point at which gains become statistically insignificant?}
 
