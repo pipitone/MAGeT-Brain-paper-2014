@@ -98,7 +98,7 @@ segmentation)\citep{Haller1997,Csernansky1998}.  Volumetric image registration
 is used to estimate a fit between the neuroanatomy of an atlas and target
 images.  Labelling of the target image is achieved by applying the resulting
 transformation to the atlas labels to bring them into the target image space
-(\{em label propagation}). This method is limited in accuracy by the
+({\em label propagation}). This method is limited in accuracy by the
 introduction of estimation errors in registration and partial volume effects in
 label resampling, and errors introduced when the anatomy of the atlas is
 unrepresentative of the target anatomy.
@@ -269,33 +269,34 @@ intensity image for which we would like an segmentation.
 
 The simplest form of multi-atlas segmentation combines labellings derived from
 several atlases by way of label fusion \citep{Heckemann2006,Heckemann2011}. We
-will refer to this as {\em basic multi-atlas segmentation}. The basic schema as
-for this method is as follows: 
-\begin{itemize}
+will refer to this as {\em basic multi-atlas segmentation}. The schema as for
+this method is as follows: 
+\begin{enumerate}
 \item   An atlas library and set of target images are given as input. The atlas
         library is used as a template library in the following steps; 
 \item   Each atlas intensity image is nonlinearly registered to each target 
         intensity image; 
-\item   label images from each atlas are propagated via the resulting
+\item   Label images from each atlas are propagated via the resulting
         transformations to the target image space; and 
 \item   the resulting labels are fused to produce a single, definitive
         segmentation. 
-\end{itemize}       
+\end{enumerate}       
 The particular registration and voting method used are left unspecified.
 
 MAGeT brain is best understood as an extension of the basic multi-atlas
-segmentation schema. Additional stages construct the template library by
-labelling a subset of target images, rather than by using the atlas library.
-The choice of targets used in the template library can be made to reflect the
-neuroanatomy or demographics of the target set as a whole (for instance, by
-sampling equally from cases and controls). A truncated version of basic
-multi-atlas segmentation is used to label the template library images; label
-fusion is not performed. Instead, each template image gets a labelling from each
-atlas image. A second round of basic multi-atlas segmentation uses the template
-library to segment the entire set of target images (including those images used
-in the template library). Label fusion in this final step fuses all labels from
-all templates.  Figure \ref{alg:MAGeT} describes the MAGeT brain algorithm in
-pseudocode.  
+segmentation schema. Instead of using the atlas library to directly label the
+target images, a subset of the input images are selected as template images and
+then labelled.  The choice of targets used in the template library can be made
+to reflect the neuroanatomy or demographics of the target set as a whole (for
+instance, by sampling equally from cases and controls). Once the template
+library images have been chosen, a truncated version of basic multi-atlas
+segmentation is used to label the template library images without performing
+label fusion. Instead, each template image receives multiple labellings: one
+from each atlas image. A second round of basic multi-atlas segmentation uses the
+template library to segment the entire set of target images (including those
+images used in the template library). Label fusion in this final step fuses all
+labels from all templates. To summarize, figure \ref{alg:MAGeT} describes the
+MAGeT brain algorithm in pseudocode.  
 
 Source code for MAGeT brain can be found at
 \url{http://github.com/pipitone/MAGeTbrain}.
@@ -327,24 +328,18 @@ Source code for MAGeT brain can be found at
 \end{algorithm}
 
 
-%\begin{figure}[h]
-%  \centering
-%  \includegraphics[width=0.5\textwidth]{figure/MAGeT-figure.png}
-%  \caption{Diagram of the MAGeT Brain algorithm \label{fig:MAGeT-diagram}}
-%\end{figure}
 
 %%%%%                             Subjects                                 %%%%%
 
 \subsection{Subjects}
-
+Our experiments use three distinct subject datasets.
 
 \subsubsection{ADNI1 1.5T Screening Dataset}
-Clinical, demographic and pre-processed T1-weighted MRI used in this paper were
-downloaded by the authors from the ADNI1 database (adni.loni.ucla.edu) between
-March 2012 and August 2012. The image dataset download was the "ADNI1:Screening
-1.5T" standardized dataset available from ADNI
-\footnote{
- \url{http://adni.loni.ucla.edu/methods/mri-analysis/adni-standardized-data/}}
+Clinical, demographic and pre-processed T1-weighted MRI were downloaded by the
+authors from the ADNI1 database (adni.loni.ucla.edu) between March 2012 and
+August 2012. The image dataset download was the "ADNI1:Screening 1.5T"
+standardized dataset available from ADNI \footnote{
+\url{http://adni.loni.ucla.edu/methods/mri-analysis/adni-standardized-data/}}
 \citep{Wyman2012}. This image collection contains uniformly preprocessed images
 which have been designated to be the "best" after quality control.  All images
 were acquired using 1.5T scanners (General Electric Healthcare, Philips Medical
@@ -391,6 +386,8 @@ latex(tab, file="", size="scriptsize",
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsubsection{SZ First Episode Patients}
+Nomenclature: SZFEP Dataset
+SZFEP dataset demographics are shown in table \ref{tab:SZFEP_Demographics}. 
 
 \todo{include image characteristics}
 
@@ -408,12 +405,25 @@ latex(tab, file="", size="scriptsize", ctable=FALSE,
 @
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-c
+\subsubsection{Winterburn Atlases}
+The Winterburn atlases \citep{Winterburn2013} are digital hippocampal segmentations
+of of five in-vivo 300u isotropic T1-weighted MR images. The segmentations
+include subfield segmentations for the cornus ammonis (CA) 1, CA4, dentate
+gyrus, subiculum, and CA 2 and 3 combined. Subjects in the Winterburn atlases
+range in age from 29-57 years (mean age of 37), and include two males and three
+females.  
+
+In addition to the high-resolution scans distributed as part of the Winterburn
+atlases, we also obtained additional T1 BRAVO scans of four of the five
+subjects.  \todo{demographics?}\todo{explain scan parameters in more detail..}
+
+
 %%%%%                       Registration Methods                           %%%%%
+
 
 \subsection{Registration Methods}
 
-Before registration, all images undergo preprocessing with the N3 algorithm
+Before registration, all images underwent preprocessing with the N3 algorithm
 \citep{Sled1998} to minimize intensity nonuniformity. In our experiments we use
 one of two non-linear image registration methods.
 
@@ -472,7 +482,7 @@ algorithm is freely available \url{http://www.picsl.upenn.edu/ANTS/}. We used an
 implementation of the ANTS algorithm compatible with the MINC data format,
 mincANTS \url{https://github.com/vfonov/mincANTS}.
 
-We used the following command line when running the ANTS command, 
+We used the following command line when running ANTS:
 {\small
 \begin{verbatim}
   mincANTS 3 -m PR[target_file.mnc,source_file.mnc,1,4] 
@@ -494,7 +504,7 @@ ANTS manual
 
 Label fusion is a term given to the process of combining the information from
 several candidate labellings for an intensity image into a single labelling.  In
-this paper we explore three different fusion methods. 
+this paper we explore three fusion methods. 
 
 \subsubsection{Voxel-wise Majority Vote}
 
@@ -526,45 +536,47 @@ region of interest\citep{Studholme2001}.  The {\tt itk\_similarity} utility from
 the EZMinc toolkit\footnote{\url{https://github.com/vfonov/EZminc}} is used to
 calculate the normalised mutual information measure between to images.
 
-%%%%%                        Overlap Measure                               %%%%%
+%%%%%                        Evaluation Measure                           %%%%%
 
-\subsection{Overlap Measure}
+\subsection{Assessing Segmentation Agreement}
 
-The Dice similarity index (SI) assesses the agreement between two segmentations.
-It is one of the most widely used measures of segmentation performance, and we
-use it as the basis of comparison throughout this paper.  Additionally, we
-report other commonly used measures:
+The Dice similarity coefficient (DSC) assesses the agreement between two
+segmentations.  It is one of the most widely used measures of segmentation
+performance, and we use it as the basis of comparison throughout this paper.
+Additionally, we report the Jaccard index, another commonly used similarity
+measure:
 
-\begin{itemize}
- \item \begin{equation*}Similarity index (SI) =\frac{2|A \cap B|}{|A| + |B|}\end{equation*}
- \item \begin{equation*}Jaccard (J) =\frac{2|A \cap B|}{|A| + |B|}\end{equation*}
- 
+ \[\text{Dice's coefficient (DSC)} = \frac{2|A \cap B|}{|A| + |B|}\]
+
+ \[\text{Jaccard (J)} = \frac{|A \cap B|}{|A \cup B|} = \frac{DSC}{(2-DSC)}\]
 
 where $A$ and $B$ are the regions being compared, and the cardinality is the
-volume measured in voxels. .
+volume measured in voxels. 
 
 %%%%%
 %%%%%                            Experiments                               %%%%%
 %%%%%
 \subsection{Experiments}
 
-Experiments were performed to assess the performance of MAGeT brain with various 
-parameter settings as well as on diverse datasets.  In each experiment we contrast 
-the performance of MAGeT brain with that standard single- and multi-atlas 
-segmentations derived from the same atlas library. 
+The following experiments were performed to assess the performance of MAGeT
+brain with various parameter settings as well as on diverse datasets.  In each
+experiment we contrast the performance of MAGeT brain with that standard single-
+and multi-atlas segmentations derived from the same atlas library. 
 
 %%%%%
 %%%%%                 Experiments: ADNI-1 cross-validationn               %%%%%
 %%%%%
-\subsubsection{ADNI-1 cross-validation}
+\subsubsection{ADNI1 cross-validation}
+To test the effect of parameter settings on the MAGeT brain algorithm, repeated
+random sub-sampling cross-validation (RRSCV) was performed using a subset of the
+ADNI1 subjects for validation.  This form of cross-validation (described in
+detail below) allows us to validate MAGeT with various atlas and template
+library sizes, registration and label fusion methods.
 
-To test the accuracy of the MAGeT brain algorithm with different parameter 
-settings, repeated random sub-sampling cross-validation (RRSCV) was performed
-on a subset of the ADNI-1 dataset.
-
-{\bf Dataset evaluated.} 69 1.5T images were randomly selected from the 
-{\em ADNI1:Screening 1.5T} standardized dataset.  Demographics for this subset 
-are shown in Table \ref{tab:ADNI1_xvalidation_demographics}.
+{\bf Dataset evaluated.} 69 1.5T images were arbitrarily selected from the {\em
+ADNI1:Screening 1.5T} standardized dataset. 23 subjects were chosen from each
+disease category (cognitively normal (CN), MCI and AD). Demographics for this
+subset are shown in Table \ref{tab:ADNI1_xvalidation_demographics}. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ADNI1 X-Validation Dataset Demographics Table
@@ -589,34 +601,39 @@ latex(tab, file="", size="scriptsize",landscape=FALSE, ctable=FALSE,
 @
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-{\bf Atlas and template libary.}  Atlases consisted of images taken from the
+{\bf Atlas and template libary.}  Atlases consist of images taken from the
 dataset, with corresponding manual labels provided by SNT.  Atlas library size
-was varied from 3 to 9 images.  The remaining images were segmented, with the
-template library size varying from 3 to 20 images.  Template library images were
-selected randomly from the images to be segmented. 
+varied from 3 to 9 images.  The remaining 60-66 target images were segmented
+with the template library size varying from 3 to 20 images for each setting of
+atlas library size. Template library images were selected at random from the
+targets. 
 
-{\bf Registration method.}  Both the ANTS and ANIMAL registration methods were
-used.
-
+{\bf Registration method.} Both the ANTS and ANIMAL registration methods were
+used. 
 
 {\bf Label fusion.} Majority vote, cross-correlation weighted majority vote, and
-Normalized Mutual Information weighted majority vote are used.  With the
+Normalized Mutual Information weighted majority vote were used. With the
 weighted majority vote fusion methods, the number of top labels used in the
 fusion was varied from 3 to 20 images.
 
 {\bf Evaluation.}  Repeated random sub-sampling cross-validation (RRSCV)
-consists of repeated trials in which items from the dataset are randomly
-assigned to a training set or validation set. In each trial, performance on the
-validation set is measured, and then averaged across all trials. 
+consists of repeated trials in which items from the dataset are randomly sampled
+and assigned to a training set or validation set. In each trial, performance on
+the validation set is measured, and then averaged across all trials. This form
+of cross-validation allows
 
-We performed RRSCV on each combination of parameters listed above: atlas library
-size, template library size, registration method, and label fusion method.  We
-performed 10 trials per parameter combination.  In each validation trial, the
+With respect to this We performed RRSCV on each combination of parameters listed above: atlas library
+size, template library size, registration method, and label fusion method.  
+
+We performed 10 trials per parameter combination.  In each validation trial, the
 training set consisted of the images used as atlases, and the validation set
-consisted of the images to be segmented. The MAGeT brain algorithm and the basic
-multi-atlas segmentation procedure were applied to segment the images in the
-validation set.  Additionally, in each trial, the single-atlas segmentation was
-obtained for each atlas-template.  
+consisted of the images to be segmented. 
+
+
+
+The MAGeT brain algorithm and the basic multi-atlas segmentation procedure were
+applied to segment the images in the validation set.  Additionally, in each
+trial, the single-atlas segmentation was obtained for each atlas-template.  
 
 The gold-standard for the segmentation accuracy of images in the validation set
 was the SNT manual labels.
