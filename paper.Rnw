@@ -109,44 +109,42 @@ segmentation information from a series of expertly segmented atlases
 Each atlas image is registered to a target image, and label propagation is
 performed to produce several labellings of the target image (one from each
 atlas). A {\it label fusion} technique, such as voxel-wise voting, is used merge
-these labels into a definitive segmentation for the target. 
+these labels into a definitive segmentation for the target.  In addition, {\em
+atlas selection} techniques are often used to exclude atlases from label fusion
+that are dissimilar to a target image in order to reduce error from
+unrepresentative anatomy \citep{Aljabar2009}. Cross-correlation or normalised
+mutual information of image intensities are common measures of image similarity
+used in atlas selection.
 
 Multi-atlas methods have been very successfully applied to hippocampal
 segmentation. Collins et al. found near-manual segmentation performance using an
 atlas library of 80 T1-weighted atlas images from the ICBM152 dataset, the
-ANIMAL nonlinear registration algorithm, normalised mutual information as a
-similarity metric for atlas selection, and majority vote for label fusion
-\citep{Collins2010}. 
-
-The Alzheimer's Disease Neuroimaging Initiative (ADNI) is a
-commonly used benchmarking dataset of MR images of controls and patients with
+ANIMAL nonlinear registration algorithm, normalised mutual information as an
+atlas selection similarity metric, and majority vote for label fusion
+\citep{Collins2010}.  The Alzheimer's Disease Neuroimaging Initiative (ADNI) is
+a commonly used benchmarking dataset of MR images of controls and patients with
 MCI or Alzheimer's (see Methods for more information on the ADNI dataset).
-
 Leung et al. tuned parameters for registration and label fusion to the
 segmentation of ADNI1 1 year dataset of images with an atlas library of 55
-images \citep{Leung2010}. 
-
-The MAPER whole brain segmentation algorithm \citep{Heckemann2006,Heckemann2011},
-using 30 atlases, on all ADNI1 baseline images \citep{Heckemann2011}. 
-
-In \citep{Lotjonen2012}, the authors use a proprietary non-linear registration
+images \citep{Leung2010}.  The MAPER whole brain segmentation algorithm
+\citep{Heckemann2006,Heckemann2011}, using 30 atlases, on all ADNI1 baseline
+images \citep{Heckemann2011}.  Lotjonen et al. use images from the ADNI1
+baseline dataset and 30 atlases with a proprietary non-linear registration
 method based on intensity differences, and post-processing step using a graph
-cuts or EM approach with intensity spatial prior models to optimise the fused
-segmentations.  Using images from the ADNI1 baseline dataset and 30 atlases. 
+cuts algorithm to optimise fused segmentations against a spatial intensity prior
+\citep{Lotjonen2012}.  
+\todo{No story here}
 
-{\em Atlas selection} techniques are often used to filter out atlases dissimilar
-to a target image in order to reduce {conceptual} errors \citep{Aljabar2009}.
-
-The LEAP algorithm, Wolz et al.  is an elegant modification to the basic
-multi-atlas strategy: the atlas library is grown, beginning with a set of
-manually labelled atlases and successively incorporating unlabelled target
-images after being labelling using multi-atlas techniques\citep{Wolz2010}.  The
-sequence in which target images are labelled is chosen so that the similarity
-between the atlas images and the target images is minimised at each step,
-effectively allowing for deformations between very dissimilar images to be
-broken up into sequences of smaller deformations.  With an atlas library of 30
-MR images, LEAP was used to segment the ADNI1 baseline dataset, achieving a mean
-Dice score of 0.85 with manual segmentations.
+The LEAP algorithm is an elegant modification to the basic multi-atlas strategy
+\citep{Wolz2010}. The atlas library is grown, beginning with a set of manually
+labelled atlases, and successively incorporats unlabelled target images after
+being labelling using multi-atlas techniques. The sequence in which target
+images are labelled is chosen so that the similarity between the atlas images
+and the target images is minimised at each step, effectively allowing for
+deformations between very dissimilar images to be broken up into sequences of
+smaller deformations.  With an atlas library of 30 MR images, LEAP was used to
+segment the ADNI1 baseline dataset, achieving a mean Dice score of 0.85 with
+manual segmentations.
 
 %- TODO: "probablistic methods?"
 
@@ -165,6 +163,7 @@ manually partitioned into 'head', 'body' and 'tail', and then multi-atlas
 methods are used to segment the image.  Finally, an AdaBoost-based bias
 correction classifier is trained on texture, spatial location, and intensities
 of manual segmentations and is applied to fix mislabelled voxels.  
+
 %  Chupin's use of shape-based priors 
 %   - Mouiha2011b - Hippocampal atrophy rates in AD: compare SNT vs FreeSurfer
 %     on ADNI
@@ -173,17 +172,18 @@ of manual segmentations and is applied to fix mislabelled voxels.
 Aside from the algorithmic choices used in multi-atlas segmentation, it is
 natural to ask about how the features of the atlases themselves impact the
 resulting segmentations. As noted, by choosing atlases ranked most similar to a
-target image by voxel intensity profile segmentation accuracy is improved,
-suggesting that neuroanatomical similarity plays a role\citep{Aljabar2009}.
-Carmichael et al. explored this directly and found that when using only one
-atlas the important factors leading to improved accuracy are that the atlas have
-neuroanatomical features that match the target, and that the atlas segmentation
-use the same protocol as the gold-standard \citep{Carmichael2005}. Nestor et al.
-found that hippocampal segmentation protocols that include more dorsal
-white-matter and posterior anatomy tended to produce higher overlap and better
-accuracy at distinguishing disease classes in the ADNI1 1 year dataset
-\citep{Nestor2012}. These results suggest both atlas library neuroanatomy and
-delineation protocol play a significant role in the resulting segmentation.
+target image by voxel intensity profile, segmentation accuracy is improved,
+suggesting that neuroanatomical similarity plays a strong role
+\citep{Aljabar2009}.  Carmichael et al. explored this directly and found that
+when using only one atlas the important factors leading to improved accuracy are
+that the atlas have neuroanatomical features that match the target, and that the
+atlas segmentation use the same protocol as the gold-standard
+\citep{Carmichael2005}. Nestor et al.  found that hippocampal segmentation
+protocols that include more dorsal white-matter and posterior anatomy tended to
+produce higher overlap and better accuracy at distinguishing disease classes in
+the ADNI1 1 year dataset \citep{Nestor2012}. These results suggest both atlas
+library neuroanatomy and delineation protocol play a significant role in the
+resulting segmentation.
 
 Considered along with our earlier discussion on the difficulty of producing
 manual segmentations of MR images and the need for adaptable segmentation
@@ -385,11 +385,11 @@ latex(tab, file="", size="scriptsize",
 @
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\subsubsection{SZ First Episode Patients}
-Nomenclature: SZFEP Dataset
-SZFEP dataset demographics are shown in table \ref{tab:SZFEP_Demographics}. 
-
-\todo{include image characteristics}
+\subsubsection{Schizophrenic First Episode Patients}
+\todo{Nomenclature: SFEP Dataset}
+\todo{describe image characteristics}
+\todo{describe expert segmentations}
+SFEP dataset demographics are shown in table \ref{tab:SZFEP_Demographics}. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % First Episode SZ Demographics Table                                         %
@@ -567,9 +567,9 @@ and multi-atlas segmentations derived from the same atlas library.
 %%%%%                 Experiments: ADNI-1 cross-validationn               %%%%%
 %%%%%
 \subsubsection{ADNI1 cross-validation}
-To test the effect of parameter settings on the MAGeT brain algorithm, repeated
-random sub-sampling cross-validation (RRSCV) was performed using a subset of the
-ADNI1 subjects for validation.  This form of cross-validation (described in
+To test the effect of parameter settings on the MAGeT brain algorithm, Monte
+Carlo Cross-Validation (MCCV) \citep{Shao1993} was performed using a subset of
+the ADNI1 subjects for validation.  This form of cross-validation (described in
 detail below) allows us to validate MAGeT with various atlas and template
 library sizes, registration and label fusion methods.
 
@@ -616,83 +616,60 @@ Normalized Mutual Information weighted majority vote were used. With the
 weighted majority vote fusion methods, the number of top labels used in the
 fusion was varied from 3 to 20 images.
 
-{\bf Evaluation.}  Repeated random sub-sampling cross-validation (RRSCV)
-consists of repeated trials in which items from the dataset are randomly sampled
-and assigned to a training set or validation set. In each trial, performance on
-the validation set is measured, and then averaged across all trials. This form
-of cross-validation allows
+{\bf Evaluation.}  Monte Carlo Cross-Validation (MCCV), also known as repeated
+random sub-sampling cross-validation, consists of repeated trials in which items
+from the dataset are randomly sampled (without replacement) and assigned to a
+training set or validation set \cite{Shao1993}.  
 
-With respect to this We performed RRSCV on each combination of parameters listed above: atlas library
-size, template library size, registration method, and label fusion method.  
+In each trial, the training set consists of images and SNT labels used as
+atlases, and the validation set consists of images to be segmented along with
+the corresponding SNT labels used as gold-standard segmentations. Both MAGeT
+brain and basic multi-atlas segmentation were performed in each trial, and the
+accuracy of the resulting segmentations were measured against the SNT labels. 
 
-We performed 10 trials per parameter combination.  In each validation trial, the
-training set consisted of the images used as atlases, and the validation set
-consisted of the images to be segmented. 
-
-
-
-The MAGeT brain algorithm and the basic multi-atlas segmentation procedure were
-applied to segment the images in the validation set.  Additionally, in each
-trial, the single-atlas segmentation was obtained for each atlas-template.  
-
-The gold-standard for the segmentation accuracy of images in the validation set
-was the SNT manual labels.
-
-\todo{ show off the number of registrations/comparisions we did}
-
+We performed 10 trials on each combination of parameters listed above: atlas
+library size (1-9), template library size (1-20), registration method (ANTS vs.
+ANIMAL), and label fusion method (MV, XC-WV, NMI-WV). A total of 1080 parameter
+settings were evaluated over a total of 10800 trials. 
 
 %%%%%
 %%%%%               Experiments: ADNI-1 Screening Validation               %%%%%
 %%%%%
 \subsubsection{ADNI-1 Screening Validation}
-\todo{comparison across field strengths, a la Heckemann2011?}
 To test the accuracy of MAGeT brain on a real-world task we segment the entire
 ADNI-1 dataset using an atlas set that is not representative of the target set.
 
-{\bf Dataset evaluated.} All images from the {\em ADNI1:Screening 1.5T} 
+{\bf Dataset evaluated.} All images from the {\em ADNI1:Screening 1.5T}
 standardized dataset.
 
-{\bf Atlas and template libary.} The atlas library consisted of the entire 
-Winterburn atlas set.  The Winterburn atlases are digital segmentations of the
-hippocampus in five in-vivo 300u isotropic T1-weighted MR scans, and include 
-subfield segmentations for the cornus ammonis (CA) 1, CA4, dentate gyrus, 
-subiculum, and CA 2 and 3 combined. Subjects in the Winterburn atlases range in 
-age from 29-57 years (mean age of 37), and include two males and three females.  
+{\bf Atlas and template libary.} The Winterburn atlases were used as the atlas
+library.  The template library consisted of 21 randomly selected images from the
+ADNI1 data dataset (7 healthy, MCI and AD subjects).  
 
-The template library consisted of 21 randomly selected images from the ADNI1 
-data dataset (7 healthy, MCI and AD subjects).  
+{\bf Registration method.} The ANTS non-linear registration algorithm was used,
+as it performed best in the ADNI1 cross-validation experiment (see Results). 
 
-{\bf Registration method.} ANTS, as it performed best in the cross-validation
-experiment. 
-
-\todo{okay to reference results whilst still in Methods?}
-
-{\bf Label fusion.} Majority vote, as it is simpliest to run and performed 
-equally well in cross-validation experiment.
+{\bf Label fusion.} Majority vote was used performed equally well in the ADNI1
+cross-validation experiment and is the easiest label fusion method to operate. 
 
 {\bf Evaluation.}
-
-Since hippocampal segmentation protocols differ between the ADNI labels and
+Since the hippocampal segmentation protocols differ between the ADNI labels and
 Winterburn atlases, this poses a problem for direct similarity comparisons
-between labels produced by MAGeT brain and the ADNI labels.  
+between labels produced by MAGeT brain and the ADNI labels.  To evaluate the
+performance of MAGeT brain, we compare the correlation of MAGeT segmentation
+volumes with manual segmentation (SNT) volumes. Additionally, we correlate the
+hippocampal volumes of established automated segmentation methods to MAGeT
+segmentations.
+
+Additionally, we compared classification accuracy of subjects by diagnosis based
+on hippocampal volume using both the SNT labels and our produced labels.  
 
 \todo{explain why we did(n't) resegment the ADNI images with the low-res
 protocol and compare directly like that.} 
 
-To evaluate the performance of MAGeT brain, we correlate our segmentation
-volumes with manual segmentation volumes, as well as with hippocampal volumes
-of established automated segmentation methods.
-
-Additionally, we compared classification accuracy of subjects
-by diagnosis based on hippocampal volume using both the SMT labels and our
-produced labels.  
-
 \todo{Include a description of validation process.. Note that we could use rms
 {\tt validate} or t-test: contrast with QDA or LDA (Coupe 2011) used in LOOCV,
 with adni/our segmentations}
-
-\todo{Also consider self-consistency (i.e. Kappa of same subject at different
-field strengths) a la Heckemann2011}
 
 \todo{Also: group differences, expecting separation}
 
@@ -701,20 +678,23 @@ field strengths) a la Heckemann2011}
 %%%%%
 \subsubsection{SZ First Episode Patient Validation}
 
-{\bf Dataset evaluated.} To validate that MAGeT performance generalises to other
-diseases, we measure the performance using the best parameter settings previous
-found, on a dataset consiting of first episode schizophrenia patients.
-\todo{Refer to the FEP description above... or just include it here}.
- 
+{\bf Dataset evaluated.} To validate that MAGeT performance generalises to
+across disease categories, we measure the performance of MAGeT on the
+Schizophrenic First Episode Patient (SFEP) dataset.
+
 {\bf Atlas and template libary.} - two different atlas sets: a manual
 hippocampal segmentation of patients, and Winterburn atlas set.  
+\todo{complete}
 
 {\bf Registration method.} ANTS.
+\todo{complete}
 
 {\bf Label fusion.} Majority vote.
+\todo{complete}
 
 {\bf Evaluation.} We validate the FEP-atlas segmentations using Dice's Kappa,
 and the Winterburn-atlas segmentations by correlating volumes. 
+\todo{complete}
 
 
 %%%%%
@@ -724,19 +704,24 @@ and the Winterburn-atlas segmentations by correlating volumes.
 {\bf Dataset evaluated.} - T1 BRAVO scans of the same subjects included in the 
 Winterburn atlas set.  These scans are taken within .... weeks of the scans for 
 the Winterburn atlases.
+\todo{complete}
 
 {\bf Atlas and template libary.} - Atlas library is Winterburn T1 atlases.  
 Template library consists of all five T1 BRAVOs, plus 15 T1 healthy control images.
+\todo{complete}
 
 {\bf Registration method.} ANTS
+\todo{complete}
 
 {\bf Label fusion.} Majority vote.
+\todo{complete}
 
 {\bf Evaluation.}  - Leave one out cross-validation (LOOCV) in which all five
 subjects are segmented in separate runs of MAGeT brain.  In each run, the subject
 to be segmented is excluded from the Atlas library (so only four atlases are used).
 
 Segmentation accuracy is judged by difference in hippocampal volume.
+\todo{complete}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                               Results
