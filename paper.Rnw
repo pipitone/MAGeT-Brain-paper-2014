@@ -386,11 +386,31 @@ latex(tab, file="", size="scriptsize",
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsubsection{Schizophrenic First Episode Patients}
-\todo{Nomenclature: SFEP Dataset}
-\todo{describe image characteristics}
-\todo{describe expert segmentations}
-SFEP dataset demographics are shown in table \ref{tab:SZFEP_Demographics}. 
+All patients were recruited and treated through the Prevention and Early
+Intervention Program for Psychoses (PEPP-Montreal), a specialized early
+intervention service at the Douglas Mental Health University Institute in
+Montreal, Canada. People aged 15–30 years from the local catchment area
+suffering from either affective or non-affective psychosis who had not taken
+antipsychotic medication for more than one month with an IQ above 70 were
+consecutively admitted as either in- or out-patients. Of those treated at PEPP,
+only patients aged 18 to 30 years with no previous history of neurological
+disease or head trauma causing loss of consciousness were eligible for the
+neuroimaging study; only those suffering from schizophrenia spectrum disorders
+were considered for this analysis.  For complete program details see Malla et
+al. \citep{Malla2003}. 
 
+Scanning was carried out at the Montreal Neurological Institute on a 1.5-T
+Siemens whole body MRI system.  Structural T1 volumes were acquired for each
+participant using a three-dimensional (3D) gradient echo pulse sequence with
+sagittal volume excitation (repetition time=22ms, echo time=9.2ms, flip
+angle=$30{\circ}$, 180 1mm contiguous sagittal slices). The rectangular field-of-view
+for the images was 256mm (SI)×204mm (AP).  Subject demographics are shown in
+table \ref{tab:SZFEP_Demographics}. 
+
+The hippocampus were traced following a validated protocol developed by Dr Jens
+Pruessner (Pruessner et al., 2000). A recent update to this protocol by Dr J
+Pruessner in 2006 allows to accurately and consistently subdivide the
+hippocampus into three different subregions: head, body, and tail.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % First Episode SZ Demographics Table                                         %
 %                                                                             %
@@ -667,10 +687,6 @@ on hippocampal volume using both the SNT labels and our produced labels.
 \todo{explain why we did(n't) resegment the ADNI images with the low-res
 protocol and compare directly like that.} 
 
-\todo{Include a description of validation process.. Note that we could use rms
-{\tt validate} or t-test: contrast with QDA or LDA (Coupe 2011) used in LOOCV,
-with adni/our segmentations}
-
 \todo{Also: group differences, expecting separation}
 
 %%%%%
@@ -681,6 +697,7 @@ with adni/our segmentations}
 {\bf Dataset evaluated.} To validate that MAGeT performance generalises to
 across disease categories, we measure the performance of MAGeT on the
 Schizophrenic First Episode Patient (SFEP) dataset.
+
 
 {\bf Atlas and template libary.} - two different atlas sets: a manual
 hippocampal segmentation of patients, and Winterburn atlas set.  
@@ -743,7 +760,7 @@ Segmentation accuracy is judged by difference in hippocampal volume.
 the point at which gains become statistically insignificant?}
 
 \begin{figure}
-<<ADNI1_cross_validation_means, cache=TRUE, fig=TRUE>>=
+<<ADNI1_cross_validation_means, cache=TRUE>>=
 t_data       = read.csv(file='data/a2a_tracc_results_2012_08_30.csv')
 a_data       = read.csv(file='data/a2a_ants_results_2012_08_30.csv')
 
@@ -793,7 +810,7 @@ ggplot(all_data, aes(x=num_templates, y=k, colour=as.factor(num_atlases))) +
 \end{figure}
 
 \begin{figure}
-<<ADN1-cross-validation-MA-difference, cache=TRUE, fig=TRUE>>=
+<<ADN1-cross-validation-MA-difference, cache=TRUE>>=
 ggplot(all_data, aes(x=num_templates, y=k_minus_ma, colour=as.factor(num_atlases))) + 
   facet_grid(method ~ reg_method) + 
   geom_smooth() + 
