@@ -759,89 +759,101 @@ Segmentation accuracy is judged by difference in hippocampal volume.
 \todo{Can we statistically capture what "peak" performance is?  Something like,
 the point at which gains become statistically insignificant?}
 
-\begin{figure}
-<<ADNI1_cross_validation_means, cache=TRUE>>=
-t_data       = read.csv(file='data/a2a_tracc_results_2012_08_30.csv')
-a_data       = read.csv(file='data/a2a_ants_results_2012_08_30.csv')
+<<ADN1_XVal_prep, include=FALSE>>=
 
-t_multiatlas = read.csv(file='data/a2a_tracc_multiatlas_2012_08_14.csv')
-a_multiatlas = read.csv(file='data/a2a_ants_multiatlas_2012_08_14.csv')
-t_ma_means   = aggregate( k ~ num_atlases , data=t_multiatlas, mean)
-a_ma_means   = aggregate( k ~ num_atlases , data=a_multiatlas, mean)
-
+# all data from the validation trials
+t_data       = read.csv(gzfile('data/a2a_ants/results_2013_01_03.csv.gz'))
+t_data       = subset(t_data, batch=="batch_1" & atlases %in% c(1,3,5,7,9))
+a_data       = t_data[,] #read.csv(gzfile('data/a2a_tracc/results_2013_01_03.csv.gz'))
+diagnoses    = read.csv('data/a2a_diagnoses.csv')
+t_data$se    = NULL
+t_data$sn    = NULL
+t_data$j     = NULL
+a_data$se    = NULL
+a_data$sn    = NULL
+a_data$j     = NULL       
 # add registration method to data frames (before joining)
 t_data       = cbind(t_data, reg_method = "ANIMAL")
 a_data       = cbind(a_data, reg_method = "ANTS")
 
-# add column with kappa - multiatlas mean
-# num_atlases - 2 is a cheap trick to perform the necessary lookup into the ma_means tables
-t_data$k_minus_ma = t_data$k - t_ma_means[ t_data$num_atlases - 2, 2 ]
-a_data$k_minus_ma = a_data$k - a_ma_means[ a_data$num_atlases - 2, 2 ]
+# baseline is multi-atlas majority vote (even though we have MA with other methods)
+t_ma = subset(t_data, approach=="multiatlas" & method=="majvote")
+a_ma = subset(a_data, approach=="multiatlas" & method=="majvote")
+t_mb = subset(t_data, approach=="mb")
+a_mb = subset(a_data, approach=="mb")
 
-all_data     = rbind(t_data,a_data)
+ma = rbind(t_ma,a_ma)
+mb = rbind(t_mb,a_mb)
+ma$templates =  ma$atlases  # since there is no template library, these are equivalent
+mb[mb$method != 'majvote',]$templates = mb[mb$method != 'majvote',]$top_n  # top_n is number of templates used
 
-# use top_n as the number of templates for weighted voting schemes
-all_data[ all_data$method != "majvote", ]$num_templates = all_data[ all_data$method != "majvote", ]$top_n
-
-t_naive      = read.csv(file='data/a2a_tracc_naive.csv')
-a_naive      = read.csv(file='data/a2a_ants_naive_2012_08_30.csv')
-t_mean_naive = mean(t_naive$k)
-a_mean_naive = mean(a_naive$k)
-df_naive     = data.frame(
-                value = c(rep(t_mean_naive,3),rep(a_mean_naive,3)),
-                method = rep(c("majvote", "nmi", "xcorr"),2), 
-                reg_method = c(rep("ANIMAL",3),rep("ANTS",3)))
-
-method_labels <- list("Majority Vote" = "majvote", "NMI Vote" = "nmi", "Cross-correlation Vote" = "xcorr")
-levels(all_data$method) <- method_labels
-levels(df_naive$method) <- method_labels
-
-ggplot(all_data, aes(x=num_templates, y=k, colour=as.factor(num_atlases))) + 
-  facet_grid(method ~ reg_method) + 
-  geom_smooth() + 
-  geom_hline(data = df_naive, aes(yintercept = value, linetype="dashed")) + 
-  scale_colour_hue(name="Atlases") +
-  xlab( "Number of Templates" ) + ylab( "Mean Kappa" ) 
+all_data = merge(ma, mb, by=c("timestamp", "atlases", "batch", "label", "reg_method", "subject"))
+all_data$k_diff = all_data$k.x - all_data$k.y
+method_labels <- list("Majority Vote" = "majvote", 
+                      "NMI Vote" = "nmi", 
+                      "Cross-correlation Vote" = "xcorr")
+levels(all_data$method.y) <- method_labels
+all_data       = merge(all_data, diagnoses)
 @
-  \caption{Comparison of MAGeT performance on ADNI-1 subset.  Smoothing line
-  fitted using GAM (generalised additive model) from R with defaults from
-  ggplot2 (formula: y ~ s(x, bs = "cs"))}
-  \label{ADNI1_cross_validation_means}
-\end{figure}
 
 \begin{figure}
-<<ADN1-cross-validation-MA-difference, cache=TRUE>>=
-ggplot(all_data, aes(x=num_templates, y=k_minus_ma, colour=as.factor(num_atlases))) + 
-  facet_grid(method ~ reg_method) + 
-  geom_smooth() + 
+<<ADN1-Xval-k_diff, cache=TRUE>>=
+ggplot(all_data, aes(x=templates.y, y=k_diff)) + 
+  facet_grid(reg_method~method.y) + 
+  stat_summary(fun.y=mean,geom='bar',position="dodge",
+               aes(y=k_diff,fill=as.factor(atlases))) + 
   scale_colour_hue(name="Atlases") +
   xlab( "Number of Templates" ) + 
-  ylab( "Difference in mean Kappa between voting method and multiatlas" )
+  ylab( "Difference in mean Kappa between voting method and multiatlas" ) +
+  coord_cartesian(ylim=c(0,0.07), xlim=c(0.5,10.5))
 @
   \caption{Difference in mean Kappa between MAGeT brain and multi-atlas}
   \label{ADNI1_cross_validation_MA_difference}
 \end{figure}
 
-
-
-<<a2a_multiatlas_means, results="asis",cache=FALSE>>=
-latex(merge(a_ma_means, t_ma_means, by="num_atlases"),
-colheads=c("Atlases", "ANTS", "ANIMAL"), file="", dec=2,
-	caption="Multi-atlas means")
+\begin{figure}
+<<ADN1-Xval-k_diff-ANTS-20_tmpls, cache=TRUE>>=
+a_20_tmpls = subset(all_data, 
+                      reg_method  == "ANTS" &
+                      method.y    == "Majority Vote" &
+                      templates.y == 20)
+ggplot(a_20_tmpls, aes(x=factor(atlases))) +
+  stat_summary(fun.y=mean,geom='point',size=3,colour="red",aes(y=k.x)) +
+  stat_summary(fun.y=mean,geom='line',colour="red",aes(y=k.x,group=1)) +
+  stat_summary(fun.y=mean,geom='point',size=3,colour="blue",aes(y=k.y)) +
+  stat_summary(fun.y=mean,geom='line',colour="blue",aes(y=k.y,group=1)) +
+  labs(x="Number of Atlases", y = "Kappa") +
+  scale_colour_hue(name="Method") + 
+  coord_cartesian(ylim=c(0.7,0.9))
+  #theme(legend.justification=c(1,0), legend.position=c(1,0))
 @
+  \caption{Difference in mean Kappa between multi-atlas and MAGeT brain using ANTS, 20 templates}
+  \label{}
+\end{figure}
 
-%\begin{table}
-%    \begin{tabular}{c|c|c}
-%        Number of Atlases & ANIMAL Kappa (Jaccard) & ANTS Kappa (Jaccard) \\ \hline
-%        3                 & 0.76 (0.63)             & 0.80 (0.69)          \\ 
-%        4                 & 0.75 (0.62)             & 0.79 (0.67)          \\ 
-%        5                 & 0.79 (0.66)             & 0.82 (0.71)          \\ 
-%        6                 & 0.78 (0.65)             & 0.82 (0.70)          \\ 
-%        7                 & 0.80 (0.67)             & 0.83 (0.72)          \\ 
-%        8                 & 0.79 (0.67)             & 0.83 (0.72)          \\ 
-%        9                 & 0.80 (0.68)             & 0.84 (0.73)          \\
-%    \end{tabular}
-%\end{table}
+\begin{figure}
+<<ADN1-Xval-k_diff-ANTS-20_tmpls, cache=TRUE>>=
+a_20_tmpls = subset(all_data, 
+                      reg_method  == "ANTS" &
+                      method.y    == "Majority Vote" &
+                      templates.y == 20 &
+                      atlases %in% c(1,9))
+template_library = read.csv('data/a2a_ants/template_library_composition.csv')
+template_library$subject = NULL
+a_20_tmpls = merge(a_20_tmpls, template_library,
+                   by.x=c('timestamp', 'templates.y'), 
+                   by.y=c('timestamp', 'templates'))
+ggplot(a_20_tmpls, aes(y=k.y, x=templates_CN,colour=DX)) +  # why does k.x look the same?
+  facet_grid( . ~ atlases) + 
+  geom_smooth(method='lm',fullrange=F)
+
+@
+  \caption{Mean kappa vs. proportion of disease category in template library by disease category}
+  \label{}
+\end{figure}
+
+
+
 
 Ideas:
 \begin{itemize}
