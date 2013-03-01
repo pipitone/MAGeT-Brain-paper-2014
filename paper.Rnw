@@ -374,7 +374,7 @@ better than .94 \citep{Hsu2002}.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ADNI1 Screening Dataset Demographics Table                                  %
 %                                                                             %
-<<ADNI1-screening-demographics, echo=F, results="asis",cache=FALSE>>=
+<<ADNI1-scr-demographics, echo=F, results="asis",cache=FALSE>>=
 # RID < 2000 ensures only ADNI1 patients
 tab <- summary(DX.bl ~ AGE + PTGENDER + PTEDUCAT + PTETHCAT + CDRSB + ADAS13 +
                MMSE, data = adnimerge, subset = VISCODE == 'bl' & RID < 2000,   
@@ -601,7 +601,7 @@ subset are shown in Table \ref{tab:ADNI1_xvalidation_demographics}.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ADNI1 X-Validation Dataset Demographics Table
 %
-<<ADNI-69-demographics, echo=F, results="asis",cache=FALSE>>=
+<<ADNI-Xval-demographics, echo=F, results="asis",cache=FALSE>>=
 adni_69_RIDs = c("295","413","619","685","729","782","938","954",
                  "1018","1155","907","981","222","324","448","546",
                  "553","572","602","610","814","1341","675","681",
@@ -759,11 +759,11 @@ Segmentation accuracy is judged by difference in hippocampal volume.
 \todo{Can we statistically capture what "peak" performance is?  Something like,
 the point at which gains become statistically insignificant?}
 
-<<ADN1_XVal_prep, include=FALSE>>=
+<<ADN1-Xval_prep, include=FALSE>>=
 
 # all data from the validation trials
 t_data       = read.csv(gzfile('data/a2a_ants/results_2013_01_03.csv.gz'))
-t_data       = subset(t_data, batch=="batch_1" & atlases %in% c(1,3,5,7,9))
+t_data       = subset(t_data, atlases %in% c(1,3,5,7,9))
 a_data       = t_data[,] #read.csv(gzfile('data/a2a_tracc/results_2013_01_03.csv.gz'))
 diagnoses    = read.csv('data/a2a_diagnoses.csv')
 t_data$se    = NULL
@@ -788,31 +788,50 @@ ma$templates =  ma$atlases  # since there is no template library, these are equi
 mb[mb$method != 'majvote',]$templates = mb[mb$method != 'majvote',]$top_n  # top_n is number of templates used
 
 all_data = merge(ma, mb, by=c("timestamp", "atlases", "batch", "label", "reg_method", "subject"))
-all_data$k_diff = all_data$k.x - all_data$k.y
+all_data$k_diff = all_data$k.y - all_data$k.x 
 method_labels <- list("Majority Vote" = "majvote", 
                       "NMI Vote" = "nmi", 
                       "Cross-correlation Vote" = "xcorr")
 levels(all_data$method.y) <- method_labels
 all_data       = merge(all_data, diagnoses)
+remove(t_ma, a_ma, t_mb, a_mb, ma, mb)
 @
 
 \begin{figure}
-<<ADN1-Xval-k_diff, cache=TRUE>>=
-ggplot(all_data, aes(x=templates.y, y=k_diff)) + 
+<<ADN1-Xval-k_mean, cache=TRUE>>=
+ggplot(all_data, aes(x=templates.y,y=k.y, colour=as.factor(atlases))) + 
   facet_grid(reg_method~method.y) + 
-  stat_summary(fun.y=mean,geom='bar',position="dodge",
-               aes(y=k_diff,fill=as.factor(atlases))) + 
+  #stat_summary(fun.y=mean,geom='line',
+  #             aes(y=k.y)) + 
+  stat_smooth(method='lm', formula=y~log(x)) + 
   scale_colour_hue(name="Atlases") +
   xlab( "Number of Templates" ) + 
-  ylab( "Difference in mean Kappa between voting method and multiatlas" ) +
-  coord_cartesian(ylim=c(0,0.07), xlim=c(0.5,10.5))
+  ylab( "mean Kappa" )
 @
-  \caption{Difference in mean Kappa between MAGeT brain and multi-atlas}
+  \caption{MAGeT brain mean kappa by atlas and template library size}
+  \label{ADNI1_xval}
+\end{figure}
+
+\begin{figure}
+<<ADN1-Xval-k_diff, cache=TRUE>>=
+
+ggplot(subset(all_data, reg_method=="ANTS" & method.y=="Majority Vote"), 
+       aes(x=templates.y, y=k_diff, colour=as.factor(atlases))) + 
+  #facet_grid(reg_method~method.y) + 
+  #stat_summary(fun.y=mean,geom='line',position="dodge",
+  #             aes(y=k_diff,colour=as.factor(atlases))) + 
+  stat_smooth(method=lm, formula=y~log(x)) + 
+  scale_colour_hue(name="Atlases") +
+  xlab( "Number of Templates" ) + 
+  ylab( "Increase in mean Kappa between MAGeT brain and multiatlas" ) 
+  #coord_cartesian(ylim=c(0,0.07), xlim=c(0.5,10.5))
+@
+  \caption{Increase in mean Kappa between MAGeT brain and multi-atlas}
   \label{ADNI1_cross_validation_MA_difference}
 \end{figure}
 
 \begin{figure}
-<<ADN1-Xval-k_diff-ANTS-20_tmpls, cache=TRUE>>=
+<<ADN1-Xval-k_diff-ANTS-20tmpls>>=
 a_20_tmpls = subset(all_data, 
                       reg_method  == "ANTS" &
                       method.y    == "Majority Vote" &
@@ -822,17 +841,18 @@ ggplot(a_20_tmpls, aes(x=factor(atlases))) +
   stat_summary(fun.y=mean,geom='line',colour="red",aes(y=k.x,group=1)) +
   stat_summary(fun.y=mean,geom='point',size=3,colour="blue",aes(y=k.y)) +
   stat_summary(fun.y=mean,geom='line',colour="blue",aes(y=k.y,group=1)) +
-  labs(x="Number of Atlases", y = "Kappa") +
+  labs(x="Number of Atlases", y = "Kappa", 
+       title="mean Kappa of MA and MAGeT brain (ANTS/20 templates) \nvs\natlas library size") +
   scale_colour_hue(name="Method") + 
   coord_cartesian(ylim=c(0.7,0.9))
   #theme(legend.justification=c(1,0), legend.position=c(1,0))
 @
-  \caption{Difference in mean Kappa between multi-atlas and MAGeT brain using ANTS, 20 templates}
+  \caption{Change in mean Kappa between multi-atlas and MAGeT brain using ANTS, 20 templates}
   \label{}
 \end{figure}
 
 \begin{figure}
-<<ADN1-Xval-k_diff-ANTS-20_tmpls, cache=TRUE>>=
+<<ADN1-Xval-k-by-disease, cache=TRUE>>=
 a_20_tmpls = subset(all_data, 
                       reg_method  == "ANTS" &
                       method.y    == "Majority Vote" &
@@ -889,14 +909,14 @@ atlas selection to refine atlas set?
 
 \todo{Kappa against our manual rater is low... explain that}
 
-<<ADNI-baseline-volumes-prep,echo=F,cache=T>>=
+<<ADNI-src-volumes-prep,echo=F,cache=T>>=
 yr1   = read.csv("data/ADNI_baseline_volumes/ADNI1_Complete_1Yr_1.5T_11_15_2012.csv")
 mb    = read.csv("data/ADNI_baseline_volumes/ADNI1_1.5T_MAGeT_volumes.csv")
 maper = read.csv("data/ADNI_baseline_volumes/MAPER_volumes.csv")
 snt   = read.csv("data/ADNI_baseline_volumes/UCSFSNTVOL.csv")
 ucsd  = read.csv("data/ADNI_baseline_volumes/UCSDVOL.csv")
 fs    = read.csv("data/ADNI_baseline_volumes/UCSFFSX_02_15_12.csv")
-fsl   = read.csv("data/ADNI_baseline_volumes/ADNI1_1.5T_FSLFIRST_volumes.csv")
+fsl   = read.csv("data/ADNI_baseline_volumes/ADNI1_1.5T_FSLFIRST_volumes.csv", sep=';')
 
 # recode VISCODE
 viscode_levels = list("bl"=1,"bl"=2, "m06"=3,"m12"=4)
@@ -909,13 +929,19 @@ yr1$Scaled_2 <- grepl("Scaled_2", yr1$Description)
 subjects = subset(yr1, VISCODE == 'bl' & Scaled_2 == FALSE)
 
 # fetch just the columns we need, and do a little renaming
-mb_pruned     = data.frame(MAGeT_L = mb$Left_Hippo, MAGeT_R = mb$Right_Hippo, Source = mb$SourceImageID)
-maper_pruned  = data.frame(MAPER_L = maper$Left_Hippo, MAPER_R = maper$Right_Hippo, Source = maper$SourceImageID)
-snt_pruned    = data.frame(SNT_L = snt$LEFTHIPPO, SNT_R = snt$RIGHTHIPPO, Source = snt$IMAGEUID)
-ucsd_pruned   = data.frame(RID=ucsd$RID, VISCODE=ucsd$VISCODE, UCSD_L=ucsd$LHIPPOC, UCSD_R=ucsd$RHIPPOC)
+mb_pruned     = data.frame(MAGeT_L = mb$Left_Hippo, 
+                           MAGeT_R = mb$Right_Hippo, Source = mb$SourceImageID)
+maper_pruned  = data.frame(MAPER_L = maper$Left_Hippo, 
+                           MAPER_R = maper$Right_Hippo, Source = maper$SourceImageID)
+snt_pruned    = data.frame(SNT_L = snt$LEFTHIPPO, 
+                           SNT_R = snt$RIGHTHIPPO, Source = snt$IMAGEUID)
+ucsd_pruned   = data.frame(RID=ucsd$RID, VISCODE=ucsd$VISCODE, 
+                           UCSD_L=ucsd$LHIPPOC, UCSD_R=ucsd$RHIPPOC)
 fs_pruned     = subset(fs, TEMPQC != "Fail")
-fs_pruned     = data.frame(FS_L=fs_pruned$ST29SV, FS_R=fs_pruned$ST88SV, Source = fs_pruned$IMAGEUID)
-fsl_pruned    = data.frame(FSL_L=fsl$X17, FSL_R=fsl$X53, Source=fsl$Source)
+fs_pruned     = data.frame(FS_L=fs_pruned$ST29SV, 
+                           FS_R=fs_pruned$ST88SV, Source = fs_pruned$IMAGEUID)
+fsl_pruned    = data.frame(FSL_L=fsl$X17, 
+                           FSL_R=fsl$X53, Source=fsl$Source)
 
 # diagnoses
 dx = adnimerge[c("DX.bl", "RID", "VISCODE")]
@@ -940,7 +966,7 @@ vols = data.frame(RID = RID, VISCODE = VISCODE, DX = DX.bl,
 @
 
 \begin{figure}[h]
-<<ADNI-baseline-volumes-boxplot,echo=F,fig=T, fig.align='center',dependson='ADNI-baseline-volumes-prep',cache=T>>=
+<<ADNI-src-volumes-boxplot,echo=F,fig=T, fig.align='center',dependson='ADNI-baseline-volumes-prep',cache=T>>=
 totals = vols
 qplot(DX,value,data=melt(totals,measure.vars=c("FS", "FSL","UCSD", "MAPER","MAGeT","SNT"),na.rm=T),
       colour=variable,geom="boxplot") + 
@@ -952,19 +978,19 @@ qplot(DX,value,data=melt(totals,measure.vars=c("FS", "FSL","UCSD", "MAPER","MAGe
 \end{figure}
 
 \begin{figure}[h]
-<<ADNI-baseline-volumes-plot,echo=F,fig=T, fig.align='center',dependson='ADNI-baseline-volumes-boxplot',cache=T>>=
+<<ADNI-src-volumes-plot,echo=F,fig=T, fig.align='center',dependson='ADNI-baseline-volumes-boxplot',cache=T>>=
 by_snt_volumes = melt(totals, measure.vars=c("FSL","MAPER","MAGeT", "FS", "UCSD"))
 fsl=subset(by_snt_volumes, variable=="FSL")
 maper=subset(by_snt_volumes, variable=="MAPER")
 maget=subset(by_snt_volumes, variable=="MAGeT")
-
+with(by_snt_volumes,
 qplot(SNT,value,data=by_snt_volumes,
       colour=variable, geom="smooth", method="lm") + 
     geom_point() +
-#     geom_text(aes(
-#       label=paste("FSL       R=", round(cor(fsl$SNT,fsl$value, use="complete.obs"), 2), 
-#                   ", p<", round(as.double(t.test(fsl$SNT,fsl$value, paired=T)["p.value"]), 2)),
-#       x=1800,y=10000, hjust=0,size=2)) + 
+     geom_text(aes(
+       label=paste("FSL       R=", round(cor(fsl$SNT,fsl$value, use="complete.obs"), 2), 
+                   ", p<", round(as.double(t.test(fsl$SNT,fsl$value, paired=T)["p.value"]), 2)),
+       x=1800,y=10000, hjust=0,size=2), data=data.frame()) + 
 #     geom_text(aes(
 #       label=paste("MAPER R=", round(cor(maper$SNT,maper$value, use="complete.obs"), 2), 
 #                   ", p<", t.test(maper$SNT,maper$value, paired=T)["p.value"]), 
@@ -974,12 +1000,34 @@ qplot(SNT,value,data=by_snt_volumes,
 #                   ", p<", t.test(maget$SNT,maget$value, paired=T)["p.value"]), 
 #       x=1800,y= 9000, hjust=0, size=2)) +
     xlab("Total Hippocampal Volume (Manual Segmentation)") + 
-    ylab("Total Hippocampal Volume (Automatic Segmentation)")
+    ylab("Total Hippocampal Volume (Automatic Segmentation)"))
 @
   \caption{{\bf ADNI Baseline cohort.} Comparison of HC volumes by FreeSurfer
   (FSF), MAGeT brain (MAGeT), MAPER, and manual (SNT).}
   \label{ADNI-baseline-volumes-plot}
 \end{figure}
+
+<<ADNI-scr-summary-table, echo=F, results="asis",cache=FALSE>>=
+melted = melt(totals, measure.vars=c("FSL","MAPER","SNT", "FS", "UCSD"))
+cor_by_dx    = by(melted[c("MAGeT", "value")], c(melted['variable'], melted['DX']), 
+                  function(x) cor(x$MAGeT,x$value, use="pairwise.complete.obs"))
+cor_overall  = by(melted[c("MAGeT", "value")], melted['variable'], 
+                  function(x) cor(x$MAGeT,x$value, use="pairwise.complete.obs"))
+cor_by_dx = t(rbind(cor_by_dx))
+cor_overall = rbind(cor_overall)
+
+vol_by_dx = t(rbind(by(totals$MAGeT, totals$DX, mean)))
+colnames(vol_by_dx) <- "Mean Volume"
+vol_overall = matrix(mean(totals$MAGeT),dimnames=list("Overall"))
+
+dx      = cbind(vol_by_dx, cor_by_dx)
+overall <- cbind(vol_overall, cor_overall)
+
+latex(format.df(rbind(dx, overall), dec=2),
+      n.cgroup=c(1,5),cgroup=c("","Volume Correlation"),
+      n.rgroup=c(4,1), file="", size="scriptsize", )
+
+@
 
 %%%%%
 %%%%%             Results: First Episode Patient Validation          %%%%%
@@ -989,16 +1037,17 @@ High volume correlation between Winterburn segmentation volumes and ground
 truth.  (High-ish?) Kappa when using manual segmentations as Atlases. 
 
 \begin{figure}
-<<SZ_volumes,echo=F,fig=T, fig.align='center',cache=T>>=
+<<FEP_volumes,echo=F,fig=T, fig.align='center',cache=T>>=
 SZ_volumes=read.csv("data/SZ_volumes_by_method.csv")
+with(SZ_volumes,
 qplot(Manual,MAGeT,data=SZ_volumes) + geom_smooth(method="lm") + 
-#   geom_text(aes(
-#       label=paste("R=", round(cor(Manual,MAGeT, use="complete.obs"), 2), 
-#                   ", p<", t.test(Manual, MAGeT, paired=T)["p.value"]),
-#       x=6500,y=10000, hjust=0,size=2)) +
+   geom_text(aes(
+       label=paste("r = ", round(cor(Manual,MAGeT, use="complete.obs"), 2), 
+                   ", p <", round(as.numeric(t.test(Manual, MAGeT, paired=T)["p.value"]), 6))),
+       x=7000,y=10000, hjust=0,vjust=-0.5,size=5,data=data.frame()) +
     xlab("Total Hippocampal Volume (Manual Segmentation)") + 
     ylab("Total Hippocampal Volume (MAGeT Segmentation)")
-
+)
 @
   \caption{{\bf First Episode Schizophrenic Patients.} Comparison of total
   HC volumes for MAGeT against manually rated Hippocampal volumes}
