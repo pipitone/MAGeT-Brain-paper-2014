@@ -1059,6 +1059,25 @@ qplot(Manual,MAGeT,data=SZ_volumes) + geom_smooth(method="lm") +
 %%%%%
 \subsection{Winterburn Atlases Validation}
 
+<<WAval-boxplot,cache=T>>=
+# dirty dirty
+data = read.csv('data/WAval.csv')
+orig = subset(data, version == "orig")
+voted = subset(data, version == "voted")
+origtotal = orig[,2:6] + orig[,7:11]
+votedtotal = voted[,2:6] + voted[,7:11]
+pchange = abs((origtotal - votedtotal)/origtotal)
+diff = cbind(orig[,1],pchange)
+
+melted = melt(diff, id.vars="orig[, 1]")
+names(melted) <- c("subject","variable","value")
+ggplot(melted, aes(y=value,x=variable,colour=subject,group=subject)) + 
+  geom_point(size=3) + 
+  geom_lin() + 
+  labs(title="Percent difference in MAGeT volumes from original",
+       y="Percent difference in volume") 
+@
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                                Discussion
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
