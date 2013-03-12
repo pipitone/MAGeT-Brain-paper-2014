@@ -1005,13 +1005,55 @@ qplot(DX,value,data=melt(complete_totals,measure.vars=c("FS", "FSL","UCSD", "MAP
 
 \begin{figure}[h]
 <<ADNI-scr-histogram,dependson='ADNI-baseline-volumes-boxplot',cache=T>>=
-melted = melt(complete_totals, measure.vars=c( "SNT","FSL","FS","MAPER","MAGeT"))
+melted   = melt(complete_totals, measure.vars=c( "SNT","FSL","FS","MAPER","MAGeT"))
+binwidth = 250
+
+# prepare the normals
+grid <- with(melted, seq(min(value), max(value), length = 100))
+normaldf <- ddply(melted, c("variable", "DX"), function(df) {
+  data.frame( 
+    value = grid,
+    density = dnorm(grid, mean(df$value), sd(df$value)),
+    freq = length(df$value) * dnorm(grid, mean(df$value), sd(df$value)) * binwidth,
+    length = length(df$value)
+  )
+})
+
+testsdf <- ddply(melted, c("variable", "DX"), function(df) {
+  shapiro = shapiro.test(df$value)
+  data.frame(
+    shapiro.w = shapiro$statistic,
+    shapiro.p = shapiro$p.value,
+    mean = mean(df$value),
+    sd = sd(df$value)
+  )
+})
+
+label_x_pos = 10000
 ggplot(data=melted, aes(x=value)) + 
-       geom_histogram(binwidth=250) +
-       facet_grid( variable ~ DX) 
+  geom_histogram(binwidth=binwidth, alpha=0.8) + 
+  geom_line(aes(y=freq, colour='red'), data=normaldf) +
+  geom_text(aes(y=29,x=label_x_pos,hjust=1,size=1, 
+                label=paste("list(W ==",signif(shapiro.w, digits=3), ", p == ", 
+                            signif(shapiro.p,digits=3), ")")
+                ), parse=TRUE,
+            data=testsdf) + 
+  geom_text(aes(y=25,x=label_x_pos,hjust=1,size=1, 
+                label=paste("sigma ==",signif(sd, digits=3))), parse=TRUE,
+            data=testsdf) + 
+  geom_text(aes(y=21,x=label_x_pos,hjust=1,size=1, 
+                label=paste("mu ==",signif(mean, digits=3))), parse=TRUE,
+            data=testsdf) + 
+  xlim(0, 10000) + ylim(0,30) + 
+  facet_grid(variable ~ DX) + 
+  scale_colour_discrete(legend=FALSE) + 
+  scale_size_continuous(legend=FALSE) + 
+  labs(title="Total hippocampus volume by disease and measurement method", 
+       x=expression(paste("Total hippocampal volume (", mm^2, ")")),
+       y="Frequency") + 
+  opts(axis.title.x = theme_text(vjust=-0.1))
 @
-  \caption{{\bf ADNI Baseline cohort.} Comparison of HC volumes by FreeSurfer
-  (FSF), MAGeT brain (MAGeT), MAPER, and manual (SNT).}
+  \caption{{\bf ADNI Baseline cohort.} Comparison of total hippocampal volumes as measured by SNT, FSL, FreeSurfer (FS), MAPER, and MAGeT brain (MAGeT). A fitted normal curve is shown in red. $W$ is the Shapiro-Wilkes test statistic measuring normality of the data (low p-values indicate non-normality).}
   \label{ADNI-scr-histogram}
 \end{figure}
 
