@@ -10,6 +10,14 @@ library(ADNIMERGE)
 library(plyr)
 options(digits=3)
 theme_set(theme_bw())
+# bland_altman_plot <- function(dat){
+#   dat$diff <- dat$pre - dat$post;
+#   
+#   return ggplot(dat, aes(pre, diff)) + 
+#     geom_hline(yintercept = mean(dat$diff) + c(-2, 0, 2) * sd(dat$diff), 
+#                linetype=2, color='brown') + 
+#     geom_point() 
+# }
 @
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -811,9 +819,7 @@ remove(t_ma, a_ma, t_mb, a_mb, ma, mb)
 @
 %                                                                              %
 %                                                                              %
-
-The 
-
+ % Bland-Altman plot for MA and MAGeT 
 
 \begin{figure}
 <<ADN1-Xval-k-mean, cache=TRUE, dependson='ADNI1-Xval-prep'>>=
@@ -830,22 +836,66 @@ ggplot(all_data, aes(x=templates.y,y=k.y, colour=as.factor(atlases))) +
   \label{fig:ADNI1_xval-k_mean}
 \end{figure}
 
+
+
 \begin{figure}
 <<ADN1-Xval-k-diff, cache=TRUE, dependson='ADNI1-Xval-prep'>>=
 ggplot(subset(all_data, reg_method=="ANTS" & method.y=="Majority Vote"), 
        aes(x=templates.y, y=k_diff, colour=as.factor(atlases))) + 
   #facet_grid(reg_method~method.y) + 
-  #stat_summary(fun.y=mean,geom='line',position="dodge",
-  #             aes(y=k_diff,colour=as.factor(atlases))) + 
-  stat_smooth(method=lm, formula=y~log(x)) + 
+  stat_summary(fun.data=mean_cl_boot,geom='errorbar',
+               aes(y=k_diff,colour=as.factor(atlases), width=0.2)) +
+  stat_summary(fun.y=mean, geom="point", 
+               aes(y=k_diff,colour=as.factor(atlases))) + 
+  #stat_smooth(method=lm, formula=y~log(x)) + 
+  geom_hline(aes(alpha=0.5, yintercept=0), linetype='dashed') + 
+  coord_cartesian(ylim=c(-0.1,0.05)) + 
+  scale_x_continuous(breaks=1:20) + scale_y_continuous(breaks=seq(-1,1,by=0.01)) + 
   scale_colour_hue(name="Atlases") +
+  scale_alpha_continuous(legend=FALSE) + 
+  scale_linetype_discrete(legend=FALSE) + 
   xlab( "Number of Templates" ) + 
   ylab( "Increase in mean Kappa between MAGeT brain and multiatlas" ) 
-  #coord_cartesian(ylim=c(0,0.07), xlim=c(0.5,10.5))
 @
   \caption{Increase in mean Kappa between MAGeT brain and multi-atlas}
   \label{ADNI1_cross_validation_MA_difference}
 \end{figure}
+
+
+\begin{figure}
+<<ADN1-Xval-k-sd-t-test-p-plot, cache=TRUE, dependson='ADNI1-Xval-prep'>>=
+    ANTSmajvote = subset(all_data, reg_method=="ANTS" & method.y=="Majority Vote")
+
+stddev = ddply(ANTSmajvote, c("subject", "label","atlases","templates.y"), function (df) {
+  data.frame(
+    MA = sd(df$k.x),
+    MB = sd(df$k.y) 
+  )
+})
+
+stddev.t.test = ddply(stddev, c("atlases","templates.y"), function (df) {
+  t = t.test(df$MA, df$MB)
+  data.frame(
+    statistic = t$statistic, 
+    p.value = t$p.value
+  )
+})
+
+ggplot(stddev.t.test, 
+       aes(x=templates.y, y=p.value, colour=as.factor(atlases))) + 
+  geom_line() + 
+  geom_hline(aes(yintercept=0.05), linetype='dashed') + 
+  scale_colour_hue(name="Atlases") +
+  scale_alpha_continuous(guide='none') + 
+  scale_linetype_discrete(guide='none') + 
+  scale_x_continuous(breaks=1:20) + scale_y_continuous(breaks=seq(0,1,by=0.05)) + 
+  scale_y_log10() + 
+  xlab( "Number of Templates" ) + 
+  ylab( "p-value" ) 
+@
+\end{figure}
+
+%- show variance in MAGeT performance by showing nine plots, each with mean multi-atlas performance plotted.
 
 \begin{figure}
 <<ADN1-Xval-k-diff-ANTS-20tmpls, cache=TRUE, dependson='ADNI1-Xval-prep'>>=
@@ -869,6 +919,59 @@ ggplot(a_20_tmpls, aes(x=factor(atlases))) +
 \end{figure}
 
 \begin{figure}
+<<ADN1-Xval-ANTS-20tmpls-t-test-sd, cache=TRUE, dependson='ADNI1-Xval-prep'>>=
+a_20_tmpls = subset(all_data, 
+                      reg_method  == "ANTS" &
+                      method.y    == "Majority Vote" &
+                      templates.y == 20 &
+                      atlases     == 9 & 
+                      volume.x < 10000)
+stddev = ddply(a_20_tmpls, c("subject", "label"), function (df) {
+  data.frame(
+    MA = sd(df$k.x),  #MA
+    MB = sd(df$k.y)  #MB
+  )
+})
+
+
+# TODO: against SNT
+melted = melt(stddev, id.vars=c("subject", "label"))
+ggplot(melted, aes(x=variable, y=value)) + geom_boxplot()
+t.test(stddev$MA, stddev$MB)
+@
+  \caption{}
+  \label{}
+\end{figure}
+
+
+\begin{figure}
+<<ADN1-Xval-ANTS-20tmpls-Bland-Atlman, cache=TRUE, dependson='ADNI1-Xval-prep'>>=
+a_20_tmpls = subset(all_data, 
+                      reg_method  == "ANTS" &
+                      method.y    == "Majority Vote" &
+                      templates.y == 20 &
+                      atlases     == 9 &
+                      volume.x < 10000)
+avg = ddply(a_20_tmpls, c("subject", "label"), function (df) {
+  data.frame(
+    pre = mean(df$volume.x),  #MA
+    post = mean(df$volume.y)  #MB
+  )
+})
+# TODO: against SNT
+
+#df = data.frame(pre=a_20_tmpls$volume.x, post=a_20_tmpls$volume.y)
+bland_altman_plot(avg) + 
+  xlab('Mean of MA and MAGeT HC Left/Right Volumes') + 
+  ylab('MA - MAGeT Volume') + 
+  opts(title = 'Bland-Altman Plot')
+@
+  \caption{Change in mean Kappa between multi-atlas and MAGeT brain using ANTS, 20 templates}
+  \label{}
+\end{figure}
+
+
+\begin{figure}
 <<ADN1-Xval-k-by-disease, cache=TRUE, dependson='ADNI1-Xval-prep'>>=
 a_20_tmpls = subset(all_data, 
                       reg_method  == "ANTS" &
@@ -882,8 +985,8 @@ a_20_tmpls = merge(a_20_tmpls, template_library,
                    by.y=c('timestamp', 'templates'))
 ggplot(a_20_tmpls, aes(y=k.y, x=templates_CN,colour=DX)) +  # why does k.x look the same?
   facet_grid( . ~ atlases) + 
-  geom_smooth(method='lm',fullrange=F)
-
+  geom_smooth(method='lm',fullrange=F) 
+ # add 
 @
   \caption{Mean kappa vs. proportion of disease category in template library by disease category}
   \label{}
@@ -915,6 +1018,7 @@ Ideas:
 
 \todo{show cost (in registrations) / benefit tradec off graph:  show number of
 registrations per Kappa?  or hours of manual labour per Kappa?)}
+% discuss run-time for each of MAGet and multi-atlas 
 
 %%%%%
 %%%%%                  Results: ADNI-1 Screening Validation               %%%%%
@@ -976,26 +1080,28 @@ dx = adnimerge[c("DX.bl", "RID", "VISCODE")]
 combined = merge(subjects, mb_pruned   , by.x="Image.Data.ID", by.y="Source", all.x=TRUE)
 combined = merge(combined, maper_pruned, by.x="Image.Data.ID", by.y="Source", all.x=TRUE)  # only Baseline
 combined = merge(combined, snt_pruned  , by.x="Image.Data.ID", by.y="Source", all.x=TRUE)
-combined = merge(combined, ucsd_pruned , by=c("RID", "VISCODE"), all.x =TRUE)              # TODO: this a unique key?
+#combined = merge(combined, ucsd_pruned , by=c("RID", "VISCODE"), all.x =TRUE)              # TODO: this a unique key?
 combined = merge(combined, fs_pruned   , by.x="Image.Data.ID", by.y="Source", all.x=TRUE)
 combined = merge(combined, fsl_pruned  , by.x="Image.Data.ID", by.y="Source", all.x=TRUE)
 combined = merge(combined, dx          , by=c("RID","VISCODE"), all.x=TRUE)
 
 attach(combined)
-totals = data.frame(RID = RID, VISCODE = VISCODE, DX = DX.bl,
+totals = data.frame(RID = RID, VISCODE = VISCODE, DX = factor(DX.bl),
                   MAGeT = MAGeT_L + MAGeT_R, 
                   MAPER = MAPER_L + MAPER_R, 
                   SNT   = SNT_L + SNT_R, 
-                  UCSD  = UCSD_L + UCSD_R,
+                  #UCSD  = UCSD_L + UCSD_R,
                   FS    = FS_L + FS_R, 
                   FSL   = FSL_L + FSL_R)
+
 detach(combined)
-complete_totals = subset(totals, !is.na(SNT) & !is.na(FSL) & !is.na(FS) & !is.na(MAPER) & !is.na(MAGeT))
+#complete_totals = subset(totals, !is.na(SNT) & !is.na(FSL) & !is.na(FS) & !is.na(MAPER) & !is.na(MAGeT))
+totals.complete = na.omit(totals)
 @
 
 \begin{figure}[h]
 <<ADNI-scr-volumes-boxplot,dependson='ADNI-baseline-volumes-prep',cache=T>>=
-qplot(DX,value,data=melt(complete_totals,measure.vars=c("FS", "FSL","UCSD", "MAPER","MAGeT","SNT")),
+qplot(DX,value,data=melt(totals.complete,measure.vars=c("FS", "FSL", "MAPER","MAGeT","SNT")),
       colour=variable,geom="boxplot") + 
       xlab("Diagnosis") + ylab("Total Hippocampal Volume (mm3)")
 @
@@ -1003,9 +1109,12 @@ qplot(DX,value,data=melt(complete_totals,measure.vars=c("FS", "FSL","UCSD", "MAP
   \label{ADNI-scr-volumes-boxplot}
 \end{figure}
 
+% paired t-test against SNT to show similarity (should be low) 
+% Kruskal-Willis against  (should be high?)
+% post-hoc power analysis to say we can detect this change
 \begin{figure}[h]
 <<ADNI-scr-histogram,dependson='ADNI-baseline-volumes-boxplot',cache=T>>=
-melted   = melt(complete_totals, measure.vars=c( "SNT","FSL","FS","MAPER","MAGeT"))
+melted   = melt(totals.complete, measure.vars=c( "SNT","FSL","FS","MAPER","MAGeT"))
 binwidth = 250
 
 # prepare the normals
@@ -1029,21 +1138,34 @@ testsdf <- ddply(melted, c("variable", "DX"), function(df) {
   )
 })
 
+
+melted.by.snt = melt(totals.complete, measure.vars=c("MAGeT","FSL", "FS", "MAPER"))
+snt.tests <- ddply(melted.by.snt, c("variable", "DX"), function(df) {
+  ks = ks.test(df$SNT, df$value)
+  data.frame( 
+    ks.D = ks$statistic,
+    ks.p = ks$p.value
+  )
+})
+
 label_x_pos = 10000
 ggplot(data=melted, aes(x=value)) + 
   geom_histogram(binwidth=binwidth, alpha=0.8) + 
   geom_line(aes(y=freq, colour='red'), data=normaldf) +
   geom_text(aes(y=29,x=label_x_pos,hjust=1,size=1, 
                 label=paste("list(W ==",signif(shapiro.w, digits=3), ", p == ", 
-                            signif(shapiro.p,digits=3), ")")
-                ), parse=TRUE,
-            data=testsdf) + 
+                            signif(shapiro.p,digits=3), ")")), 
+            parse=TRUE, data=testsdf) +
   geom_text(aes(y=25,x=label_x_pos,hjust=1,size=1, 
-                label=paste("sigma ==",signif(sd, digits=3))), parse=TRUE,
-            data=testsdf) + 
+                label=paste("list(D ==",signif(ks.D, digits=3), ", p == ", 
+                            signif(ks.p,digits=3), ")")), 
+            parse=TRUE, data=snt.tests) + 
   geom_text(aes(y=21,x=label_x_pos,hjust=1,size=1, 
-                label=paste("mu ==",signif(mean, digits=3))), parse=TRUE,
-            data=testsdf) + 
+                label=paste("sigma ==",signif(sd, digits=3))), 
+            parse=TRUE, data=testsdf) + 
+  geom_text(aes(y=17,x=label_x_pos,hjust=1,size=1, 
+                label=paste("mu ==",signif(mean, digits=3))), 
+            parse=TRUE,data=testsdf) + 
   xlim(0, 10000) + ylim(0,30) + 
   facet_grid(variable ~ DX) + 
   scale_colour_discrete(legend=FALSE) + 
@@ -1053,62 +1175,17 @@ ggplot(data=melted, aes(x=value)) +
        y="Frequency") + 
   opts(axis.title.x = theme_text(vjust=-0.1))
 @
-  \caption{{\bf ADNI Baseline cohort.} Comparison of total hippocampal volumes as measured by SNT, FSL, FreeSurfer (FS), MAPER, and MAGeT brain (MAGeT). A fitted normal curve is shown in red. $W$ is the Shapiro-Wilkes test statistic measuring normality of the data (low p-values indicate non-normality).}
+  \caption{{\bf ADNI Baseline cohort.} Comparison of total hippocampal volumes as measured by SNT, FSL, FreeSurfer (FS), MAPER, and MAGeT brain (MAGeT). A fitted normal curve is shown in red. $W$ is the Shapiro-Wilkes test statistic measuring normality of the data (signficance indicates non-normality). $D$ is the Kolmogorov-Smirnov test statistic measuring the goodness-of-fit between the distribution of measured volumes and SNT volumes (significance indicates a difference).}
   \label{ADNI-scr-histogram}
 \end{figure}
 
+% 
 
-\begin{figure}[h]
-<<ADNI-src-volumes-plot,echo=F,fig=T, fig.align='center',dependson='ADNI-baseline-volumes-boxplot',cache=T>>=
-by_snt_volumes = melt(totals, measure.vars=c( "SNT","FSL","FS","MAPER","MAGeT"))
-
-with(by_snt_volumes,
-ggplot(data=by_snt_volumes, aes(x=value)) + geom_histogram(binwidth=250) +
-    facet_grid( variable ~ DX) 
-     )
-#     geom_text(aes(
-#       label=paste("MAPER R=", round(cor(maper$SNT,maper$value, use="complete.obs"), 2), 
-#                   ", p<", t.test(maper$SNT,maper$value, paired=T)["p.value"]), 
-#       x=1800,y= 9500, hjust=0, size=2)) +
-#     geom_text(aes(
-#       label=paste("MAGeT  R=", round(cor(maget$SNT,maget$value, use="complete.obs"),2), 
-#                   ", p<", t.test(maget$SNT,maget$value, paired=T)["p.value"]), 
-#       x=1800,y= 9000, hjust=0, size=2)) +
-#   xlab("Total Hippocampal Volume (Manual Segmentation)") + 
-#   ylab("Total Hippocampal Volume (Automatic Segmentation)")) 
-@
-  \caption{{\bf ADNI Baseline cohort.} Comparison of HC volumes by FreeSurfer
-  (FSF), MAGeT brain (MAGeT), MAPER, and manual (SNT).}
-  \label{ADNI-baseline-volumes-plot}
-\end{figure}
-
-
-\begin{figure}[h]
-<<ADNI-src-volumes-plot,echo=F,fig=T, fig.align='center',dependson='ADNI-baseline-volumes-boxplot',cache=T>>=
-by_snt_volumes = melt(totals, measure.vars=c( "SNT","FSL","FS","MAPER","MAGeT"))
-
-with(by_snt_volumes,
-ggplot(data=by_snt_volumes, aes(x=value)) + geom_histogram(binwidth=250) +
-    facet_grid( variable ~ DX) 
-     )
-#     geom_text(aes(
-#       label=paste("MAPER R=", round(cor(maper$SNT,maper$value, use="complete.obs"), 2), 
-#                   ", p<", t.test(maper$SNT,maper$value, paired=T)["p.value"]), 
-#       x=1800,y= 9500, hjust=0, size=2)) +
-#     geom_text(aes(
-#       label=paste("MAGeT  R=", round(cor(maget$SNT,maget$value, use="complete.obs"),2), 
-#                   ", p<", t.test(maget$SNT,maget$value, paired=T)["p.value"]), 
-#       x=1800,y= 9000, hjust=0, size=2)) +
-#   xlab("Total Hippocampal Volume (Manual Segmentation)") + 
-#   ylab("Total Hippocampal Volume (Automatic Segmentation)")) 
-@
-  \caption{{\bf ADNI Baseline cohort.} Comparison of HC volumes by FreeSurfer
-  (FSF), MAGeT brain (MAGeT), MAPER, and manual (SNT).}
-  \label{ADNI-baseline-volumes-plot}
-\end{figure}
-
+% show as a plot
 <<ADNI-scr-summary-table, echo=F, results="asis",cache=FALSE>>=
-melted = melt(totals, measure.vars=c("FSL","MAPER","SNT", "FS", "UCSD"))
+# a rather dirty way of computing the pairwise correlations and then forming
+# a printable table out of them.  Sorry.
+melted = melt(totals.complete, measure.vars=c("SNT","FSL", "FS", "MAPER"))
 cor_by_dx    = by(melted[c("MAGeT", "value")], c(melted['variable'], melted['DX']), 
                   function(x) cor(x$MAGeT,x$value, use="pairwise.complete.obs"))
 cor_overall  = by(melted[c("MAGeT", "value")], melted['variable'], 
@@ -1116,17 +1193,17 @@ cor_overall  = by(melted[c("MAGeT", "value")], melted['variable'],
 cor_by_dx = t(rbind(cor_by_dx))
 cor_overall = rbind(cor_overall)
 
-vol_by_dx = t(rbind(by(totals$MAGeT, totals$DX, mean)))
+vol_by_dx = t(rbind(by(totals.complete$MAGeT, totals.complete$DX, mean)))
 colnames(vol_by_dx) <- "Mean Volume"
-vol_overall = matrix(mean(totals$MAGeT),dimnames=list("Overall"))
+vol_overall = matrix(mean(totals.complete$MAGeT),dimnames=list("Overall"))
 
 dx      = cbind(vol_by_dx, cor_by_dx)
-overall <- cbind(vol_overall, cor_overall)
-
-latex(format.df(rbind(dx, overall), dec=2),
-      n.cgroup=c(1,5),cgroup=c("","Volume Correlation"),
-      n.rgroup=c(4,1), file="", size="scriptsize")
-
+overall = cbind(vol_overall, cor_overall)
+df      = format.df(rbind(dx, overall), dec=2)
+                    
+latex(df, title="",
+      n.cgroup=c(1,ncol(df)-1),cgroup=c("","Volume Correlation"),
+      )#file="", size="scriptsize")
 @
 
 %%%%%
@@ -1172,29 +1249,41 @@ gold_0.6mm_total = gold_0.6mm[,2:6] + gold_0.6mm[,7:11]
 mb_bravo_total   = mb_bravo[,2:6] + mb_bravo[,7:11]
 mb_0.6mm_total   = mb_0.6mm[,2:6] + mb_0.6mm[,7:11]
 
-gold_diff     = (gold_0.3mm_total - gold_0.6mm_total)/gold_0.3mm_total
-mb_bravo_diff = (gold_0.3mm_total - mb_bravo_total)/gold_0.3mm_total
-mb_0.6mm_diff = (gold_0.3mm_total - mb_0.6mm_total)/gold_0.3mm_total
+# calculate percent error from the gold standard measured at 0.3mm resolution
+pe_gold0.6mm = (gold_0.6mm_total - gold_0.3mm_total)/gold_0.3mm_total * 100
+pe_mbbravo   = (mb_bravo_total - gold_0.3mm_total)/gold_0.3mm_total * 100
+pe_mb0.6mm   = (mb_0.6mm_total - gold_0.3mm_total)/gold_0.3mm_total * 100
 
 subjects = gold_0.6mm[,1]
-mb0.6mm_diff_over_gold_diff = cbind(subjects, mb_0.6mm_diff - mean(gold_diff) , res="diffdff")
-gold_diff     = cbind(subjects,gold_diff, res="0.3mm gold & 0.6mm gold")
-mb_bravo_diff = cbind(subjects,mb_bravo_diff, res="0.3mm gold & MAGeT-on-BRAVO")
-mb_0.6mm_diff = cbind(subjects,mb_0.6mm_diff, res="0.3mm gold & MAGeT-at-0.6mm")
+pe_gold0.6mm = cbind(subjects,pe_gold0.6mm, res="Resampling to 0.6mm")
+pe_mbbravo   = cbind(subjects,pe_mbbravo,   res="MAGeT-on-BRAVO")
+pe_mb0.6mm   = cbind(subjects,pe_mb0.6mm,   res="MAGeT-at-0.6mm")
 
 
-diff = rbind(mb_bravo_diff,mb_0.6mm_diff,gold_diff, mb0.6mm_diff_over_gold_diff)
-names(diff) <- c("subject", "CA1", "Subiculum", "CA4", "CA2/CA3", "Dentate", "res")
+pe = rbind(pe_mbbravo,pe_mb0.6mm, pe_gold0.6mm)
+names(pe) <- c("subject", "CA1", "Subiculum", "CA4", "CA2/CA3", "Dentate", "res")
 
-melted = melt(diff, id.vars=c("subject", "res"))
-names(melted) <- c("subject","res", "region","voldiff")
-ggplot(melted, aes(y=voldiff,x=region)) +
-  geom_boxplot() + facet_grid( . ~ res)  + 
-  labs(title="Percent difference in MAGeT volumes from original",
-       y="Percent difference in volume", 
+melted = melt(pe, id.vars=c("subject", "res"))
+names(melted) <- c("subject","res", "region","percenterr")
+ggplot(melted, aes(y=percenterr,x=region)) +
+  geom_boxplot(aes(colour=res)) +
+  labs(title="Percent error in volumes under different measurement regimes",
+       y="Percent error in volume", 
        x="Region") 
 @
 
+<<WAval-error,cach=T>>=
+# compare % error between MAGeT and resampling
+mb0.6mm_diff_over_gold_diff = cbind(subjects, abs(gold_diff) - abs(mb_0.6mm_diff), res="diffdff")
+names(mb0.6mm_diff_over_gold_diff) <- c("subject", "CA1", "Subiculum", "CA4", "CA2/CA3", "Dentate", "res")
+melted = melt(mb0.6mm_diff_over_gold_diff, id.vars=c("subject", "res"))
+names(melted) <- c("subject","res", "region","voldiff")
+ggplot(melted, aes(y=voldiff,x=region)) +
+  geom_boxplot() +
+  labs(title="Absolute difference in % difference between MAGeT and resampling",
+       y="Absolute difference in % difference in volume", 
+       x="Region")
+@
 <<WAval-kappa,cache=T>>=
 data = read.csv('data/WAval-kappa.csv')
 ggplot(data, aes(x=label, y=kappa)) + geom_boxplot(y=kappa)
