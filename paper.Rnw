@@ -823,11 +823,11 @@ remove(t_ma, a_ma, t_mb, a_mb, ma, mb)
 
 \begin{figure}
 <<ADN1-Xval-k-mean, cache=TRUE, dependson='ADNI1-Xval-prep'>>=
-ggplot(all_data, aes(x=templates.y,y=k.y, colour=as.factor(atlases))) + 
+ggplot(subset(all_data, reg_method=="ANTS"), aes(x=templates.y,y=k.y, colour=as.factor(atlases))) + 
   facet_grid(reg_method~method.y) + 
-  #stat_summary(fun.y=mean,geom='line',
-  #             aes(y=k.y)) + 
-  stat_smooth(method='lm', formula=y~log(x)) + 
+  stat_summary(fun.y=mean,geom='line',
+               aes(y=k.y, weight=1)) + 
+  #stat_smooth(method='lm', formula=y~log(x)) + 
   scale_colour_hue(name="Atlases") +
   xlab( "Number of Templates" ) + 
   ylab( "Mean DSC" )
@@ -840,17 +840,20 @@ ggplot(all_data, aes(x=templates.y,y=k.y, colour=as.factor(atlases))) +
 
 \begin{figure}
 <<ADN1-Xval-k-diff, cache=TRUE, dependson='ADNI1-Xval-prep'>>=
-ggplot(subset(all_data, reg_method=="ANTS" & method.y=="Majority Vote"), 
+ggplot(subset(all_data, reg_method=="ANTS" & method.y=="Majority Vote" &
+                templates.y %in% seq(1,20,2)), 
        aes(x=templates.y, y=k_diff, colour=as.factor(atlases))) + 
   #facet_grid(reg_method~method.y) + 
   stat_summary(fun.data=mean_cl_boot,geom='errorbar',
                aes(y=k_diff,colour=as.factor(atlases), width=0.2)) +
   stat_summary(fun.y=mean, geom="point", 
                aes(y=k_diff,colour=as.factor(atlases))) + 
+  stat_summary(fun.y=mean, geom="line", 
+               aes(y=k_diff,colour=as.factor(atlases))) + 
   #stat_smooth(method=lm, formula=y~log(x)) + 
   geom_hline(aes(alpha=0.5, yintercept=0), linetype='dashed') + 
   coord_cartesian(ylim=c(-0.1,0.05)) + 
-  scale_x_continuous(breaks=1:20) + scale_y_continuous(breaks=seq(-1,1,by=0.01)) + 
+  scale_x_continuous(breaks=seq(1,20,2)) + scale_y_continuous(breaks=seq(-1,1,by=0.01)) + 
   scale_colour_hue(name="Atlases") +
   scale_alpha_continuous(legend=FALSE) + 
   scale_linetype_discrete(legend=FALSE) + 
@@ -866,34 +869,51 @@ ggplot(subset(all_data, reg_method=="ANTS" & method.y=="Majority Vote"),
 <<ADN1-Xval-k-sd-t-test-p-plot, cache=TRUE, dependson='ADNI1-Xval-prep'>>=
     ANTSmajvote = subset(all_data, reg_method=="ANTS" & method.y=="Majority Vote")
 
-stddev = ddply(ANTSmajvote, c("subject", "label","atlases","templates.y"), function (df) {
+data.stats = ddply(ANTSmajvote, c("subject", "label","atlases","templates.y"), function (df) {
   data.frame(
-    MA = sd(df$k.x),
-    MB = sd(df$k.y) 
+    MA.sd  =  sd(df$k.x),
+    MB.sd  =  sd(df$k.y),
+    MA.var = var(df$k.x),
+    MB.var = var(df$k.y)    
   )
 })
 
-stddev.t.test = ddply(stddev, c("atlases","templates.y"), function (df) {
-  t = t.test(df$MA, df$MB)
+stats.tests = ddply(data.stats, c("atlases","templates.y"), function (df) {
+  t.var = t.test(df$MA.var, df$MB.var)
+  t.sd  = t.test(df$MA.sd , df$MB.sd)
   data.frame(
-    statistic = t$statistic, 
-    p.value = t$p.value
+    stat      = c("var", "sd"),
+    statistic = c(t.var$statistic, t.sd$statistic),
+    p.value   = c(t.var$p.value, t.sd$p.value)
   )
 })
 
-ggplot(stddev.t.test, 
+ggplot(stats.tests, 
        aes(x=templates.y, y=p.value, colour=as.factor(atlases))) + 
+  facet_grid( . ~ stat) + 
   geom_line() + 
   geom_hline(aes(yintercept=0.05), linetype='dashed') + 
   scale_colour_hue(name="Atlases") +
   scale_alpha_continuous(guide='none') + 
   scale_linetype_discrete(guide='none') + 
   scale_x_continuous(breaks=1:20) + scale_y_continuous(breaks=seq(0,1,by=0.05)) + 
-  scale_y_log10() + 
   xlab( "Number of Templates" ) + 
   ylab( "p-value" ) 
+
+  
 @
 \end{figure}
+
+<<ADN1-Xval-sd-by-subject, cache=TRUE, dependson='ADNI1-Xval-prep'>>=
+SDs = data.stats[c('subject','label','atlases','templates.y','MA.sd','MB.sd')]
+SDs = subset(SDs, templates.y %in% c(5,10,15,20) & atlases == 5)
+
+melted = melt(SDs, measure.vars=c('MA.sd','MB.sd'))
+ggplot(melted, aes(x=templates.y, y=value, 
+                   group=interaction(templates.y, variable), colour=as.factor(variable))) + 
+  scale_x_continuous(breaks=c(5,10,15,20)) + 
+  geom_violin() 
+@
 
 %- show variance in MAGeT performance by showing nine plots, each with mean multi-atlas performance plotted.
 
