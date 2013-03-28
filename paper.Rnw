@@ -1,8 +1,8 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Sweave/Knitr init
 <<setup, include=FALSE, cache=FALSE>>=
-opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE, 
-    fig.align = 'center', tidy = FALSE, comment = NA, cache = TRUE)
+#opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE, 
+#    fig.align = 'center', tidy = FALSE, comment = NA, cache = TRUE)
 library(ggplot2)
 library(Hmisc)
 library(reshape2)
@@ -773,6 +773,7 @@ Segmentation accuracy is judged by difference in hippocampal volume.
 %%%%%
 \subsection{ADNI-1 Cross-Validation}
 
+
 %                                                                              %
 % ADNI1 Screening Validation - results preparation                             %
 %                                                                              %
@@ -819,11 +820,34 @@ remove(t_ma, a_ma, t_mb, a_mb, ma, mb)
 @
 %                                                                              %
 %                                                                              %
- % Bland-Altman plot for MA and MAGeT 
+
+% TODO: Bland-Altman plot for MA and MAGeT 
+
+Hippocampal MAGeT-based segmentations using both ANIMAL and ANTs registration
+algorithm demonstrate good overlap with manually derived gold-standards ( Figure
+\ref{fig:ADNI1-xval-k-mean}, \todo{table?}) using each label fusion method.
+Qualitatively, both ANIMAL and ANTs-based segmentations demonstrate trend
+overlap accuracy that increases with the size of atlas library and template
+library, with at least 12 templates needed for optimal results
+\todo{quantify?}).  No significant difference in segmentation accuracy is seen
+when either ANIMAL or ANTs registration is used with different label fusion
+techniques, at any atlas or template library sizes (\todo{lm of interaction?).
+In every parameter configuration, the use of MAGeT Brain with ANTs registration
+shows increased segmentation accuracy over MAGeT Brain with ANIMAL registration
+(\todo{interaction?}).
+
+It is interesting to note that with an even number of templates, MAGeT brain
+shows a small decrease in performance relative to when one fewer template image
+is used (\todo{show significance of this}). See section (\todo{ref}) for a
+discussion of this behaviour. In the remainder of this section, only results
+from odd-sized template libraries will be shown. 
+
 
 \begin{figure}
-<<ADN1-Xval-k-mean, cache=TRUE, dependson='ADNI1-Xval-prep'>>=
-ggplot(all_data, aes(x=templates.y,y=k.y, colour=as.factor(atlases))) + 
+<<ADN1-xval-k-mean, cache=TRUE, dependson='ADNI1-Xval-prep'>>=
+
+ggplot(subset(all_data, method == 'majvote'), 
+       aes(x=templates.y,y=k.y, colour=as.factor(atlases))) + 
   facet_grid(reg_method~method.y) + 
   #stat_summary(fun.y=mean,geom='line',
   #             aes(y=k.y)) + 
@@ -837,6 +861,14 @@ ggplot(all_data, aes(x=templates.y,y=k.y, colour=as.factor(atlases))) +
 \end{figure}
 
 
+With an increasing number of templates, MAGeT-based segmentating using ANTs
+registration and majority vote label fusion shows improvement in overlap
+accuracy over multi-atlas-based segmentation, using the same number of atlases
+and voting method Figure \todo{ref}. The magnitude of improvement over
+multi-atlas-based segmentation decreases with an increasing number of atlases,
+with accuracy converging with 7 atlases.  Peak improvement in MAGeT Brain
+accuracy (0.02 DSC) is found when one atlas is used with a template library of
+20 images. \todo{stats?}
 
 \begin{figure}
 <<ADN1-Xval-k-diff, cache=TRUE, dependson='ADNI1-Xval-prep'>>=
@@ -860,6 +892,13 @@ ggplot(subset(all_data, reg_method=="ANTS" & method.y=="Majority Vote"),
   \caption{Increase in mean Kappa between MAGeT brain and multi-atlas}
   \label{ADNI1_cross_validation_MA_difference}
 \end{figure}
+
+
+In addition to an improvement in accuracy over multi-atlas-based segmentation,
+MAGeT Brain also shows a decrease in the variability of segmentation accuracy
+with different input atlases (Figure \todo{ref}).  Additionally, variability
+decreases with the size of template library, and is significantly decreased
+(p<0.05) when using 3-7 atlases and 17 or more templates. 
 
 
 \begin{figure}
@@ -889,7 +928,6 @@ ggplot(stddev.t.test,
   scale_alpha_continuous(guide='none') + 
   scale_linetype_discrete(guide='none') + 
   scale_x_continuous(breaks=1:20) + scale_y_continuous(breaks=seq(0,1,by=0.05)) + 
-  scale_y_log10() + 
   xlab( "Number of Templates" ) + 
   ylab( "p-value" ) 
 @
@@ -914,7 +952,8 @@ ggplot(a_20_tmpls, aes(x=factor(atlases))) +
   coord_cartesian(ylim=c(0.7,0.9))
   #theme(legend.justification=c(1,0), legend.position=c(1,0))
 @
-  \caption{Change in mean Kappa between multi-atlas and MAGeT brain using ANTS, 20 templates}
+  \caption{Change in mean Kappa between multi-atlas and MAGeT brain using ANTS,
+  20 templates}
   \label{}
 \end{figure}
 
@@ -944,99 +983,79 @@ t.test(stddev$MA, stddev$MB)
 \end{figure}
 
 
-\begin{figure}
-<<ADN1-Xval-ANTS-20tmpls-Bland-Atlman, cache=TRUE, dependson='ADNI1-Xval-prep'>>=
-a_20_tmpls = subset(all_data, 
-                      reg_method  == "ANTS" &
-                      method.y    == "Majority Vote" &
-                      templates.y == 20 &
-                      atlases     == 9 &
-                      volume.x < 10000)
-avg = ddply(a_20_tmpls, c("subject", "label"), function (df) {
-  data.frame(
-    pre = mean(df$volume.x),  #MA
-    post = mean(df$volume.y)  #MB
-  )
-})
-# TODO: against SNT
-
-#df = data.frame(pre=a_20_tmpls$volume.x, post=a_20_tmpls$volume.y)
-bland_altman_plot(avg) + 
-  xlab('Mean of MA and MAGeT HC Left/Right Volumes') + 
-  ylab('MA - MAGeT Volume') + 
-  opts(title = 'Bland-Altman Plot')
-@
-  \caption{Change in mean Kappa between multi-atlas and MAGeT brain using ANTS, 20 templates}
-  \label{}
-\end{figure}
-
-
-\begin{figure}
-<<ADN1-Xval-k-by-disease, cache=TRUE, dependson='ADNI1-Xval-prep'>>=
-a_20_tmpls = subset(all_data, 
-                      reg_method  == "ANTS" &
-                      method.y    == "Majority Vote" &
-                      templates.y == 20 &
-                      atlases %in% c(1,9))
-template_library = read.csv('data/a2a_ants/template_library_composition.csv')
-template_library$subject = NULL
-a_20_tmpls = merge(a_20_tmpls, template_library,
-                   by.x=c('timestamp', 'templates.y'), 
-                   by.y=c('timestamp', 'templates'))
-ggplot(a_20_tmpls, aes(y=k.y, x=templates_CN,colour=DX)) +  # why does k.x look the same?
-  facet_grid( . ~ atlases) + 
-  geom_smooth(method='lm',fullrange=F) 
- # add 
-@
-  \caption{Mean kappa vs. proportion of disease category in template library by disease category}
-  \label{}
-\end{figure}
-
-- find significant improvement over multi-atlas performed with the same
-  parameters. Also, find smoothed performance is monotonically increasing but
-  asymptotic in size of both template and atlas library, with peak performance
-  reached after 15 templates. 
-  
-- True for all parameter settings! (so works generally..)
-\todo{Can we statistically capture what "peak" performance is?  Something like,
-the point at which gains become statistically insignificant?}
-
-
-
-Ideas:
-\begin{itemize}
-\item more atlases -> better performance
-\item  larger template library -> better performance, but tails off around 10-15 templates
-\item  no significant difference between majority or weighted vote methods (haven???t tested this statistically though). 
-\item  consistently performs better than average naive performance by XXX
-\item  using ANTS, with a large enough template library (>12) MAGeT brain performs
-  better than the average multi-atlas approach with the same number of atlases.
-  using ANIMAL, 5 or more atlases needed before boost seen. 
-\item  more atlases -> smaller template library required to improve on average multi-atlas performance
-\item  discuss variance?  best/worst case? --how often do we expect random template library selection to work decently
-\end{itemize}
-
-\todo{show cost (in registrations) / benefit tradec off graph:  show number of
-registrations per Kappa?  or hours of manual labour per Kappa?)}
+% \begin{figure}
+% <<ADN1-Xval-ANTS-20tmpls-Bland-Atlman, cache=TRUE, dependson='ADNI1-Xval-prep'>>=
+% a_20_tmpls = subset(all_data, 
+%                       reg_method  == "ANTS" &
+%                       method.y    == "Majority Vote" &
+%                       templates.y == 20 &
+%                       atlases     == 9 &
+%                       volume.x < 10000)
+% avg = ddply(a_20_tmpls, c("subject", "label"), function (df) {
+%   data.frame(
+%     pre = mean(df$volume.x),  #MA
+%     post = mean(df$volume.y)  #MB
+%   )
+% })
+% # TODO: against SNT
+% 
+% #df = data.frame(pre=a_20_tmpls$volume.x, post=a_20_tmpls$volume.y)
+% bland_altman_plot(avg) + 
+%   xlab('Mean of MA and MAGeT HC Left/Right Volumes') + 
+%   ylab('MA - MAGeT Volume') + 
+%   opts(title = 'Bland-Altman Plot')
+% @
+%   \caption{Change in mean Kappa between multi-atlas and MAGeT brain using ANTS, 20 templates}
+%   \label{}
+% \end{figure}
+% 
+% 
+% \begin{figure}
+% <<ADN1-Xval-k-by-disease, cache=TRUE, dependson='ADNI1-Xval-prep'>>=
+% a_20_tmpls = subset(all_data, 
+%                       reg_method  == "ANTS" &
+%                       method.y    == "Majority Vote" &
+%                       templates.y == 20 &
+%                       atlases %in% c(1,9))
+% template_library = read.csv('data/a2a_ants/template_library_composition.csv')
+% template_library$subject = NULL
+% a_20_tmpls = merge(a_20_tmpls, template_library,
+%                    by.x=c('timestamp', 'templates.y'), 
+%                    by.y=c('timestamp', 'templates'))
+% ggplot(a_20_tmpls, aes(y=k.y, x=templates_CN,colour=DX)) +  # why does k.x look the same?
+%   facet_grid( . ~ atlases) + 
+%   geom_smooth(method='lm',fullrange=F) 
+%  # add 
+% @
+%   \caption{Mean kappa vs. proportion of disease category in template library by disease category}
+%   \label{}
+% \end{figure}
+% 
+% 
+% \todo{show cost (in registrations) / benefit tradec off graph:  show number of
+% registrations per Kappa?  or hours of manual labour per Kappa?)}
 % discuss run-time for each of MAGet and multi-atlas 
 
 %%%%%
 %%%%%                  Results: ADNI-1 Screening Validation               %%%%%
 %%%%%
-\subsection{ADNI-1 Screen Validation}
+\subsection{ADNI-1 Screening Validation}
 
 
-Ideas: 
-\begin{itemize}
-\item  A2A shows that if atlas population strongly(?) represents subject set
-variability, then free choice from atlas population will produce improvements
-(we know this b/c of extensive validation trials). 
-\item  what about in the case where atlas population doesn???t strongly
-represent subject set variability (e.g. a priori atlas set)?  then, we can use
-atlas selection to refine atlas set? 
-\end{itemize}
+Based on the results from the ADNI1 Cross-Validation experiment, MAGeT Brain was
+configured with a template library of 20 subject images and majority vote label
+fusion. 
 
-\todo{Kappa against our manual rater is low... explain that}
+% \begin{itemize}
+% \item  A2A shows that if atlas population strongly(?) represents subject set
+%        variability, then free choice from atlas population will produce
+%        improvements (we know this b/c of extensive validation trials). 
+% \item  what about in the case where atlas population doesn???t strongly
+%        represent subject set variability (e.g. a priori atlas set)?  then, we
+%        can use atlas selection to refine atlas set? 
+% \end{itemize}
+% 
+% \todo{Kappa against our manual rater is low... explain that}
 
 <<ADNI-src-volumes-prep,echo=F,cache=T>>=
 bl1.5T= read.csv("data/ADNI_baseline_volumes/ADNI1_Screening_1.5T_11_15_2012.csv")
@@ -1113,7 +1132,7 @@ qplot(DX,value,data=melt(totals.complete,measure.vars=c("FS", "FSL", "MAPER","MA
 % Kruskal-Willis against  (should be high?)
 % post-hoc power analysis to say we can detect this change
 \begin{figure}[h]
-<<ADNI-scr-histogram,dependson='ADNI-baseline-volumes-boxplot',cache=T>>=
+<<ADNI-scr-histogram,cache=T>>=
 melted   = melt(totals.complete, measure.vars=c( "SNT","FSL","FS","MAPER","MAGeT"))
 binwidth = 250
 
@@ -1168,14 +1187,20 @@ ggplot(data=melted, aes(x=value)) +
             parse=TRUE,data=testsdf) + 
   xlim(0, 10000) + ylim(0,30) + 
   facet_grid(variable ~ DX) + 
-  scale_colour_discrete(legend=FALSE) + 
-  scale_size_continuous(legend=FALSE) + 
+  scale_colour_discrete(guide="none") + 
+  scale_size_continuous(guide="none") + 
   labs(title="Total hippocampus volume by disease and measurement method", 
        x=expression(paste("Total hippocampal volume (", mm^2, ")")),
        y="Frequency") + 
-  opts(axis.title.x = theme_text(vjust=-0.1))
+  theme(axis.title.x = element_text(vjust=-0.1))
 @
-  \caption{{\bf ADNI Baseline cohort.} Comparison of total hippocampal volumes as measured by SNT, FSL, FreeSurfer (FS), MAPER, and MAGeT brain (MAGeT). A fitted normal curve is shown in red. $W$ is the Shapiro-Wilkes test statistic measuring normality of the data (signficance indicates non-normality). $D$ is the Kolmogorov-Smirnov test statistic measuring the goodness-of-fit between the distribution of measured volumes and SNT volumes (significance indicates a difference).}
+  \caption{{\bf ADNI Baseline cohort.} Comparison of total hippocampal volumes
+  as measured by SNT, FSL, FreeSurfer (FS), MAPER, and MAGeT brain (MAGeT). A
+  fitted normal curve is shown in red. $W$ is the Shapiro-Wilkes test statistic
+  measuring normality of the data (signficance indicates non-normality). $D$ is
+  the Kolmogorov-Smirnov test statistic measuring the goodness-of-fit between
+  the distribution of measured volumes and SNT volumes (significance indicates a
+  difference).}
   \label{ADNI-scr-histogram}
 \end{figure}
 
@@ -1185,11 +1210,11 @@ ggplot(data=melted, aes(x=value)) +
 <<ADNI-scr-summary-table, echo=F, results="asis",cache=FALSE>>=
 # a rather dirty way of computing the pairwise correlations and then forming
 # a printable table out of them.  Sorry.
-melted = melt(totals.complete, measure.vars=c("SNT","FSL", "FS", "MAPER"))
-cor_by_dx    = by(melted[c("MAGeT", "value")], c(melted['variable'], melted['DX']), 
-                  function(x) cor(x$MAGeT,x$value, use="pairwise.complete.obs"))
-cor_overall  = by(melted[c("MAGeT", "value")], melted['variable'], 
-                  function(x) cor(x$MAGeT,x$value, use="pairwise.complete.obs"))
+melted = melt(totals.complete, measure.vars=c("MAGeT","FSL", "FS", "MAPER"))
+cor_by_dx    = by(melted[c("SNT", "value")], c(melted['variable'], melted['DX']), 
+                  function(x) cor(x$SNT,x$value, use="pairwise.complete.obs"))
+cor_overall  = by(melted[c("SNT", "value")], melted['variable'], 
+                  function(x) cor(x$SNT,x$value, use="pairwise.complete.obs"))
 cor_by_dx = t(rbind(cor_by_dx))
 cor_overall = rbind(cor_overall)
 
@@ -1203,7 +1228,7 @@ df      = format.df(rbind(dx, overall), dec=2)
                     
 latex(df, title="",
       n.cgroup=c(1,ncol(df)-1),cgroup=c("","Volume Correlation"),
-      )#file="", size="scriptsize")
+      file="", size="scriptsize")
 @
 
 %%%%%
@@ -1285,7 +1310,7 @@ ggplot(melted, aes(y=voldiff,x=region)) +
        x="Region")
 @
 <<WAval-kappa,cache=T>>=
-data = read.csv('data/WAval-kappa.csv')
+#data = read.csv('data/WAval-kappa.csv')
 ggplot(data, aes(x=label, y=kappa)) + geom_boxplot(y=kappa)
 @
 
