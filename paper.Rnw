@@ -33,6 +33,8 @@ theme_set(theme_bw())
 \setlength{\marginparwidth}{1.2in}
 
 \newcommand{\mb}{MAGeT Brain}
+\newcommand{\ants}{ANTS}
+\newcommand{\animal}{ANIMAL}
 
 %notes and TODO formatting
 %\newcommand{\marginnote}[1]{\-\marginpar[\raggedleft\footnotesize #1]{\raggedright\footnotesize #1}}
@@ -129,7 +131,7 @@ used in atlas selection.
 Multi-atlas methods have been very successfully applied to hippocampal
 segmentation. Collins et al. found near-manual segmentation performance using an
 atlas library of 80 T1-weighted atlas images from the ICBM152 dataset, the
-ANIMAL nonlinear registration algorithm, normalised mutual information as an
+\animal nonlinear registration algorithm, normalised mutual information as an
 atlas selection similarity metric, and majority vote for label fusion
 \citep{Collins2010}.  The Alzheimer's Disease Neuroimaging Initiative (ADNI) is
 a commonly used benchmarking dataset of MR images of controls and patients with
@@ -458,14 +460,14 @@ Before registration, all images underwent preprocessing with the N3 algorithm
 one of two non-linear image registration methods.
 
 \subsubsection{Automatic Normalization and Image Matching and Anatomical
-Labeling (ANIMAL)}
+Labeling (\animal)}
 
-The ANIMAL algorithm carries out image registration is in two phases. In the
+The \animal algorithm carries out image registration is in two phases. In the
 first, a 12-parameter linear transformation (3 translations, rotations, scales,
 shears) is estimated between images using an algorithm that maximizes the
 correlation between blurred MR intensities and gradient magnitude over the whole
 brain \citep{Collins}. In the second phase, nonlinear registration is completed
-using the ANIMAL algorithm \citep{Collins1995}: an iterative procedure that
+using the \animal algorithm \citep{Collins1995}: an iterative procedure that
 estimates a 3D deformation field between two MR images. At first, large
 deformations are estimated using blurred version of the input data. These larger
 deformations are then input to subsequent steps where the fit is refined by
@@ -481,7 +483,7 @@ displayed in table \ref{tab:ANIMAL_params}.
 %                                                                             %
 \begin{table*}[!tbp]
 \scriptsize
-\caption{ANIMAL Registration Parameters\label{tab:ANIMAL_params}} 
+\caption{\animal Registration Parameters\label{tab:ANIMAL_params}} 
 \begin{center}
 \begin{tabular}{l | c c c}
 \hline 
@@ -499,20 +501,20 @@ Lattice Diameter  &24x24x24 &12x12x12 & 6x6x6    \tabularnewline
 \end{table*}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\subsubsection{Automatic Normalization Tools (ANTS)}
+\subsubsection{Automatic Normalization Tools (\ants)}
 
-ANTs is a diffeomorphic registration algorithm which provides great flexibility
+\ants is a diffeomorphic registration algorithm which provides great flexibility
 over the choice of transformation model, objective function, and the consistency
 of the final transformation. The transformation is estimated in a hierarchical
 fashion where the MRI data is subsampled, allowing large deformations to be
 estimated and successively refined at later hierarchical stages (where the data
 is subsampled to a finer grid). The deformation field and the objective function
-are regularized with a Gaussian kernel at each level of the hierarchy. The ANTs
+are regularized with a Gaussian kernel at each level of the hierarchy. The \ants
 algorithm is freely available \url{http://www.picsl.upenn.edu/ANTS/}. We used an
-implementation of the ANTS algorithm compatible with the MINC data format,
+implementation of the \ants algorithm compatible with the MINC data format,
 mincANTS \url{https://github.com/vfonov/mincANTS}.
 
-We used the following command line when running ANTS:
+We used the following command line when running \ants:
 {\small
 \begin{verbatim}
   mincANTS 3 -m PR[target_file.mnc,source_file.mnc,1,4] 
@@ -524,7 +526,7 @@ We used the following command line when running ANTS:
  \end{verbatim}
 }
 These settings were adapted from the "reasonable starting point" given in the
-ANTS manual 
+\ants manual 
 \footnote{\url{https://sourceforge.net/projects/advants/files/Documentation/}}.
 
 
@@ -555,7 +557,7 @@ atlas labels after linear registration to the template, dilated by three voxels
 \citep{Chakravarty2012}.  The number of top ranked template library image labels
 is a configurable parameter.
 
-The {\tt xcorr\_vol} utility from the ANIMAL toolkit is used to calculate the
+The {\tt xcorr\_vol} utility from the \animal toolkit is used to calculate the
 cross-correlation similarity measure.  
  
 \subsubsection{Normalised Mutual Information Weighted Majority Vote}
@@ -599,7 +601,7 @@ segmentations derived from the same atlas library.
 \subsubsection{ADNI1 cross-validation}
 To test the effect of parameter settings on the \mb algorithm, Monte
 Carlo Cross-Validation (MCCV) \citep{Shao1993} was performed using a subset of
-the ADNI1 subjects for validation.  This form of cross-validation (described in
+the ADNI1 dataset for validation.  This form of cross-validation (described in
 detail below) allows us to validate \mb with various atlas and template
 library sizes, registration and label fusion methods.
 
@@ -634,7 +636,7 @@ images were selected at random from remaining images not used as atlases. The
 atlas library size ranged from 1 to 9 images. Template library size ranged from
 1 to 20 images. 
 
-{\bf Registration method.} Both the ANTS and ANIMAL registration methods were
+{\bf Registration method.} Both the \ants and \animal registration methods were
 used. 
 
 {\bf Label fusion.} Majority vote, cross-correlation weighted majority vote, and
@@ -654,11 +656,13 @@ Second, \mb and basic multi-atlas segmentation are performed on the subject usin
 selected atlas and template libraries. Third, the accuracy of the resulting 
 segmentations are measured against the SNT labels. 
 
-A total of 10 validation rounds are perfomed on each subject in the dataset, for each 
-combination of parameter settings: atlas library size (1-9), template library 
-size (1-20), registration method (ANTS vs. ANIMAL), and label fusion method 
-(MV, XC-WV, NMI-WV). A total of $10*69*9*20*2*3 = 7452000$ validation rounds were
-conducted, resulting in a total of 1'490'400 segmentations analysed. 
+A total of ten validation rounds are perfomed on each subject in the dataset,
+for each combination of parameter settings. Reported subject segmentation
+accuracy is the averaged over the ten validation rounds. The parameter settings
+we explore are: atlas library size (1-9), template library size (1-20),
+registration method (\ants vs.  \animal), and label fusion method (MV, XC-WV,
+NMI-WV). A total of $10*69*9*20*2*3 = 7452000$ validation rounds were conducted,
+resulting in a total of 1'490'400 segmentations analysed. 
 
 %%%%%
 %%%%%               Experiments: ADNI-1 Screening Validation               %%%%%
@@ -676,7 +680,7 @@ ADNI1 data dataset (7 healthy, MCI and AD subjects). Clinical and demographic
 data for the template library subjects are shown in Table
 \ref{tab:ADNI1_scr_tmpllib_demographics}.
 
-{\bf Registration method.} The ANTS non-linear registration algorithm was used,
+{\bf Registration method.} The \ants non-linear registration algorithm was used,
 as it performed best in the ADNI1 cross-validation experiment (see Results). 
 
 {\bf Label fusion.} Majority vote was used performed equally well in the ADNI1
@@ -684,20 +688,13 @@ cross-validation experiment and is the easiest label fusion method to operate.
 
 {\bf Evaluation.}
 Since the hippocampal segmentation protocols differ between the ADNI labels and
-Winterburn atlases, this poses a problem for direct similarity comparisons
-between labels produced by \mb and the ADNI labels.  To evaluate the
-performance of \mb, we compare the correlation of \mb segmentation
-volumes with manual segmentation (SNT) volumes. Additionally, we correlate the
+Winterburn atlases, this poses a problem for direct evaluation between labels
+produced by \mb and the ADNI labels in terms of overlap; we would not expect
+different segmentation protocols to have a high degree of overlap.  Instead, to
+evaluate the performance of \mb we compare the correlation of \mb segmentation
+volumes with manual segmentation (SNT) volumes.  Additionally, we correlate the
 hippocampal volumes of established automated segmentation methods to \mb
-segmentations.
-
-Additionally, we compared classification accuracy of subjects by diagnosis based
-on hippocampal volume using both the SNT labels and our produced labels.  
-
-\todo{explain why we did(n't) resegment the ADNI images with the low-res
-protocol and compare directly like that.} 
-
-\todo{Also: group differences, expecting separation}
+segmentations.  
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ADNI1 Screening Template Library Demographics Table
@@ -730,7 +727,7 @@ Schizophrenic First Episode Patient (SFEP) dataset.
 hippocampal segmentation of patients, and Winterburn atlas set.  
 \todo{complete}
 
-{\bf Registration method.} ANTS.
+{\bf Registration method.} \ants.
 \todo{complete}
 
 {\bf Label fusion.} Majority vote.
@@ -754,7 +751,7 @@ the Winterburn atlases.
 Template library consists of all five T1 BRAVOs, plus 15 T1 healthy control images.
 \todo{complete}
 
-{\bf Registration method.} ANTS
+{\bf Registration method.} \ants
 \todo{complete}
 
 {\bf Label fusion.} Majority vote.
@@ -775,7 +772,7 @@ Segmentation accuracy is judged by difference in hippocampal volume.
 %%%%%
 %%%%%                  Results: ADNI-1 cross-validationn                   %%%%%
 %%%%%
-\subsection{ADNI-1 Cross-Validation}
+\subsection{ADNI1 Cross-Validation}
 
 
 %                                                                              %
@@ -851,27 +848,27 @@ all_data_mean  = merge(all_data_mean, diagnoses)
 % antonyms: 
 % negligible, minor, no appreciable, scant
 
-In this experiment we conducted 10 rounds of \mb and multi-atlas segmentation of 
-each of 69 subjects, over a range of atlas and template library sizes, with ANTS 
-and ANIMAL registration algorithms, and three kinds of label fusion techniques. 
-Hippocampal \mb-based segmentations using both ANIMAL and ANTs registration
-algorithm demonstrate good overlap with manually derived gold-standards (Figure
-\ref{fig:ADNI1-xval-k-mean}). Qualitatively, both ANIMAL and ANTs-based 
-segmentations demonstrate trend overlap accuracy that increases with the size of 
-atlas library and template library. With 12 or more templates \mb library of at 
+In this experiment we conducted 10 rounds of \mb and multi-atlas segmentation of
+each of 69 subjects at a range of atlas and template library sizes, registration
+algorithm (\ants or \animal), and three label fusion techniques.  Hippocampal
+\mb-based segmentations using both \animal and \ants registration algorithm
+demonstrate good overlap with manually derived gold-standards (Figure
+\ref{fig:ADNI1-xval-k-mean}). Qualitatively, both \animal and \ants-based
+segmentations demonstrate trend overlap accuracy that increases with the size of
+atlas library and template library. With 12 or more templates \mb library of at
 least 12 templates 
 
-No marked difference in segmentation accuracy is seen when either ANIMAL or ANTs
+No marked difference in segmentation accuracy is seen when either \animal or \ants
 registration is used with different label fusion techniques, at any atlas or
-template library sizes.  In every parameter configuration, the use of \mb with 
-ANTs registration shows increased segmentation accuracy over \mb with ANIMAL registration (\todo{interaction?}).
+template library sizes.  In every parameter configuration, the use of \mb with
+\ants registration shows increased segmentation accuracy over \mb with \animal
+registration. In the remainder of this section, only results using the \ants
+registration algorithm will be shown.
 
 It is interesting to note that with an even number of templates, \mb shows a
-small decrease in performance relative to when one fewer template image is used
-(\todo{show significance of this}). See section (\todo{ref}) for a discussion of
-this behaviour. In the remainder of this section, only results from odd-sized
-template libraries will be shown. 
-
+small decrease in performance relative to when one fewer template image is used.
+See section (\todo{ref}) for a discussion of this behaviour. In the remainder of
+this section, only results from odd-sized template libraries will be shown. 
 
 \begin{figure}
 <<ADN1-xval-k-mean, cache=TRUE, dependson='ADNI1-Xval-prep'>>=
@@ -886,18 +883,24 @@ ggplot(all_data_mean,
   xlab( "Number of Templates" ) + 
   ylab( "Mean DSC" )
 @
-  \caption{\mb mean DSC by atlas and template library size}
-  \label{fig:ADNI1_xval-k_mean}
+  \label{fig:ADNI1-xval-k_mean}
+  \caption{
+  {\em \mb mean DSC by atlas and template library size, registration algorithm,
+  and label fusion method. Mean DSC is calculated over each subject from the
+  ADNI1 Cross-Validation } 
+  }
 \end{figure}
 
-With an increasing number of templates, \mb-based segmentating using ANTs
+With an increasing number of templates, \mb-based segmentating using \ants
 registration and majority vote label fusion shows improvement in overlap
 accuracy over multi-atlas-based segmentation, using the same number of atlases
-and voting method Figure \todo{ref}. The magnitude of improvement over
+and voting method (Figure \todo{fig:ADNI1-xva-k-diff}. The magnitude of improvement over
 multi-atlas-based segmentation decreases with an increasing number of atlases,
-with accuracy converging with 7 atlases.  Peak improvement in \mb accuracy (0.02
+with accuracy converging with 7 atlases.  Peak improvement in \mb accuracy (~0.02
 DSC) is found when one atlas is used with a template library of 20 images.
 \todo{stats?}
+
+\todo{mention failures}
 
 \begin{figure}
 <<ADN1-Xval-k-diff, cache=TRUE, dependson='ADNI1-Xval-prep'>>=
@@ -922,7 +925,7 @@ ggplot(subset(all_data_mean, reg_method=="ANTS" & method.mb=="Majority Vote" &
   ylab( "Increase in mean Kappa between MAGeT brain and multiatlas" ) 
 @
   \caption{Increase in mean Kappa between \mb and multi-atlas}
-  \label{ADNI1_cross_validation_MA_difference}
+  \label{ADNI1-xval-k-diff}
 \end{figure}
 
 
@@ -1009,7 +1012,7 @@ ggplot(a_20_tmpls, aes(x=factor(atlases))) +
   coord_cartesian(ylim=c(0.7,0.9))
   #theme(legend.justification=c(1,0), legend.position=c(1,0))
 @
-  \caption{Change in mean Kappa between multi-atlas and \mb using ANTS,
+  \caption{Change in mean Kappa between multi-atlas and \mb using \ants,
   20 templates}
   \label{}
 \end{figure}
@@ -1096,7 +1099,7 @@ t.test(stddev$MA, stddev$MB)
 %%%%%
 %%%%%                  Results: ADNI-1 Screening Validation               %%%%%
 %%%%%
-\subsection{ADNI-1 Screening Validation}
+\subsection{ADNI1 Screening Validation}
 
 
 Based on the results from the ADNI1 Cross-Validation experiment, in this
@@ -1116,13 +1119,12 @@ fusion. Overall co
 % \todo{Kappa against our manual rater is low... explain that}
 
 <<ADNI-src-volumes-prep,echo=F,cache=T>>=
-#bl1.5T= read.csv("data/ADNI_baseline_volumes/ADNI1_Screening_1.5T_11_15_2012.csv")
+bl    = read.csv("data/ADNI_baseline_volumes/ADNI1_Screening_1.5T_11_15_2012.csv")
 #bl3T  = read.csv("data/ADNI_baseline_volumes/ADNI1_Baseline_3T_11_15_2012.csv")
-yr1   = read.csv("data/ADNI_baseline_volumes/ADNI1_Complete_1Yr_1.5T_11_15_2012.csv")
+#yr1   = read.csv("data/ADNI_baseline_volumes/ADNI1_Complete_1Yr_1.5T_11_15_2012.csv")
 mb    = read.csv("data/ADNI_baseline_volumes/ADNI1_1.5T_MAGeT_volumes.csv")
 maper = read.csv("data/ADNI_baseline_volumes/MAPER_volumes.csv")
 snt   = read.csv("data/ADNI_baseline_volumes/UCSFSNTVOL.csv")
-ucsd  = read.csv("data/ADNI_baseline_volumes/UCSDVOL.csv")
 fs    = read.csv("data/ADNI_baseline_volumes/UCSFFSX_02_15_12.csv")
 fsl   = read.csv("data/ADNI_baseline_volumes/ADNI1_1.5T_FSLFIRST_volumes.csv", sep=';')
 qc    = read.csv("data/ADNI_baseline_volumes/ADNI1_Complete_1Yr_1.5T_QC_Park.csv", sep="\t")
@@ -1130,11 +1132,10 @@ qc    = read.csv("data/ADNI_baseline_volumes/ADNI1_Complete_1Yr_1.5T_QC_Park.csv
 #viscode_levels = list("bl"=1,"bl"=2, "m06"=3,"m12"=4)
 #yr1$VISCODE <- as.factor(yr1$Visit)
 #levels(yr1$VISCODE) <-viscode_levels
-#bl1.5T$VISCODE <- 'bl'
 #bl1.5T$Scaled_2 <- grepl("Scaled_2", yr1$Description)
 
-#TODO: include Scaled_2? 
-subjects = subset(yr1,Visit ==1)
+#subjects = subset(yr1,Visit ==1)
+subjects = bl
 subjects$VISCODE = 'bl'
 
 # fetch just the columns we need, and do a little renaming
@@ -1144,30 +1145,48 @@ maper_pruned  = data.frame(MAPER_L = maper$Left_Hippo,
                            MAPER_R = maper$Right_Hippo, Source = maper$SourceImageID)
 snt_pruned    = data.frame(SNT_L = snt$LEFTHIPPO, 
                            SNT_R = snt$RIGHTHIPPO, Source = snt$IMAGEUID)
-ucsd_pruned   = data.frame(RID=ucsd$RID, VISCODE=ucsd$VISCODE, 
-                           UCSD_L=ucsd$LHIPPOC, UCSD_R=ucsd$RHIPPOC)
-fs_pruned     = subset(fs, TEMPQC != "Fail")
-fs_pruned     = data.frame(FS_L=fs_pruned$ST29SV, 
-                           FS_R=fs_pruned$ST88SV, Source = fs_pruned$IMAGEUID)
+fs_pruned     = data.frame(TEMPQC =fs$TEMPQC, 
+                           FS_L=fs$ST29SV, 
+                           FS_R=fs$ST88SV, 
+                           Source = fs$IMAGEUID)
 fsl_pruned    = data.frame(FSL_L=fsl$X17, 
                            FSL_R=fsl$X53, Source=fsl$Source)
-qc_pruned     = qc[,c("Image.Data.ID","MAGeT_QC","FSL_QC")]
-qc_pruned     = subset(qc_pruned, MAGeT_QC == 1 & FSL_QC == 1)
 
 # diagnoses
-dx = adnimerge[c("DX.bl", "RID", "VISCODE")]
+dx = unique(adnimerge[c("DX.bl", "RID", "VISCODE")])
 
 # Now create one data.frame with all the yr1 volume data we have from each datasource
 combined = merge(subjects, mb_pruned   , by.x="Image.Data.ID", by.y="Source", all.x=TRUE)
 combined = merge(combined, maper_pruned, by.x="Image.Data.ID", by.y="Source", all.x=TRUE)  # only Baseline
 combined = merge(combined, snt_pruned  , by.x="Image.Data.ID", by.y="Source", all.x=TRUE)
-#combined = merge(combined, ucsd_pruned , by=c("RID", "VISCODE"), all.x =TRUE)              # TODO: this a unique key?
 combined = merge(combined, fs_pruned   , by.x="Image.Data.ID", by.y="Source", all.x=TRUE)
 combined = merge(combined, fsl_pruned  , by.x="Image.Data.ID", by.y="Source", all.x=TRUE)
 combined = merge(combined, dx          , by=c("RID","VISCODE"), all.x=TRUE)
-combined = merge(combined, qc_pruned   , by=c("Image.Data.ID"))
+combined = merge(combined, qc          , by=c("Image.Data.ID"), all.x=TRUE)
 
-attach(combined)
+# A table showing the number of images (and failures) from each package
+#           Total  MAGeT  FSL  FS   MAPER
+# Images    
+# Failures
+# 
+# Total number complete images = 
+
+
+# Step 2: Of those, get counts for the numbers that fail QC
+package_totals = data.frame(
+  Screening  = c(length(subjects$VISCODE), 'N/A'),
+  SNT        = c(length(which(!is.na(combined$SNT_L)))    , "--"),
+  MAGeT      = c(length(which(!is.na(combined$MAGeT_L)))  , length(which(combined$MAGeT_QC==0))), 
+  MAPER      = c(length(which(!is.na(combined$MAPER_L)))  , "--"), 
+  FSL        = c(length(which(!is.na(combined$FSL_L)))    , length(which(combined$FSL_QC==0))), 
+  FS         = c(length(which(!is.na(combined$FS_L)))     , length(which(combined$TEMPQC == "Fail"))),
+  row.names  = c("Images", "Failures")
+)
+
+
+all_qc = subset(all_qc, TEMPQC != "Fail" & MAGeT_QC == 1 | FSL_QC == 1 )
+
+attach(all_qc)
 totals = data.frame(RID = RID, VISCODE = VISCODE, DX = factor(DX.bl),
                   MAGeT = MAGeT_L + MAGeT_R, 
                   MAPER = MAPER_L + MAPER_R, 
@@ -1175,11 +1194,21 @@ totals = data.frame(RID = RID, VISCODE = VISCODE, DX = factor(DX.bl),
                   #UCSD  = UCSD_L + UCSD_R,
                   FS    = FS_L + FS_R, 
                   FSL   = FSL_L + FSL_R)
-
-detach(combined)
-#complete_totals = subset(totals, !is.na(SNT) & !is.na(FSL) & !is.na(FS) & !is.na(MAPER) & !is.na(MAGeT))
+detach(all_qc)
 totals.complete = na.omit(totals)
 @
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% ADNI1 Screening Dataset Package Totals & Failures                           %
+%                                                                             %
+<<ADNI1-scr-package-totals, echo=F, results="asis",cache=FALSE>>=
+latex(package_totals, file="", size="scriptsize", 
+    caption="ADNI1 1.5T Screening Dataset Segmentations",
+    title="",
+    label="tab:ADN1-1.5T-Screening-Dataset-Segmentations")
+@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 \begin{figure}[h]
 <<ADNI-scr-volumes-boxplot,dependson='ADNI-baseline-volumes-prep',cache=T>>=
