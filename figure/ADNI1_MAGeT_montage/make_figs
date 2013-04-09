@@ -1,0 +1,56 @@
+#!/bin/bash
+
+
+# minclookup -clobber -discrete -lut_string '1 101; 2 101; 3 101; 4 101; 5 101; 6 101; 101 101; 102 101; 103 101; 104 101; 105 101; 106 101;' \
+#    MAGeT_116_S_0382_I59725_CN.mnc MAGeT_116_S_0382_I59725_CN_w.mnc
+# minclookup -clobber -discrete -lut_string '1 101; 2 101; 3 101; 4 101; 5 101; 6 101; 101 101; 102 101; 103 101; 104 101; 105 101; 106 101;' \
+#    MAGeT_127_S_0754_I80760_AD.mnc MAGeT_127_S_0754_I80760_AD_w.mnc
+# minclookup -clobber -discrete -lut_string '1 101; 2 101; 3 101; 4 101; 5 101; 6 101; 101 101; 102 101; 103 101; 104 101; 105 101; 106 101;' \
+#    MAGeT_137_S_0994_I45943_LMCI.mnc MAGeT_137_S_0994_I45943_LMCI_w.mnc
+# minclookup -clobber -discrete -lut_string '5123 201; 5376 201; 20 101; 21 101;' \
+#    SNT_116_S_0382_I59725_CN.mnc SNT_116_S_0382_I59725_CN_w.mnc
+# minclookup -clobber -discrete -lut_string '5123 101; 5376 101; 20 101; 21 101;' \
+#    SNT_127_S_0754_I80760_AD.mnc SNT_127_S_0754_I80760_AD_w.mnc
+# minclookup -clobber -discrete -lut_string '5123 101; 5376 101; 20 101; 21 101;' \
+#    SNT_137_S_0994_I45943_LMCI.mnc SNT_137_S_0994_I45943_LMCI_w.mnc
+
+
+#ADNI_116_S_0382_I59725_CN.mnc
+ID=116_S_0382_I59725_CN
+SLICES="-sagittal_slice 19 -axial_slice 40 -coronal_slice 43"
+mincmontage -bbox_source MAGeT_${ID}_w.mnc $SLICES \
+  -minclookupopts -hotmetal -clobber -isostep .9 -show_t1 \
+  ADNI_${ID}.mnc MAGeT_${ID}_w.mnc montage_MAGeT_${ID}.png
+
+mincmontage -bbox_source MAGeT_${ID}_w.mnc $SLICES \
+  -minclookupopts -spectral -clobber -isostep .9 \
+  ADNI_${ID}.mnc SNT_${ID}_w.mnc montage_SNT_${ID}.png
+
+montage -geometry +0+0 montage_MAGeT_${ID}.png montage_SNT_${ID}.png montage_combined_${ID}.png
+
+
+#ADNI_127_S_0754_I80760_AD.mnc
+ID=127_S_0754_I80760_AD
+SLICES="-sagittal_slice 13 -axial_slice 37 -coronal_slice 43"
+mincmontage -bbox_source MAGeT_${ID}_w.mnc $SLICES \
+  -minclookupopts -hotmetal -clobber -isostep .9 -show_t1 \
+  ADNI_${ID}.mnc MAGeT_${ID}_w.mnc montage_MAGeT_${ID}.png
+
+mincmontage -bbox_source MAGeT_${ID}_w.mnc $SLICES \
+  -minclookupopts -spectral -clobber -isostep .9 \
+  ADNI_${ID}.mnc SNT_${ID}_w.mnc montage_SNT_${ID}.png
+
+montage -geometry +0+0 montage_MAGeT_${ID}.png montage_SNT_${ID}.png montage_combined_${ID}.png
+
+#ADNI_137_S_0994_I45943_LMCI.mnc
+ID=137_S_0994_I45943_LMCI
+SLICES="-sagittal_slice 13 -axial_slice 37 -coronal_slice 43"
+mincmontage -bbox_source MAGeT_${ID}_w.mnc $SLICES \
+  -minclookupopts -hotmetal -clobber -isostep .9 -show_t1 \
+  ADNI_${ID}.mnc MAGeT_${ID}_w.mnc montage_MAGeT_${ID}.png
+
+mincmontage -bbox_source MAGeT_${ID}_w.mnc $SLICES \
+  -minclookupopts -spectral -clobber -isostep .9 \
+  ADNI_${ID}.mnc SNT_${ID}_w.mnc montage_SNT_${ID}.png
+
+montage -geometry +0+0 montage_MAGeT_${ID}.png montage_SNT_${ID}.png montage_combined_${ID}.png
