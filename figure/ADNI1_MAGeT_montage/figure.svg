@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="600.00006"
+   height="2178.8452"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.48.3.1 r9886"
+   sodipodi:docname="figure.pdf">
+  <defs
+     id="defs4" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.24748737"
+     inkscape:cx="1055.5824"
+     inkscape:cy="1126.5951"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     showborder="false"
+     inkscape:window-width="1280"
+     inkscape:window-height="750"
+     inkscape:window-x="400"
+     inkscape:window-y="1050"
+     inkscape:window-maximized="1"
+     showguides="true"
+     inkscape:guide-bbox="true"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(244.03358,682.65176)">
+    <g
+       id="g3606"
+       transform="translate(7.3950538,-678.82251)">
+      <image
+         style="fill:#ffffff"
+         width="600"
+         height="600"
+         xlink:href="file:///home/jp/prj/hippo/figure/ADNI1_MAGeT_montage/montage_combined_116_S_0382_I59725_CN.png"
+         id="image3189"
+         x="-251.42859"
+         y="52.362186" />
+      <g
+         transform="translate(0,-12)"
+         id="g3494">
+        <flowRoot
+           xml:space="preserve"
+           id="flowRoot3192"
+           style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+           transform="matrix(0.58467778,0,0,0.58467778,-52.541684,281.6438)"><flowRegion
+             id="flowRegion3194"><rect
+               id="rect3196"
+               width="102.85714"
+               height="140"
+               x="-200"
+               y="675.2193" /></flowRegion><flowPara
+             id="flowPara3198">T1</flowPara></flowRoot>        <flowRoot
+           xml:space="preserve"
+           id="flowRoot3192-1"
+           style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+           transform="matrix(0.58467778,0,0,0.58467778,118.3179,281.6438)"><flowRegion
+             id="flowRegion3194-8"><rect
+               id="rect3196-6"
+               width="182.85713"
+               height="117.01231"
+               x="-200"
+               y="675.2193" /></flowRegion><flowPara
+             id="flowPara3198-2">MAGeT</flowPara></flowRoot>        <flowRoot
+           xml:space="preserve"
+           id="flowRoot3192-1-6"
+           style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+           transform="matrix(0.58467778,0,0,0.58467778,318.05739,281.6438)"><flowRegion
+             id="flowRegion3194-8-3"><rect
+               id="rect3196-6-0"
+               width="182.85713"
+               height="117.01231"
+               x="-200"
+               y="675.2193" /></flowRegion><flowPara
+             id="flowPara3198-2-3">Manual</flowPara></flowRoot>      </g>
+      <flowRoot
+         transform="translate(148,105.75391)"
+         style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+         id="flowRoot3405"
+         xml:space="preserve"><flowRegion
+           id="flowRegion3407"><rect
+             y="-119.06639"
+             x="-297.14285"
+             height="177.14285"
+             width="660"
+             id="rect3409" /></flowRegion><flowPara
+           id="flowPara3411">Cognitively Normal</flowPara></flowRoot>    </g>
+    <g
+       id="g3626"
+       transform="translate(-625.17642,64.64978)">
+      <image
+         style="fill:#ffffff"
+         width="600"
+         height="600"
+         xlink:href="file:///home/jp/prj/hippo/figure/ADNI1_MAGeT_montage/montage_combined_137_S_0994_I45943_LMCI.png"
+         id="image3087"
+         x="381.14288"
+         y="52.362186" />
+      <flowRoot
+         transform="translate(714.22098,105.75391)"
+         style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+         id="flowRoot3405-6"
+         xml:space="preserve"><flowRegion
+           id="flowRegion3407-0"><rect
+             y="-119.06639"
+             x="-297.14285"
+             height="177.14285"
+             width="660"
+             id="rect3409-9" /></flowRegion><flowPara
+           id="flowPara3411-2">Mild Cognitive Impairment</flowPara></flowRoot>      <g
+         id="g3494-9"
+         transform="translate(627.34778,-12)">
+        <flowRoot
+           xml:space="preserve"
+           id="flowRoot3192-12"
+           style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+           transform="matrix(0.58467778,0,0,0.58467778,-52.541684,281.6438)"><flowRegion
+             id="flowRegion3194-2"><rect
+               id="rect3196-8"
+               width="102.85714"
+               height="140"
+               x="-200"
+               y="675.2193" /></flowRegion><flowPara
+             id="flowPara3198-9">T1</flowPara></flowRoot>        <flowRoot
+           xml:space="preserve"
+           id="flowRoot3192-1-4"
+           style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+           transform="matrix(0.58467778,0,0,0.58467778,118.3179,281.6438)"><flowRegion
+             id="flowRegion3194-8-1"><rect
+               id="rect3196-6-8"
+               width="182.85713"
+               height="117.01231"
+               x="-200"
+               y="675.2193" /></flowRegion><flowPara
+             id="flowPara3198-2-38">MAGeT</flowPara></flowRoot>        <flowRoot
+           xml:space="preserve"
+           id="flowRoot3192-1-6-1"
+           style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+           transform="matrix(0.58467778,0,0,0.58467778,318.05739,281.6438)"><flowRegion
+             id="flowRegion3194-8-3-7"><rect
+               id="rect3196-6-0-5"
+               width="182.85713"
+               height="117.01231"
+               x="-200"
+               y="675.2193" /></flowRegion><flowPara
+             id="flowPara3198-2-3-1">Manual</flowPara></flowRoot>      </g>
+    </g>
+    <g
+       id="g3646"
+       transform="translate(-1257.748,808.12204)">
+      <image
+         style="fill:#ffffff"
+         width="600"
+         height="600"
+         xlink:href="file:///home/jp/prj/hippo/figure/ADNI1_MAGeT_montage/montage_combined_127_S_0754_I80760_AD.png"
+         id="image3138"
+         x="1013.7144"
+         y="52.362186" />
+      <flowRoot
+         transform="translate(1418.5067,105.75391)"
+         style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+         id="flowRoot3405-5"
+         xml:space="preserve"><flowRegion
+           id="flowRegion3407-2"><rect
+             y="-119.06639"
+             x="-297.14285"
+             height="177.14285"
+             width="660"
+             id="rect3409-8" /></flowRegion><flowPara
+           id="flowPara3411-7">Alzheimer's Disease</flowPara></flowRoot>      <g
+         id="g3494-1"
+         transform="translate(1265.6335,-12)">
+        <flowRoot
+           xml:space="preserve"
+           id="flowRoot3192-4"
+           style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+           transform="matrix(0.58467778,0,0,0.58467778,-52.541684,281.6438)"><flowRegion
+             id="flowRegion3194-83"><rect
+               id="rect3196-62"
+               width="102.85714"
+               height="140"
+               x="-200"
+               y="675.2193" /></flowRegion><flowPara
+             id="flowPara3198-8">T1</flowPara></flowRoot>        <flowRoot
+           xml:space="preserve"
+           id="flowRoot3192-1-8"
+           style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+           transform="matrix(0.58467778,0,0,0.58467778,118.3179,281.6438)"><flowRegion
+             id="flowRegion3194-8-2"><rect
+               id="rect3196-6-5"
+               width="182.85713"
+               height="117.01231"
+               x="-200"
+               y="675.2193" /></flowRegion><flowPara
+             id="flowPara3198-2-5">MAGeT</flowPara></flowRoot>        <flowRoot
+           xml:space="preserve"
+           id="flowRoot3192-1-6-3"
+           style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+           transform="matrix(0.58467778,0,0,0.58467778,318.05739,281.6438)"><flowRegion
+             id="flowRegion3194-8-3-8"><rect
+               id="rect3196-6-0-7"
+               width="182.85713"
+               height="117.01231"
+               x="-200"
+               y="675.2193" /></flowRegion><flowPara
+             id="flowPara3198-2-3-5">Manual</flowPara></flowRoot>      </g>
+    </g>
+  </g>
+</svg>
