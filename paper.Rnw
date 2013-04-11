@@ -45,7 +45,7 @@ lm_eqn = function(m) {
 \documentclass{article}
 \usepackage[margin=1in]{geometry}
 \usepackage{algorithm, color, algpseudocode, amsmath, url, geometry, ctable}
-\usepackage{titlesec}
+\usepackage{titlesec, siunitx}
 \usepackage[round,authoryear]{natbib}
 
 %draft mode
@@ -55,11 +55,11 @@ lm_eqn = function(m) {
 \setlength{\marginparwidth}{1.2in}
 
 % add \subsubsubsection
-\setcounter{secnumdepth}{4}  
-\titleformat{\paragraph}
-{\normalfont\normalsize\bfseries}{\theparagraph}{1em}{}
-\titlespacing*{\paragraph}
-{0pt}{3.25ex plus 1ex minus .2ex}{1.5ex plus .2ex}
+% \setcounter{secnumdepth}{4}  
+% \titleformat{\paragraph}
+% {\normalfont\normalsize\bfseries}{\theparagraph}{1em}{}
+% \titlespacing*{\paragraph}
+% {0pt}{3.25ex plus 1ex minus .2ex}{1.5ex plus .2ex}
 \newcommand{\subsubsubsection}[1]{\paragraph{#1}}
 
 % shortcuts 
@@ -519,40 +519,37 @@ the \mb algorithm when applied to different diseases: Alzheimer's disease
 %%%%%         Experiment 1: Whole Hippocampus Cross-Validation            %%%%%
 %%%%%                                                                     %%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsubsection*{Experiment 1: Whole Hippocampus Cross-Validation}
+\subsubsection{Experiment 1: Whole Hippocampus Cross-Validation}
 
-To test the effect of parameter settings on the \mb algorithm, Monte
-Carlo Cross-Validation (MCCV) \citep{Shao1993} was performed using a subset of
-the ADNI1 dataset for validation (see below).  This form of cross-validation
-allows us to validate \mb with various atlas and template library sizes,
-registration and label fusion methods.
+Monte Carlo Cross-Validation (MCCV) \citep{Shao1993} was performed using a pool
+of images and manual hippocampal segmentations from ADNI1 dataset.  This form of
+cross-validation allows us to rigorously validate a large number of parameter
+settings of \mb.
 
-Monte Carlo Cross-Validation (MCCV), also known as repeated random sub-sampling
-cross-validation, consists of repeated rounds of validation in which items from
-the dataset are randomly sampled (without replacement) and assigned to a
-training set or validation set \cite{Shao1993}.  
+\paragraph{ADNI1 dataset} 
 
-In this experiment, each validation round consists of the following steps. First, 
-an atlas library is selected (the training set) and, from the remaining images, 
-a template library and subject to be segmented is chosen (the validation set). 
-Second, \mb and basic multi-atlas segmentation are performed on the subject using the 
-selected atlas and template libraries. Third, the accuracy of the resulting 
-segmentations are measured against the SNT labels. 
+69 1.5T images were arbitrarily selected from the baseline scans in the {\em
+ADNI1:Complete 1Yr 1.5T} standardized dataset. 23 subjects were chosen from each
+disease category: cognitively normal (CN), mild cognitive impairment (MCI) and
+Alzheimer's disease (AD). Demographics for this subset are shown in Table
+\ref{tab:ADNI1-xvalidation-demographics}.  Manual segmentations of the left and
+right whole hippocampi are available. These labels have been generated using a
+semiautomatic tool (SNT, Medtronic Surgical Navigation Technologies, Louisville,
+CO; see Supplementary Materials).
 
-A total of ten validation rounds are perfomed on each subject in the dataset,
-for each combination of parameter settings. Reported subject segmentation
-accuracy is the averaged over the ten validation rounds. The parameter settings
-we explore are: atlas library size (1-9), template library size (1-20),
-registration method (\ants vs.  \animal), and label fusion method (MV, XC-WV,
-NMI-WV). A total of $10*69*9*20*2*3 = 7452000$ validation rounds were conducted,
-resulting in a total of 1'490'400 segmentations analysed. 
-
-\subsubsubsection{Dataset evaluated.} 
-
-69 1.5T images were arbitrarily selected from the {\em ADNI1:Complete 1Yr 1.5T}
-standardized dataset. 23 subjects were chosen from each disease category
-(cognitively normal (CN), MCI and AD). Demographics for this subset are shown in
-Table \ref{tab:ADNI1-xvalidation-demographics}. 
+Clinical, demographic and pre-processed T1-weighted MRI were downloaded by the
+authors from the ADNI1 database (adni.loni.ucla.edu) between March 2012 and
+August 2012. The image dataset download was the "ADNI1:Complete 1Yr 1.5T"
+standardized dataset available from ADNI \footnote{
+\url{http://adni.loni.ucla.edu/methods/mri-analysis/adni-standardized-data/}}
+\citep{Wyman2012}. This image collection contains uniformly preprocessed images
+which have been designated to be the "best" after quality control.  All images
+were acquired using 1.5T scanners (General Electric Healthcare, Philips Medical
+Systems or Siemens Medical Solutions) at multiple sites using the protocol
+described in \citep{Jack2008a}.  Representative 1.5T imaging parameters were TR
+= 2400ms, TI = 1000ms, TE = 3.5ms, flip angle = $8{\circ}$, field of view = 240
+x 240mm, a $192 \times 192 \times 166$ matrix ($x$, $y$, and $z$ directions)
+yielding a voxel resolution of $1.25 \times 1.25 \times 1.2mm^3$.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
@@ -574,24 +571,34 @@ latex(tab, file="", size="scriptsize",landscape=FALSE, ctable=FALSE,
 @
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-The atlas and template libraries are selected from the dataset evaluated.
-Atlases consist of images taken from the dataset, with corresponding manual
-labels provided by SNT. Template library images were selected at random from
-remaining images not used as atlases. The atlas library size ranged from 1 to 9
-images. Template library size ranged from 1 to 20 images. 
+\paragraph{Experiment details} 
 
-Both the \ants and \animal registration methods were used. 
+Monte Carlo Cross-Validation (MCCV), also known as repeated random sub-sampling
+cross-validation, consists of repeated rounds of validation conducted on a fixed
+dataset \cite{Shao1993}. In each round, the dataset is randomly partitioned into
+a training set and a validation set. The method to be validated is then given
+the training data, and its output is compared with the validation set.
 
-Majority vote, cross-correlation weighted majority vote, and
-Normalized Mutual Information weighted majority vote were used. With the
-weighted majority vote fusion methods, the number of top labels used in the
-fusion was varied from 1 to 20 images.
+In this experiment, our dataset consists of 69 1.5T images and corresponding
+manual segmentations taken from the ADNI1 project (see below for details). In each
+validation round, the training set is used as an atlas library for both \mb and
+basic multi-atlas. The remaining images are segmented by both methods, and the
+resulting segmentations are compared to the manual segmentations for the images.
 
-\subsubsubsection{Evaluation method}  
+A total of ten validation rounds are perfomed on each subject in the dataset,
+over each combination of parameter settings. The parameter settings
+we explore are: atlas library size (1-9), template library size (1-20),
+registration method (\ants or \animal), and label fusion method (majority vote,
+cross-correlation weighted majority vote, and normalized mutual information
+weighted majority vote).  A total of $10 \times 69 \times 9 \times 20 \times 2
+\times 3 = \num{7452000}$ validation rounds were conducted, resulting in a total
+of $\num{1490400}$ segmentations analysed. 
+
+\paragraph{Evaluation method}  
 
 The Dice similarity coefficient (DSC) assesses the agreement between two
-segmentations.  It is one of the most widely used measures of segmentation
-performance, and we use it as the basis of comparison throughout this paper.
+segmentations. It is one of the most widely used measures of segmentation
+performance, and we use it as the basis of comparison in this experiment.
 Additionally, we report the Jaccard index, another commonly used similarity
 measure:
 
@@ -602,40 +609,56 @@ measure:
 where $A$ and $B$ are the regions being compared, and the cardinality is the
 volume measured in voxels. 
 
+Reported subject segmentation accuracy is averaged over the ten validation
+rounds for each parameter setting. 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%                                                                     %%%%%
 %%%%%        Experiment 2: Hippocampal Subfield Cross-Validation          %%%%%
 %%%%%                                                                     %%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsubsection{Winterburn Atlases Cross-Validation}
+\subsubsection{Experiment 2: Winterburn Atlases Cross-Validation}
 In this experiment, the accuracy of the \mb algorithm on hippocampal subregion
 segmentation is tested using a leave-one-out cross-validation (LOOCV) design.
-Leave-one-out-cross-validation (LOOCV) is performed separately for each dataset
-evaluated (WA-BRAVO, and WA-Resampled) as follows. Each subject in the dataset
-is segmented by \mb using an atlas library in which that subject's image is
-excluded. 
+The optimal parameter settings found in Experiment 1 are used.
 
-The atlas library is composed of the Winterburn T1 atlas images and hippocampal
-subregion segmentations. The template library consists of 15 3T T1 images
-(0.9mm-isotropic voxels) of healthy subjects as well as all of the images from
-the dataset being evaluated.  
+\paragraph{Winterburn Atlases dataset} 
+The Winterburn atlases \citep{Winterburn2013} are digital hippocampal
+segmentations of five in-vivo $300\mu$ isotropic T1-weighted MR images. The
+segmentations include subfield segmentations for the cornus ammonis (CA) 1, CA4,
+dentate gyrus, subiculum, and CA 2 and 3 combined. Subjects in the Winterburn
+atlases range in age from 29-57 years (mean age of 37), and include two males
+and three females.  
 
-- note registration and fusion method were chosen 
-\todo{reference, demographics for health control images}.
+In addition to the high-resolution scans distributed as part of the Winterburn
+atlases, we also obtained additional 3T T1 BRAVO images (0.9mm-isotropic voxels)
+of four of the five Winterburn atlas subjects. 
 
-\subsubsubsection{Dataset evaluated} 
-\mb segmentations are evaluated on two datasets. The WA-BRAVO dataset consists
-of separately acquired 3T T1 BRAVO images (0.9mm-isotropic voxel) of four of the
-five Winterburn atlas subjects.  The WA-Resampled dataset consists of the
-Winterburn atlas images and segmentations downsampled to 0.9mm-isotropic voxel
-resolution.
+\paragraph{Experiment details} 
+Leave-one-out cross-validation (LOOCV) is an approach in which the method to be
+validated is given all but one item in a dataset as training data, and the
+output is compared with the left-out item. This is done, in turn, for each item
+in the dataset. 
 
+In this experiment, the five $300\mu$-isotropic voxel Winterburn atlases are
+used as the atlas library for \mb segmentation. LOOCV is conducted separately
+for two different input datasets: the four Winterburn atlas subject BRAVO MR
+images (referred to as the {\em Winterburn BRAVO} dataset), and the five
+Winterburn atlas subject images resampled to 0.9mm-isotropic voxel resolution
+(referred to as the {\em Winterburn Resampled} dataset. Each subject in the
+dataset is segmented by \mb with that subject's image excluded from the atlas
+library. The template library consists of 3T T1 images (0.9mm-isotropic
+voxels) of healthy subjects in addition to the images from the dataset being
+evaluated.
 
-\subsubsubsection{Evaluation method}  
-The segmentation volumes of each hippocampal subregion are compared to
-the expert manual segmentations of the unmodified Winterburn atlases.  As a
-point of comparison, we also calculate the subregion volumes from the Winterburn
-atlas segmentations after downsampling to 0.9mm-isotropic voxels. 
+The optimal size of template library, registration method, and label fusion
+method found in Experiment 1 are used. 
+
+\paragraph{Evaluation method}  
+The segmentation volumes of each hippocampal subregion are compared to the
+expert manual segmentations of the unmodified Winterburn atlases.  As a point of
+comparison, we also calculate the subregion volumes from the Winterburn atlas
+segmentations after downsampling to 0.9mm-isotropic voxels. 
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -644,95 +667,15 @@ atlas segmentations after downsampling to 0.9mm-isotropic voxels.
 %%%%%                       of schizophrenia patients                     %%%%%
 %%%%%                                                                     %%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsubsection{SZ First Episode Patient Validation}
-To validate that \mb algorithm works effectively with diseased brain images the
-performance of \mb is measured on a Schizophrenia dataset.
+\subsubsection{Experiment 3: Application to the segmentation first episode
+schizophrenia patients}
+ 
+To validate that \mb algorithm works effectively with diseased brain images \mb
+is applied to a dataset of Schizophrenia patient MR images. The resulting
+segmentations are assessed for quality by comparison with expert manual
+segmentations.
 
-The atlas library is composed of the Winterburn T1 atlas images, with whole
-hippocampus segmentations (no subregions). The template library is composed of
-21 images selected at random from the SZFEP dataset. 
-
-- note registration and fusion method were chosen 
-\subsubsubsection{Dataset Evaluated}
-
-\subsubsubsection{Evaluation method}
-The manual segmentation protocol used to segment the Winterburn atlases is
-similar to, but different from, the protocol used to segment the SZFEP dataset.
-Therefore, rather than use an overlap metric, \mb hippocampal volumes are
-compared to the corresponding manual segmentation volumes. 
-
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%                                                                     %%%%%
-%%%%%         EXPERIMENT 3: Application of \mb to the segmentation        %%%%%
-%%%%%                       of ADNI subjects                              %%%%%
-%%%%%                                                                     %%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsubsection{Experiment 4: Segmentation of Alzheimer's Disease Patients}
-
-To test the accuracy of \mb on a real-world task we segment the entire
-ADNI-1 dataset using an atlas set that is not representative of the target set.
-
-The Winterburn atlases were used as the atlas
-library.  The template library consisted of 21 randomly selected images from the
-ADNI1 data dataset (7 healthy, MCI and AD subjects). 
-
-- note registration and fusion method were chosen 
-
-\ref{tab:ADNI1-scr-tmpllib-demographics}.
-
-\subsubsubsection{Dataset evaluated} 
-All images from the {\em ADNI1:Complete 1Yr 1.5T}
-standardized dataset.
-
-
-\subsubsubsection{Evaluation method}
-Since the hippocampal segmentation protocols differ between the ADNI labels and
-Winterburn atlases, this poses a problem for direct evaluation between labels
-produced by \mb and the ADNI labels in terms of overlap; we would not expect
-different segmentation protocols to have a high degree of overlap.  Instead, to
-evaluate the performance of \mb we compare the correlation of \mb segmentation
-volumes with manual segmentation (SNT) volumes.  Additionally, we correlate the
-hippocampal volumes of established automated segmentation methods to \mb
-segmentations.  
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%
-% ADNI1 Complete 1Yr Template Library Demographics Table
-%
-%
-% <<ADNI1-scr-tmpllib-demographics, echo=F, results="asis",cache=FALSE>>=
-% scr_tmpllib_RIDs = c(0295, 0413, 0619, 0685, 0729, 0782, 0938, 0954, 1018, 1155,
-%                  0907, 0981, 0448, 0553, 0814, 1130, 0698, 1339, 1095, 0991,
-%                  0159)
-% tab <- summary(DX.bl ~ AGE + PTGENDER + PTEDUCAT + PTETHCAT + CDRSB + ADAS13 +
-%                MMSE, data = adnimerge, subset = VISCODE == 'bl' & RID %in%
-%                scr_tmpllib_RIDs, method = "reverse", test=FALSE, overall=TRUE)
-% 
-% latex(tab, landscape=FALSE, ctable=FALSE, file="", size="scriptsize",
-%       caption="ADNI1 Complete 1Yr Template Library demographics", 
-%       title="tab:ADNI1-scr-tmpllib-demographics")
-% @
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-%%%%%                             Subjects                                 %%%%%
-\subsection{Subjects}
-
-\subsubsection{Winterburn Atlases}
-The Winterburn atlases \citep{Winterburn2013} are digital hippocampal segmentations
-of of five in-vivo 300u isotropic T1-weighted MR images. The segmentations
-include subfield segmentations for the cornus ammonis (CA) 1, CA4, dentate
-gyrus, subiculum, and CA 2 and 3 combined. Subjects in the Winterburn atlases
-range in age from 29-57 years (mean age of 37), and include two males and three
-females.  
-
-In addition to the high-resolution scans distributed as part of the Winterburn
-atlases, we also obtained additional T1 BRAVO scans of four of the five
-subjects.  \todo{demographics?}\todo{explain scan parameters in more detail..}
-
-\subsubsubsection{FEP dataset}
+\paragraph{SZ-FEP dataset}
 All patients were recruited and treated through the Prevention and Early
 Intervention Program for Psychoses (PEPP-Montreal), a specialized early
 intervention service at the Douglas Mental Health University Institute in
@@ -746,18 +689,32 @@ neuroimaging study; only those suffering from schizophrenia spectrum disorders
 were considered for this analysis.  For complete program details see Malla et
 al. \citep{Malla2003}. 
 
-Scanning was carried out at the Montreal Neurological Institute on a 1.5-T
-Siemens whole body MRI system.  Structural T1 volumes were acquired for each
-participant using a three-dimensional (3D) gradient echo pulse sequence with
-sagittal volume excitation (repetition time=22ms, echo time=9.2ms, flip
+Scanning of 81 subjects was carried out at the Montreal Neurological Institute
+on a 1.5-T Siemens whole body MRI system.  Structural T1 volumes were acquired
+for each participant using a three-dimensional (3D) gradient echo pulse sequence
+with sagittal volume excitation (repetition time=22ms, echo time=9.2ms, flip
 angle=$30{\circ}$, 180 1mm contiguous sagittal slices). The rectangular
-field-of-view for the images was 256mm (SI)×204mm (AP).  Subject demographics
-are shown in table \ref{tab:SZFEP-Demographics}. 
+field-of-view for the images was 256mm (SI)$\times$204mm (AP).  Subject
+demographics are shown in table \ref{tab:SZFEP-Demographics}. 
 
 The hippocampus were traced following a validated protocol developed by Dr Jens
 Pruessner \todo{cite: (Pruessner et al., 2000)}. A recent update to this
 protocol by Dr J Pruessner in 2006 allows to accurately and consistently
 subdivide the hippocampus into three different subregions: head, body, and tail.
+
+\paragraph{Experiment details} 
+\mb is configured with an atlas library composed of the Winterburn T1 atlases
+(see Experiment 2).  All images from the SZ-FEP dataset are segmented.  The optimal
+size of template library, registration method, and label fusion method found in
+Experiment 1 are used. 
+
+\paragraph{Evaluation method}
+The manual segmentation protocol used to segment the Winterburn atlases is
+similar to, but different from, the protocol used to segment the SZFEP dataset.
+Therefore, rather than use an overlap metric, \mb hippocampal volumes are
+compared to the corresponding manual segmentation volumes. 
+
+\todo{discuss Bland-Altman?  Or bias analysis}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
@@ -776,48 +733,46 @@ latex(tab, file="", ctable=FALSE,
 
 
 
-\subsubsection{ADNI1 1.5T Complete 1Yr Dataset}
-Clinical, demographic and pre-processed T1-weighted MRI were downloaded by the
-authors from the ADNI1 database (adni.loni.ucla.edu) between March 2012 and
-August 2012. The image dataset download was the "ADNI1:Complete 1Yr 1.5T"
-standardized dataset available from ADNI \footnote{
-\url{http://adni.loni.ucla.edu/methods/mri-analysis/adni-standardized-data/}}
-\citep{Wyman2012}. This image collection contains uniformly preprocessed images
-which have been designated to be the "best" after quality control.  All images
-were acquired using 1.5T scanners (General Electric Healthcare, Philips Medical
-Systems or Siemens Medical Solutions) at multiple sites using the protocol
-described in \citep{Jack2008a}.  Representative 1.5T imaging parameters were TR
-= 2400ms, TI = 1000ms, TE = 3.5ms, flip angle = $8{\circ}$, field of view = 240
-x 240mm, a 192 x 192 x 166 matrix (x, y, and z directions) yielding a voxel
-resolution of 1.25 x 1.25 x 1.2 $mm^3$. Clinical and demographic data are shown
-in table \ref{tab:ADNI1-1.5T-Complete-1Yr-Dataset-Demographics}. 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%                                                                     %%%%%
+%%%%%         EXPERIMENT 3: Application of \mb to the segmentation        %%%%%
+%%%%%                       of ADNI subjects                              %%%%%
+%%%%%                                                                     %%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Experiment 4: Application to the segmentation of Alzheimer's
+disease patients}
 
-% The following blurb is taken (except for the first sentence) verbatim 
-For a subset of ADNI1 images, labels of the left and right hippocampi are
-available (herein refered to as SNT labels).  Semi-automated hippocampal
-volumetry was carried out using a commercially available high dimensional brain
-mapping tool (Medtronic Surgical Navigation Technologies, Louisville, CO), that
-has previously been validated and compared to manual tracing of the hippocampus
-\citep{Hsu2002}. Measurement of hippocampal volume is achieved first by placing
-manually 22 control points as local landmarks for the hippocampus on the
-individual brain MRI data: one landmark at the hippocampal head, one at the
-tail, and four per image (i.e., at the superior, inferior, medial and lateral
-boundaries) on five equally spaced images perpendicular to the long axis of the
-hippocampus. Second, fluid image transformation is used to match the individual
-brains to a template brain \citep{Christensen1997}. The pixels corresponding to
-the hippocampus are then labeled and counted to obtain volumes. This method of
-hippocampal voluming has a documented reliability of an intraclass coefficient
-better than .94 \citep{Hsu2002}.
+To validate that \mb algorithm works as well as established automated methods,
+\mb is applied to the ADNI1 dataset and the resulting segmentations are
+compared to those produced by FreeSurfer, FSL, MAPER, and by expert manual
+segmentation.
 
-%Representative 3T image parameters were TR = 2300ms, TI = 900ms, TE = 3.0ms,
-%flip angle = $8{\circ}$, field of view = 256 x 240mm, a 256 x 256 x 166 matrix
-%(x, y, and z directions) yielding a voxel resolution of 1.00 x 1.00 x 1.2
-%$mm^3$.
+\paragraph{ADNI1 dataset revisited} 
+All images from the {\em ADNI1:Complete 1Yr 1.5T} standardized dataset described
+in Experiment 1 are used.  Clinical and demographic data are shown in table
+\ref{tab:ADNI1-1.5T-Complete-1Yr-Dataset-Demographics}. 
 
-%                                                                             
+\paragraph{Experiment details} 
+\mb is configured with an atlas library composed of the Winterburn T1 atlases
+(see Experiment 2). All images from the ADN11 Complete 1Yr 1.5T dataset are
+segmented. The optimal size of template library, registration method, and label
+fusion method found in Experiment 1 are used. The template library is composed
+of equal numbers of images from each disease class (AD, MCI, and cognitively
+normal controls). 
+
+\paragraph{Evaluation method}
+Since the hippocampal segmentation protocols differ between the ADNI labels and
+Winterburn atlases, this poses a problem for direct evaluation between labels
+produced by \mb and the ADNI labels in terms of overlap; we would not expect
+different segmentation protocols to have a high degree of overlap.  Instead, to
+evaluate the performance of \mb we compare the correlation of \mb segmentation
+volumes with manual segmentation (SNT) volumes. Additionally, we correlate the
+hippocampal volumes of established automated segmentation methods to \mb
+segmentations.  
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                                                                             
 % ADNI1 Complete 1Yr Dataset Demographics Table 
-%                                                                             
 %                                                                             
 <<ADNI1-scr-demographics, echo=F, results="asis",cache=FALSE>>=
 # RID < 2000 ensures only ADNI1 patients
@@ -826,18 +781,17 @@ yr1$VISCODE <- factor(yr1$Visit, levels = c(1,2,3,4), labels=c("bl","m03","m06",
 yr1 = subset(yr1, !grepl("Scaled_2", Description))
 yr1 = yr1[,c("RID","VISCODE")]
 
-adnimerge_yr1 = merge(adnimerge, yr1) 
+adnimerge.yr1 = merge(adnimerge, yr1) 
 tab <- summary(DX.bl ~ AGE + PTGENDER + PTEDUCAT + PTETHCAT + CDRSB + ADAS13 +
-               MMSE, data = adnimerge, 
-               subset =  adnimerge_yr1, #RID %in% yr1$RID & VISCODE %in% c('bl','m06','m12'),   
+               MMSE, data = adnimerge.yr1, 
+               #subset = RID %in% yr1$RID & VISCODE %in% c('bl','m06','m12'),   
                method = "reverse", test=FALSE, overall=TRUE)
 
 latex(tab, file="", size="scriptsize", 
     caption="ADNI1 1.5T Complete 1Yr dataset demographics",
     label="tab:ADN1-1.5T-Complete-1Yr-Dataset-Demographics")
-@ %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
+@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1601,6 +1555,51 @@ ggplot(melted, aes(y=percenterr,x=region,colour=measure)) +
 %                               Conclusion 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Conclusion}
+
+\section{Supplementary Materials}
+
+\subsection{ADNI Manual Labels}
+% The following blurb is taken (except for the first sentence) verbatim 
+Semi-automated hippocampal volumetry was carried out using a commercially
+available high dimensional brain mapping tool (Medtronic Surgical Navigation
+Technologies, Louisville, CO), that has previously been validated and compared
+to manual tracing of the hippocampus \citep{Hsu2002}. Measurement of hippocampal
+volume is achieved first by placing manually 22 control points as local
+landmarks for the hippocampus on the individual brain MRI data: one landmark at
+the hippocampal head, one at the tail, and four per image (i.e., at the
+superior, inferior, medial and lateral boundaries) on five equally spaced images
+perpendicular to the long axis of the hippocampus. Second, fluid image
+transformation is used to match the individual brains to a template brain
+\citep{Christensen1997}. The pixels corresponding to the hippocampus are then
+labeled and counted to obtain volumes. This method of hippocampal voluming has a
+documented reliability of an intraclass coefficient better than .94
+\citep{Hsu2002}.
+
+%Representative 3T image parameters were TR = 2300ms, TI = 900ms, TE = 3.0ms,
+%flip angle = $8{\circ}$, field of view = 256 x 240mm, a 256 x 256 x 166 matrix
+%(x, y, and z directions) yielding a voxel resolution of 1.00 x 1.00 x 1.2
+%$mm^3$.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% ADNI1 Complete 1Yr Template Library Demographics Table
+%
+%
+% <<ADNI1-scr-tmpllib-demographics, echo=F, results="asis",cache=FALSE>>=
+% scr_tmpllib_RIDs = c(0295, 0413, 0619, 0685, 0729, 0782, 0938, 0954, 1018, 1155,
+%                  0907, 0981, 0448, 0553, 0814, 1130, 0698, 1339, 1095, 0991,
+%                  0159)
+% tab <- summary(DX.bl ~ AGE + PTGENDER + PTEDUCAT + PTETHCAT + CDRSB + ADAS13 +
+%                MMSE, data = adnimerge, subset = VISCODE == 'bl' & RID %in%
+%                scr_tmpllib_RIDs, method = "reverse", test=FALSE, overall=TRUE)
+% 
+% latex(tab, landscape=FALSE, ctable=FALSE, file="", size="scriptsize",
+%       caption="ADNI1 Complete 1Yr Template Library demographics", 
+%       title="tab:ADNI1-scr-tmpllib-demographics")
+% @
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
 
 \bibliographystyle{plainnat}
 \bibliography{references}
