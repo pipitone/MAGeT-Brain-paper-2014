@@ -1337,6 +1337,10 @@ ggplot(data=melted, aes(x=value)) +
 % Tabulation of segmentation accuracies of existing methods (ADNI)
 %
 <<ADNI1-literature, echo=F, results="asis",cache=FALSE>>=
+caption = paste(
+  "Survey of automated segmentation accuracy of the ADNI dataset",
+  sep=" ")
+
 tab = read.csv("data/ADNI-existing-work.csv")
 tab$Notes <- NULL
 
@@ -1347,9 +1351,9 @@ other_lit$Dataset <- NULL
 
 latex(adni_lit, file="", 
       size="scriptsize",
-      caption="Caption", 
+      caption=caption, 
       rowname=NULL,
-      col.just=c("p{1.5in}l","p{0.5in}","p{.5in}","p{1in}"),
+      col.just=c("p{1.5in}l","p{0.5in}","p{1.3in}","p{1.5in}"),
       title="")
 @
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
