@@ -47,6 +47,7 @@ lm_eqn = function(m) {
 \usepackage{algorithm, color, algpseudocode, amsmath, url, geometry, ctable}
 \usepackage{titlesec, siunitx}
 \usepackage[round,authoryear]{natbib}
+\usepackage[section]{placeins}  % keep floats in their place.
 
 %draft mode
 \usepackage[colorlinks]{hyperref}
@@ -643,9 +644,9 @@ in the dataset.
 In this experiment, the five $300\mu$-isotropic voxel Winterburn atlases are
 used as the atlas library for \mb segmentation. LOOCV is conducted separately
 for two different input datasets: the four Winterburn atlas subject BRAVO MR
-images (referred to as the {\em Winterburn BRAVO} dataset), and the five
+images (referred to as the {\em WA BRAVO} dataset), and the five
 Winterburn atlas subject images resampled to 0.9mm-isotropic voxel resolution
-(referred to as the {\em Winterburn Resampled} dataset. Each subject in the
+(referred to as the {\em WA Resampled} dataset. Each subject in the
 dataset is segmented by \mb with that subject's image excluded from the atlas
 library. The template library consists of 3T T1 images (0.9mm-isotropic
 voxels) of healthy subjects in addition to the images from the dataset being
@@ -795,90 +796,18 @@ latex(tab, file="", size="scriptsize",
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%                               Results
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                               RESULTS                                        %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Results}
 
-%%%%%
-%%%%%                  Results: ADNI-1 cross-validationn                   %%%%%
-%%%%%
-\subsection{ADNI1 Cross-Validation}
-
-
-%                                                                              %
-% ADNI1 Complete 1Yr Validation - results preparation                             %
-%                                                                              %
-<<ADNI1-xval-load, include=FALSE, cache=TRUE>>=
-# all data from the validation trials
-a_data       = read.csv(gzfile('data/a2a_ants/results_2013_01_03.csv.gz'))
-#t_data       = read.csv(gzfile('data/a2a_tracc/xfmtrials_results_2013-04-01.csv.gz'))
-t_data       = read.csv(gzfile('data/a2a_tracc/results_xfmjoin_2013_04_04.csv.gz'))
-diagnoses    = read.csv('data/a2a_diagnoses.csv')
-@
-
-<<ADNI1-xval-prep,dependson='ADNI1-xval-load',include=FALSE,cache=TRUE>>=
-# simplify the data
-t_data       = subset(t_data, atlases %in% c(1,3,5,7,9))
-a_data       = subset(a_data, atlases %in% c(1,3,5,7,9))
-t_data$se    = NULL
-t_data$sn    = NULL
-t_data$j     = NULL
-a_data$se    = NULL
-a_data$sn    = NULL
-a_data$j     = NULL       
-
-# add registration method column 
-t_data       = cbind(t_data, reg_method = "ANIMAL")
-a_data       = cbind(a_data, reg_method = "ANTS")
-
-# separate MA majvote from MB so we can compute differences
-# we only compare multiatlas using majority vote
-t_ma = subset(t_data, approach=="ma" & method=="majvote")
-t_ma$approach="multiatlas"
-a_ma = subset(a_data, approach=="multiatlas" & method=="majvote")
-t_mb = subset(t_data, approach=="mb")
-a_mb = subset(a_data, approach=="mb")
-
-ma = rbind(t_ma,a_ma)
-mb = rbind(t_mb,a_mb)
-
-# set up a few equivalences for multi-atlas, to make nomenclature simpler
-ma$templates =  ma$atlases  # because no template library
-mb[mb$method != 'majvote',]$templates = mb[mb$method != 'majvote',]$top_n 
-
-# aggregate over batches
-ma_mean = aggregate(k ~ subject + reg_method + approach + method + atlases + templates + top_n + label, data = ma, mean)
-mb_mean = aggregate(k ~ subject + reg_method + approach + method + atlases + templates + top_n + label, data = mb, mean)                    
-
-all_data = merge(ma, mb, by=c("timestamp", "atlases", "batch", "label", "reg_method", "subject"), 
-                 suffixes=c(".ma", ".mb"))
-
-all_data_mean = merge(ma_mean, mb_mean, by=c("reg_method", "label", "atlases", "subject"), 
-                 suffixes=c(".ma", ".mb"))
-
-all_data$k_diff = all_data$k.mb - all_data$k.ma
-all_data_mean$k_diff = all_data_mean$k.mb - all_data_mean$k.ma
-
-vote_levels <- list("Majority Vote" = "majvote", 
-                      "NMI Vote" = "nmi", 
-                      "Cross-correlation Vote" = "xcorr")
-levels(all_data$method.mb) <- vote_levels
-levels(all_data_mean$method.mb) <- vote_levels
-
-all_data       = merge(all_data, diagnoses)
-all_data_mean  = merge(all_data_mean, diagnoses)
-remove(t_ma, a_ma, t_mb, a_mb, ma, mb)
-@
-%                                                                              %
-%                                                                              %
-
-%
-% synonyms for significant: 
-% powerful, suggestive, apparent, definite, evident, large, marked, material, 
-% noticeable, plain, pronounced, substantial, substantive, 
-%
-% antonyms: 
-% negligible, minor, no appreciable, scant
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%                                                                     %%%%%
+%%%%%     RESULTS: Experiment 1: Whole Hippocampus Cross-Validation       %%%%%
+%%%%%                                                                     %%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Experiment 1 Results: Whole Hippocampus Cross-Validation}
 
 In this experiment we conducted 10 rounds of \mb and multi-atlas segmentation of
 each of 69 subjects at a range of atlas and template library sizes, registration
@@ -902,6 +831,44 @@ small decrease in performance relative to when one fewer template image is used.
 See section \todo{ref} for a discussion of this behaviour. In the remainder of
 this section, only results from odd-sized template libraries will be shown. 
 
+With an increasing number of templates, \mb-based segmentating using \ants
+registration and majority vote label fusion shows improvement in overlap
+accuracy over multi-atlas-based segmentation, using the same number of atlases
+and voting method (Figure \ref{fig:ADNI1-xva-k-diff}). The magnitude of improvement over
+multi-atlas-based segmentation decreases with an increasing number of atlases,
+with accuracy converging with 7 atlases.  Peak improvement in \mb accuracy (~0.02
+DSC) is found when one atlas is used with a template library of 20 images.
+
+\todo{mention failures}
+
+In addition to an improvement in accuracy over multi-atlas-based segmentation,
+\mb also shows a decrease in the variability of segmentation accuracy 
+(Figure \todo{ADNI1-xval-variability}).  The size of template library 
+necessary to reach a significant (p<0.5) decrease in variance and standard 
+deviation grows with the size of atlas library used.  A template library of 19
+images is sufficient to show significant decrease in variance and standard 
+deviation for 3-7 atlases. 
+
+Finally, \mb segmentation volumes show differential agreement with manual (SNT) 
+volumes throughout the range of hippocampal volumes (Figure 
+\ref{ADNI1-xval-Bland-Altman}). \mb shows a negligble fixed bias towards 
+producing smaller segmentations, and shows a slight proportional bias towards 
+smaller segmentations with larger hippocampi.
+\todo{Note limits of agreement?}
+
+\todo{Include multi-atlas 9-atlas in plot as a comparison} 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% ADNI1-XVAL: prep
+% Prepares the data in a the form needed for plotting.
+<<ADNI1-xval-prep,dependson='ADNI1-xval-load',include=FALSE,cache=TRUE>>=
+all_data  <- read.csv('data/cache/ADNI-XVAL:all_data.csv')
+all_data_mean  <- read.csv('data/cache/ADNI-XVAL:all_data_mean.csv')
+@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% ADNI1-XVAL: mean Kappa plot by atlases, templates, reg and voting method. 
 \begin{figure}
 <<ADN1-xval-k-mean, cache=TRUE, dependson='ADNI1-Xval-prep'>>=
 ggplot(all_data_mean, 
@@ -917,23 +884,17 @@ ggplot(all_data_mean,
 @
   \label{fig:ADNI1-xval-k_mean}
   \caption{
-  {\bf Mean DSC by atlas and template library size, registration algorithm,
-  and label fusion method.} The mean DSC score is calculated over all subjects 
-  from the ADNI1 Cross-Validation dataset for each parameter setting.}
+  {\bf Mean DSC of \mb segmentations across 69 ADNI1 subjects, by atlas and
+  template library size, registration algorithm, and label fusion method.} 
+  }
 \end{figure}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-With an increasing number of templates, \mb-based segmentating using \ants
-registration and majority vote label fusion shows improvement in overlap
-accuracy over multi-atlas-based segmentation, using the same number of atlases
-and voting method (Figure \ref{fig:ADNI1-xva-k-diff}). The magnitude of improvement over
-multi-atlas-based segmentation decreases with an increasing number of atlases,
-with accuracy converging with 7 atlases.  Peak improvement in \mb accuracy (~0.02
-DSC) is found when one atlas is used with a template library of 20 images.
 
-\todo{mention failures}
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% ADNI1-XVAL: "increase" in mean kappa over multi-atlas
 \begin{figure}
-<<ADN1-Xval-k-diff, cache=TRUE, dependson='ADNI1-Xval-prep'>>=
+<<ADN1-Xval-k-diff,cache=TRUE,dependson='ADNI1-Xval-prep',fig.width=6,fig.height=4>>=
 ggplot(subset(all_data_mean, reg_method=="ANTS" & method.mb=="Majority Vote" &
                 templates.mb %in% seq(1,20,2)), 
        aes(x=templates.mb, y=k_diff, colour=as.factor(atlases))) + 
@@ -951,23 +912,17 @@ ggplot(subset(all_data_mean, reg_method=="ANTS" & method.mb=="Majority Vote" &
   scale_alpha_continuous(legend=FALSE) + 
   scale_linetype_discrete(legend=FALSE) + 
   xlab( "Number of Templates" ) + 
-  ylab( "Increase in mean DSC between MAGeT brain and multiatlas" ) +
+  ylab( "Difference in mean DSC" ) +
   opts(legend.direction = "horizontal", legend.position = "bottom")
 @
   \caption{The difference in mean DSC between \mb and multi-atlas segmentations for 
   a range of parameter settings.}
   \label{ADNI1-xval-k-diff}
 \end{figure}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
-In addition to an improvement in accuracy over multi-atlas-based segmentation,
-\mb also shows a decrease in the variability of segmentation accuracy 
-(Figure \todo{ADNI1-xval-variability}).  The size of template library 
-necessary to reach a significant (p<0.5) decrease in variance and standard 
-deviation grows with the size of atlas library used.  A template library of 19
-images is sufficient to show significant decrease in variance and standard 
-deviation for 3-7 atlases. 
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% ADNI1-XVAL: show variability of MAGeT over parameters
 \begin{figure}
 <<ADN1-Xval-variability, cache=TRUE, dependson='ADNI1-Xval-prep'>>=
 ANTSmajvote = subset(all_data, 
@@ -1023,82 +978,10 @@ ggplot(stats.tests,
   t-test. The p-value of this test, is shown on the y-axis (scaled logarithmically).}
   \label{ADNI1-xval-variability}
 \end{figure}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% <<ADNI1-Xval-sd-by-subject, cache=TRUE>>=
-% SDs = data.stats[c('subject','label','atlases','templates.mb','MA.sd','MB.sd')]
-% SDs = subset(SDs, templates.mb %in% c(5,10,15,20) & atlases == 5)
-% 
-% melted = melt(SDs, measure.vars=c('MA.sd','MB.sd'))
-% ggplot(melted, aes(x=templates.mb, y=value, 
-%                    group=interaction(templates.mb, variable), colour=as.factor(variable))) + 
-%   scale_x_continuous(breaks=c(5,10,15,20)) + 
-%   geom_violin() 
-% @
-% \begin{figure}
-% <<ADN1-Xval-k-diff-ANTS-20tmpls, cache=TRUE, dependson='ADNI1-Xval-prep'>>=
-% a_20_tmpls = subset(all_data_mean, 
-%                       reg_method  == "ANTS" &
-%                       method.mb   == "Majority Vote" &
-%                       templates.mb== 20)
-% ggplot(a_20_tmpls, aes(x=factor(atlases))) +
-%   #geom_point(aes(y=k.mb,group=1,colour="MAGeT"),position="jitter") + 
-%   #geom_point(aes(y=k.ma,group=2,colour="MA"),position="jitter") + 
-%   geom_violin(aes(y=k.mb,group=factor(atlases),colour="MAGeT")) + 
-%   geom_violin(aes(y=k.ma,group=factor(atlases),colour="MA")) + 
-%   geom_smooth(aes(y=k.mb,group=1,colour="MAGeT")) +
-%   geom_smooth(aes(y=k.ma,group=2,colour="MA")) +
-%   
-%   #stat_summary(fun.y=mean,geom='point',size=3,colour="red",aes(y=k.ma)) +
-%   #stat_summary(fun.y=mean,geom='line',colour="red",aes(y=k.ma,group=1)) +
-%   #stat_summary(fun.y=mean,geom='point',size=3,colour="blue",aes(y=k.mb)) +
-%   #stat_summary(fun.y=mean,geom='line',colour="blue",aes(y=k.mb,group=1)) +
-%   labs(x="Number of Atlases", y = "Kappa", 
-%        title="mean Kappa of MA and MAGeT brain (ANTS/20 templates) \nvs\natlas library size") +
-%   scale_colour_hue(name="Method") + 
-%   coord_cartesian(ylim=c(0.7,0.9))
-%   #theme(legend.justification=c(1,0), legend.position=c(1,0))
-% @
-%   \caption{Change in mean Kappa between multi-atlas and \mb using \ants,
-%   20 templates}
-%   \label{}
-% \end{figure}
-% 
-% \begin{figure}
-% <<ADN1-Xval-ANTS-20tmpls-t-test-sd, cache=TRUE, dependson='ADNI1-Xval-prep'>>=
-% a_20_tmpls = subset(all_data, 
-%                       reg_method  == "ANTS" &
-%                       method.mb    == "Majority Vote" &
-%                       templates.mb == 20 &
-%                       atlases     == 9 & 
-%                       volume.ma < 10000)
-% stddev = ddply(a_20_tmpls, c("subject", "label"), function (df) {
-%   data.frame(
-%     MA = sd(df$k.ma),  #MA
-%     MB = sd(df$k.mb)  #MB
-%   )
-% })
-% 
-% 
-% # TODO: against SNT
-% melted = melt(stddev, id.vars=c("subject", "label"))
-% ggplot(melted, aes(x=variable, y=value)) + geom_boxplot()
-% t.test(stddev$MA, stddev$MB)
-% @
-%   \caption{}
-%   \label{}
-% \end{figure}
-% 
-%
-
-Finally, \mb segmentation volumes show differential agreement with manual (SNT) 
-volumes throughout the range of hippocampal volumes (Figure 
-\ref{ADNI1-xval-Bland-Altman}). \mb shows a negligble fixed bias towards 
-producing smaller segmentations, and shows a slight proportional bias towards 
-smaller segmentations with larger hippocampi.
-\todo{Note limits of agreement?}
-
-\todo{Include multi-atlas 9-atlas in plot as a comparison} 
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% ADNI1-XVAL: Bland-Altman plots
 \begin{figure}
 <<ADN1-xval-Bland-Atlman, cache=TRUE, dependson='ADNI1-Xval-prep', fig.width=8, fig.height=8>>=
 df_subset = subset(all_data, 
@@ -1144,104 +1027,154 @@ ggplot(hc_vol, aes(x=ma, y = diff, group=Atlases)) +
   when using a varying number of atlases and templates.}
   \label{ADNI1-xval-Bland-Altman}
 \end{figure}
-% 
-% 
-% \begin{figure}
-% <<ADN1-Xval-k-by-disease, cache=TRUE, dependson='ADNI1-Xval-prep'>>=
-% a_20_tmpls = subset(all_data, 
-%                       reg_method  == "ANTS" &
-%                       method.y    == "Majority Vote" &
-%                       templates.y == 20 &
-%                       atlases %in% c(1,9))
-% template_library = read.csv('data/a2a_ants/template_library_composition.csv')
-% template_library$subject = NULL
-% a_20_tmpls = merge(a_20_tmpls, template_library,
-%                    by.x=c('timestamp', 'templates.y'), 
-%                    by.y=c('timestamp', 'templates'))
-% ggplot(a_20_tmpls, aes(y=k.y, x=templates_CN,colour=DX)) +  # why does k.x look the same?
-%   facet_grid( . ~ atlases) + 
-%   geom_smooth(method='lm',fullrange=F) 
-%  # add 
-% @
-%   \caption{Mean kappa vs. proportion of disease category in template library by disease category}
-%   \label{}
-% \end{figure}
-% 
-% 
-% \todo{show cost (in registrations) / benefit tradec off graph:  show number of
-% registrations per Kappa?  or hours of manual labour per Kappa?)}
-% discuss run-time for each of MAGet and multi-atlas 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%%%%%
-%%%%%                  Results: ADNI-1 Complete 1Yr Validation               %%%%%
-%%%%%
-\subsection{ADNI1 Complete 1Yr Validation}
+\FloatBarrier
 
-<<ADNI-src-volumes-prep,echo=F,cache=T>>=
-#bl    = read.csv("data/ADNI_baseline_volumes/ADNI1_Complete_1Yr_1.5T_11_15_2012.csv")
-mb    = read.csv("data/ADNI_baseline_volumes/ADNI1_1.5T_MAGeT_volumes.csv")
-maper = read.csv("data/ADNI_baseline_volumes/MAPER_volumes.csv")
-snt   = read.csv("data/ADNI_baseline_volumes/UCSFSNTVOL.csv")
-fs    = read.csv("data/ADNI_baseline_volumes/UCSFFSX_02_15_12.csv")
-fsl   = read.csv("data/ADNI_baseline_volumes/ADNI1_1.5T_FSLFIRST_volumes.csv", sep=';')
-qc    = read.csv("data/ADNI_baseline_volumes/ADNI1_Complete_1Yr_1.5T_QC_Park.csv", sep="\t")
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%                                                                     %%%%%
+%%%%%    RESULTS: Experiment 2: Hippocampal Subfield Cross-Validation     %%%%%
+%%%%%                                                                     %%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Experiment 2 Results: Winterburn Atlases Cross-Validation}
+This experiment explores \mb segmentations of hippocampal subfields. To
+achieve this, a leave-one-out validation is conducted in which lower-resolution
+images ($0.9mm^3$ voxels) of each Winterburn atlas subject is segmented using 
+the remaining Winterburn atlases. As a point of comparison, volumes of Winterburn 
+atlases when downsampled to $0.9mm^3$ voxels are also computed.
 
-# Get subjects, and diagnoses
-yr1 = read.csv("data/ADNI_baseline_volumes/ADNI1_Complete_1Yr_1.5T_11_15_2012.csv")
-yr1 = subset(yr1, !grepl("Scaled_2", Description)) #TODO: remove Scaled_2? 
-yr1$VISCODE <- factor(yr1$Visit, levels = c(1,2,3,4), labels=c("bl","m03","m06","m12"))
-subjects = yr1[,c("Image.Data.ID", "RID","VISCODE")]  # we only need these fields
-dx = unique(adnimerge[c("DX.bl", "RID", "VISCODE")])
-subjects = merge(subjects, dx) 
+In general, across hippocampal subregions the percent error in volume between 
+\mb segmentations and the manual Winterburn atlas segmentations compares 
+favourably to error when resampling the atlas segmentations (Figure 
+\ref{fig:WAval-vol-boxplot}). In particular, the CA1, CA4, and Dentate subregions 
+all show near or smaller percent errors. The Sibiculum and CA2/CA3 subregions 
+show distinctly larger than resampling error. 
 
-# fetch just the columns we need, and do a little renaming
-mb_pruned     = data.frame(MAGeT_L = mb$Left_Hippo, 
-                           MAGeT_R = mb$Right_Hippo, Source = mb$SourceImageID)
-maper_pruned  = data.frame(MAPER_L = maper$Left_Hippo, 
-                           MAPER_R = maper$Right_Hippo, Source = maper$SourceImageID)
-snt_pruned    = data.frame(SNT_L = snt$LEFTHIPPO, 
-                           SNT_R = snt$RIGHTHIPPO, Source = snt$IMAGEUID)
-fs_pruned     = data.frame(TEMPQC =fs$TEMPQC, 
-                           FS_L=fs$ST29SV, 
-                           FS_R=fs$ST88SV, 
-                           Source = fs$IMAGEUID)
-fsl_pruned    = data.frame(FSL_L=fsl$X17, 
-                           FSL_R=fsl$X53, Source=fsl$Source)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Winterburn-XVAL: compare resampling
+\begin{figure}[h!]
+<<WAval-vol-boxplot,cache=T,fig.width=6,fig.height=4>>=
+data = subset(read.csv('data/WAval.csv'))
+casted = dcast(melt(data, id.vars=c("file","version")), file + variable ~ version)
+casted = rename(casted, c("variable"="region"))
 
+error = ddply(casted, c("file", "region"), function(df) {
+  with(df, 
+  data.frame(
+    resampled = (gold_0.9mm - gold_0.3mm) / gold_0.3mm * 100, 
+    mb_bravo  = (mb_bravo   - gold_0.3mm) / gold_0.3mm * 100, 
+    mb_0.9mm  = (mb_0.9mm   - gold_0.3mm) / gold_0.3mm * 100))})
 
+levels(error$region) <-list("CA1"="X1", "CA1"="X101", 
+                            "Subiculum"="X2","Subiculum"="X102", 
+                            "CA4"="X4","CA4"="X104", 
+                            "CA2/CA3"="X5","CA2/CA3"="X105", 
+                            "Dentate"="X6","Dentate"="X106")
+melted = melt(error,id.vars=c("file", "region"))
+melted = rename(melted, c("variable"="measure", "value"="percenterr"))
+levels(melted$measure) <- list("WA Resampled"="resampled",
+                               "MAGeT + WA Resampled" = "mb_0.9mm",
+                               "MAGeT + WA BRAVO"="mb_bravo")
 
-# Now create one data.frame with all the yr1 volume data we have from each datasource
-combined = merge(subjects, mb_pruned   , by.x="Image.Data.ID", by.y="Source", all.x=TRUE)
-combined = merge(combined, maper_pruned, by.x="Image.Data.ID", by.y="Source", all.x=TRUE)  # only Baseline
-combined = merge(combined, snt_pruned  , by.x="Image.Data.ID", by.y="Source", all.x=TRUE)
-combined = merge(combined, fs_pruned   , by.x="Image.Data.ID", by.y="Source", all.x=TRUE)
-combined = merge(combined, fsl_pruned  , by.x="Image.Data.ID", by.y="Source", all.x=TRUE)
-combined = merge(combined, qc          , by=c("Image.Data.ID", "RID"), all.x=TRUE)
-
-# Step 2: Of those, get counts for the numbers that fail QC
-package_totals = data.frame(
-  Total     = c(length(subjects$VISCODE), 'N/A'),
-  SNT        = c(length(which(!is.na(combined$SNT_L)))    , "--"),
-  MAGeT      = c(length(which(!is.na(combined$MAGeT_L)))  , length(which(combined$MAGeT_QC==0))), 
-  MAPER      = c(length(which(!is.na(combined$MAPER_L)))  , "--"), 
-  FSL        = c(length(which(!is.na(combined$FSL_L)))    , length(which(combined$FSL_QC==0))), 
-  FS         = c(length(which(!is.na(combined$FS_L)))     , length(which(combined$TEMPQC == "Fail"))),
-  row.names  = c("Images", "Failures")
-)
-
-
-all_qc = subset(combined, TEMPQC != "Fail" & MAGeT_QC == 1 | FSL_QC == 1 )
-
-attach(all_qc)
-totals = data.frame(RID = RID, VISCODE = VISCODE, DX = factor(DX.bl),
-                  MAGeT = MAGeT_L + MAGeT_R, 
-                  MAPER = MAPER_L + MAPER_R, 
-                  SNT   = SNT_L + SNT_R, 
-                  FS    = FS_L + FS_R, 
-                  FSL   = FSL_L + FSL_R)
-detach(all_qc)
-totals.complete = na.omit(totals)
+ggplot(melted, aes(y=percenterr,x=region,colour=measure)) +
+  geom_boxplot() +
+  labs(y="Percent error in volume", x="Region") +
+  scale_colour_discrete("") + 
+  theme(legend.direction = "horizontal", legend.position = "bottom")
 @
+  \caption{{\bf Percent error in segmentation volume by hippocampus subregion.} 
+  Percent error is measured against the volumes of of the unmodified Winterburn
+  atlas segmentations.
+  {\bf WA Resampled} are volumes of the manual segmentations of the Winterburn
+  atlases after resampling to $0.9mm^3$.  
+  {\bf MAGeT + WA Resampled} volumes are \mb segmentations of the Winterburn atlas
+  images after resampling to $0.9mm^3$ voxels.
+  {\bf MAGeT + WA BRAVO} volumes are \mb segmentations of T1 BRAVO images
+  ($0.9mm^3$ voxels) acquired separately of four of the five Winterburn atlas
+  subjects. 
+  } 
+  \label{fig:WAval-vol-boxplot}
+\end{figure}
+
+\FloatBarrier
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%                                                                     %%%%%
+%%%%%    RESULTS: Experiment 3, Application of \mb to the segmentation    %%%%%
+%%%%%                       of schizophrenia patients                     %%%%%
+%%%%%                                                                     %%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Experiment 3 Results: Application to the segmentation first episode
+\\ \mbox{schizophrenia patients}}
+ 
+In this experiment \mb is applied to a dataset of images of first episode
+schizophrenia parients, using the Winterburn atlases and a template library of
+21 subject images selected at random.  Expert manual whole hippocampal
+segmentations are used as gold standards. 
+
+\mb produces hippocampus segmentation volumes that are highly correlated with 
+manual segmentation volumes (Figure \ref{fig:SZ-volumes}).  Additionally, as we 
+saw in the previous experiments, \mb volumes show a fixed bias towards smaller 
+volumes (although the bias is negligble), and a proportional bias towards 
+producing smaller segmentations for larger hippocampi (Figure \ref{fig:FEP-SZ-Bland-Altman}.
+
+\begin{figure}
+<<FEP-volumes,cache=FALSE,dependson="setup">>=
+SZ_volumes=read.csv("data/SZ_volumes_by_method.csv", sep="\t")
+casted = dcast(SZ_volumes, Subject + Label ~ Method)
+lm = lm(MAGeT ~ Manual, casted)
+ggplot(data=casted, aes(x = Manual, y = MAGeT)) + 
+  geom_smooth(method="lm", formula=y~x) + 
+  geom_point() + 
+  geom_text(aes(x=3500, y=5000, label=lm_eqn(lm),hjust=0,size=1), parse=TRUE, data=data.frame()) +
+  xlab(expression("Manual left / right hippocampus volume " (mm^3))) + 
+  ylab(expression("MAGeT left / right hippocampus volume "  (mm^3))) + 
+  scale_size_continuous(guide="none") 
+@
+  \caption{{\bf First Episode Schizophrenic Patients.} Comparison of total
+  HC volumes for \mb against manually rated Hippocampal volumes}
+  \label{fig:SZ-volumes}
+\end{figure}
+
+\begin{figure}
+<<ADN1-FEP-Bland-Atlman, cache=TRUE, dependson='FEP-volumes', fig.width=4, fig.height=4>>=
+bland_altman_plot <- function(x, y) {
+  data = data.frame(x=x,y=y,diff=x-y)
+  upper = mean(data$diff) + 2 * sd(data$diff)
+  lower = mean(data$diff) - 2 * sd(data$diff)
+  return(ggplot(data, aes(x= x, y = diff)) + 
+    geom_hline(yintercept = mean(data$diff) + c(-2, 0, 2) * sd(data$diff), 
+               linetype=2, color='brown') + 
+    annotate("text", y = upper, x=Inf, 
+              label=paste("std =",round(upper,0)), 
+              hjust=1.1,vjust=1.5) + 
+    annotate("text", y = lower, x=Inf, 
+              label=paste("-std =",round(lower,0)), 
+              hjust=1.1,vjust=1.5) + 
+    geom_point())
+}
+
+bland_altman_plot(casted$Manual, casted$MAGeT) + 
+  xlab('Mean manual and MAGeT Brain total Hippocampus volume') + 
+  ylab('Manual - MAGeT Brain volume') + 
+  geom_smooth(method="lm", formula = y~x)
+@
+  \caption{Bland-Altman plot comparing manual and \mb hippocampal volumes 
+  when using five Winterburn atlases, and a 21 image template library.}
+  \label{fig:FEP-SZ-Bland-Altman}
+\end{figure}
+
+
+\FloatBarrier
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%                                                                     %%%%%
+%%%%%                           RESULTS                                   %%%%%
+%%%%%                                                                     %%%%%
+%%%%%         EXPERIMENT 3: Application of \mb to the segmentation        %%%%%
+%%%%%                       of ADNI subjects                              %%%%%
+%%%%%                                                                     %%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Experiment 4 Results: Application to the segmentation of Alzheimer's
+disease patients}
 
 Based on the results from the ADNI1 Cross-Validation experiment, in this
 experiment \mb was configured with a template library of 21 randomly
@@ -1256,11 +1189,27 @@ are included in the following analysis (a total of
 \Sexpr{length(totals.complete$RID)} images; Table 
 \ref{tab:ADNI1-1.5T-Complete-1Yr-Dataset-Method-Totals}).
  
+Comparing total hippocampal volume, we find close agreement between manual
+volumes, MAPER and MAGeT volumes across disease categories (Figure
+\ref{fig:ADNI-scr-volumes-boxplot}, Figure \ref{fig:ADNI-scr-histogram}). FSL
+and FreeSurfer both produce volumes in close agreement with each other, but
+which are consistently larger than manually segmented volumes in each disease
+category.  
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% ADNI1 1yr Complete Dataset Package Totals & Failures                        %
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% ADNI1-COMPLETE
+% Prepares the data in a the form needed for plotting.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+<<ADNI-src-volumes-prep,echo=F,cache=T>>=
+totals.complete  <- read.csv('data/cache/ADNI1:totals.complete.csv')
+totals           <- read.csv('data/cache/ADNI1:totals.csv')
+package_totals   <- read.csv('data/cache/ADNI1:package_totals.csv')
+@
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% ADNI1 1yr Complete Dataset Package Totals & Failures
 %                        
-%
 <<ADNI1-scr-package-totals, echo=F, results="asis",cache=FALSE>>=
 caption = paste(
   "Pass/fail quality control indicators were supplied with the FreeSurfer",
@@ -1272,18 +1221,21 @@ latex(package_totals, file="", size="scriptsize",
     title = "",
     label="tab:ADNI1-1.5T-Complete-1Yr-Dataset-Method-Totals")
 @
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 \begin{figure}[h]
 <<ADNI-scr-volumes-boxplot,dependson='ADNI-baseline-volumes-prep',cache=T,fig.width=6,fig.height=4>>=
-melted.by.snt = melt(totals.complete, measure.vars=c("MAGeT","FSL", "FS", "MAPER"))
-snt.tests <- ddply(melted.by.snt, c("variable", "DX"), function(df) {
-  data.frame( c = cor(df$SNT, df$value) ) 
+snt.tests <- ddply(totals.complete, c("DX"), function(df) {
+  data.frame( corr = cor(df$SNT, df$MAGeT),
+              value = -Inf) 
 })
 
 qplot(DX,value,data=melt(totals.complete,measure.vars=c("FS", "FSL", "MAPER","MAGeT","SNT")),
       colour=variable,geom="boxplot") + 
+      geom_text(aes(y=value,x=DX, vjust=-1.4, size=1,
+                    label=paste("r==", signif(corr, digits=3))), 
+            colour='black',parse=TRUE, data=snt.tests) +
       xlab("Diagnosis") + ylab("Total Hippocampal Volume (mm3)")
 @
   \caption{Comparison of hippocampus volumes obtained by FreeSurfer (FS), FSL, 
@@ -1369,187 +1321,39 @@ ggplot(data=melted, aes(x=value)) +
   \label{fig:ADNI-scr-histogram}
 \end{figure}
 
-Comparing total hippocampal volume, we find close
-agreement between manual volumes, MAPER and MAGeT volumes across disease 
-categories (Figure \ref{fig:ADNI-scr-volumes-boxplot}, Figure 
-\ref{fig:ADNI-scr-histogram}). FSL and FreeSurfer both produce volumes in close 
-agreement with each other, but which are consistently larger than manually 
-segmented volumes in each disease category.  
-
 \begin{figure}
   \includegraphics[width=6in,height=3in]{figure/ADNI1_MAGeT_montage/figure.pdf}
   \caption{A caption}
   \label{fig:ADNI1-segmentation-montage}
 \end{figure}
 
-% show as a plot
-<<ADNI-scr-summary-table, echo=F, results="asis",cache=FALSE>>=
-# a rather dirty way of computing the pairwise correlations and then forming
-# a printable table out of them.  Sorry.
-melted = melt(totals.complete, measure.vars=c("MAGeT","FSL", "FS", "MAPER"))
-cor_by_dx    = by(melted[c("SNT", "value")], c(melted['variable'], melted['DX']), 
-                  function(x) cor(x$SNT,x$value, use="pairwise.complete.obs"))
-cor_overall  = by(melted[c("SNT", "value")], melted['variable'], 
-                  function(x) cor(x$SNT,x$value, use="pairwise.complete.obs"))
-cor_by_dx = t(rbind(cor_by_dx))
-cor_overall = rbind(cor_overall)
-
-vol_by_dx = t(rbind(by(totals.complete$MAGeT, totals.complete$DX, mean)))
-colnames(vol_by_dx) <- "Mean Volume"
-vol_overall = matrix(mean(totals.complete$MAGeT),dimnames=list("Overall"))
-
-dx      = cbind(vol_by_dx, cor_by_dx)
-overall = cbind(vol_overall, cor_overall)
-df      = format.df(rbind(dx, overall), dec=2)
-                    
-#latex(df, title="",
-#      n.cgroup=c(1,ncol(df)-1),cgroup=c("","Volume Correlation"),
-#      file="", size="scriptsize")
-@
-
-%%%%%
-%%%%%             Results: First Episode Patient Validation          %%%%%
-%%%%%
-\subsection{First Episode Schizophrenic Patients}
-In this experiment we move from an Alzheimer's disease dataset to a dataset of 
-first episode schizophrenia parients.  This dataset is segmented using \mb with the
-Winterburn atlases, and a template library of 21 subject images selected at random. 
-Expert manual whole hippocampal segmentations are used as gold standards. 
-
-\mb produces hippocampus segmentation volumes that are highly correlated with 
-manual segmentation volumes (Figure \ref{fig:SZ-volumes}).  Additionally, as we 
-saw in the previous experiments, \mb volumes show a fixed bias towards smaller 
-volumes (although the bias is negligble), and a proportional bias towards 
-producing smaller segmentations for larger hippocampi (Figure \ref{fig:FEP-SZ-Bland-Altman}.
-
-\begin{figure}
-<<FEP-volumes,cache=FALSE,dependson="setup">>=
-SZ_volumes=read.csv("data/SZ_volumes_by_method.csv", sep="\t")
-casted = dcast(SZ_volumes, Subject + Label ~ Method)
-lm = lm(MAGeT ~ Manual, casted)
-ggplot(data=casted, aes(x = Manual, y = MAGeT)) + 
-  geom_smooth(method="lm", formula=y~x) + 
-  geom_point() + 
-  geom_text(aes(x=3500, y=5000, label=lm_eqn(lm),hjust=0,size=1), parse=TRUE, data=data.frame()) +
-  xlab(expression("Manual left / right hippocampus volume " (mm^3))) + 
-  ylab(expression("MAGeT left / right hippocampus volume "  (mm^3))) + 
-  scale_size_continuous(guide="none") 
-@
-  \caption{{\bf First Episode Schizophrenic Patients.} Comparison of total
-  HC volumes for \mb against manually rated Hippocampal volumes}
-  \label{fig:SZ-volumes}
-\end{figure}
-
-\begin{figure}
-<<ADN1-FEP-Bland-Atlman, cache=TRUE, dependson='FEP-volumes', fig.width=4, fig.height=4>>=
-bland_altman_plot <- function(x, y) {
-  data = data.frame(x=x,y=y,diff=x-y)
-  upper = mean(data$diff) + 2 * sd(data$diff)
-  lower = mean(data$diff) - 2 * sd(data$diff)
-  return(ggplot(data, aes(x= x, y = diff)) + 
-    geom_hline(yintercept = mean(data$diff) + c(-2, 0, 2) * sd(data$diff), 
-               linetype=2, color='brown') + 
-    annotate("text", y = upper, x=Inf, 
-              label=paste("std =",round(upper,0)), 
-              hjust=1.1,vjust=1.5) + 
-    annotate("text", y = lower, x=Inf, 
-              label=paste("-std =",round(lower,0)), 
-              hjust=1.1,vjust=1.5) + 
-    geom_point())
-}
-
-bland_altman_plot(casted$Manual, casted$MAGeT) + 
-  xlab('Mean manual and MAGeT Brain total Hippocampus volume') + 
-  ylab('Manual - MAGeT Brain volume') + 
-  geom_smooth(method="lm", formula = y~x)
-@
-  \caption{Bland-Altman plot comparing manual and \mb hippocampal volumes 
-  when using five Winterburn atlases, and a 21 image template library.}
-  \label{fig:FEP-SZ-Bland-Altman}
-\end{figure}
-
-%%%%%
-%%%%%              Experiments: Winterburn Atlases Validation              %%%%%
-%%%%%
-\subsection{Winterburn Atlases Cross-Validation}
-
-The final experiment explores \mb segmentations of hippocampal subfields. To
-achieve this, a leave-one-out validation is conducted in which lower-resolution
-images ($0.9mm^3$ voxels) of each Winterburn atlas subject is segmented using 
-the remaining Winterburn atlases. As a point of comparison, volumes of Winterburn 
-atlases when downsampled to $0.9mm^3$ voxels are also computed.
-
-In general, across hippocampal subregions the percent error in volume between 
-\mb segmentations and the manual Winterburn atlas segmentations compares 
-favourably to error when resampling the atlas segmentations (Figure 
-\ref{fig:WAval-vol-boxplot}). In particular, the CA1, CA4, and Dentate subregions 
-all show near or smaller percent errors. The Sibiculum and CA2/CA3 subregions 
-show distinctly larger than resampling error. 
-
-\begin{figure}
-<<WAval-vol-boxplot,cache=T>>=
-# dirty dirty
-data = subset(read.csv('data/WAval.csv'))
-casted = dcast(melt(data, id.vars=c("file","version")), file + variable ~ version)
-casted = rename(casted, c("variable"="region"))
-
-error = ddply(casted, c("file", "region"), function(df) {
-  with(df, 
-  data.frame(
-    resampled = (gold_0.9mm - gold_0.3mm) / gold_0.3mm * 100, 
-    mb_bravo  = (mb_bravo   - gold_0.3mm) / gold_0.3mm * 100, 
-    mb_0.9mm  = (mb_0.9mm   - gold_0.3mm) / gold_0.3mm * 100))})
-
-levels(error$region) <-list("CA1"="X1", "CA1"="X101", 
-                            "Subiculum"="X2","Subiculum"="X102", 
-                            "CA4"="X4","CA4"="X104", 
-                            "CA2/CA3"="X5","CA2/CA3"="X105", 
-                            "Dentate"="X6","Dentate"="X106")
-melted = melt(error,id.vars=c("file", "region"))
-melted = rename(melted, c("variable"="measure", "value"="percenterr"))
-levels(melted$measure) <- list("Resampled WA"="resampled",
-                               "MAGeT-Brain(Resampled WA)" = "mb_0.9mm",
-                               "MAGeT-Brain(BRAVO)"="mb_bravo")
-
-ggplot(melted, aes(y=percenterr,x=region,colour=measure)) +
-  geom_boxplot() +
-  labs(y="Percent error in volume", x="Region") +
-  scale_colour_discrete("") + 
-  theme(legend.direction = "horizontal", legend.position = "bottom")
-@
-  \caption{{\bf Percent error in segmentation volume by hippocampus subregion.} 
-  {\em Resampled WA} are volumes of the manual segmentations of the Winterburn atlases 
-  after resampling to $0.9mm^3$.  {\em \mb(Resampled WA)} volumes are
-  \mb segmentations of the Winterburn atlas images after resampling to $0.9mm^3$ voxels.
-  {\em \mb(BRAVO) \mb} volumes are \mb segmentations of T1 BRAVO images ($0.9mm^3$ voxels)      
-  acquired separately 
-  of four of the five Winterburn atlas subjects. Percent error is measured against the volumes of
-  of the unmodified Winterburn atlas segmentations.}
-  \label{fig:WAval-vol-boxplot}
-\end{figure}
-% 
-% <<WAval-error,cach=T>>=
-% # compare % error between MAGeT and resampling
-% mb0.9mm_diff_over_gold_diff = cbind(subjects, abs(gold_diff) - abs(mb_0.9mm_diff), res="diffdff")
-% names(mb0.9mm_diff_over_gold_diff) <- c("subject", "CA1", "Subiculum", "CA4", "CA2/CA3", "Dentate", "res")
-% melted = melt(mb0.9mm_diff_over_gold_diff, id.vars=c("subject", "res"))
-% names(melted) <- c("subject","res", "region","voldiff")
-% ggplot(melted, aes(y=voldiff,x=region)) +
-%   geom_boxplot() +
-%   labs(title="Absolute difference in % difference between MAGeT and resampling",
-%        y="Absolute difference in % difference in volume", 
-%        x="Region")
-% @
-
-%<<WAval-kappa,cache=T>>=
-%#data = read.csv('data/WAval-kappa.csv')
-%ggplot(data, aes(x=label, y=kappa)) + geom_boxplot(y=kappa)
-%@
+\FloatBarrier
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                                Discussion
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Discussion}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Tabulation of segmentation accuracies of existing methods (ADNI)
+%
+<<ADNI1-literature, echo=F, results="asis",cache=FALSE>>=
+tab = read.csv("data/ADNI-existing-work.csv")
+tab$Notes <- NULL
+
+adni_lit = subset(tab, Dataset=="ADNI")
+adni_lit$Dataset <- NULL
+other_lit = subset(tab, Dataset!="ADNI")
+other_lit$Dataset <- NULL
+
+latex(adni_lit, file="", 
+      size="scriptsize",
+      caption="Caption", 
+      rowname=NULL,
+      col.just=c("p{1.5in}l","p{0.5in}","p{.5in}","p{1in}"),
+      title="")
+@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                               Conclusion 
@@ -1574,32 +1378,6 @@ transformation is used to match the individual brains to a template brain
 labeled and counted to obtain volumes. This method of hippocampal voluming has a
 documented reliability of an intraclass coefficient better than .94
 \citep{Hsu2002}.
-
-%Representative 3T image parameters were TR = 2300ms, TI = 900ms, TE = 3.0ms,
-%flip angle = $8{\circ}$, field of view = 256 x 240mm, a 256 x 256 x 166 matrix
-%(x, y, and z directions) yielding a voxel resolution of 1.00 x 1.00 x 1.2
-%$mm^3$.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%
-% ADNI1 Complete 1Yr Template Library Demographics Table
-%
-%
-% <<ADNI1-scr-tmpllib-demographics, echo=F, results="asis",cache=FALSE>>=
-% scr_tmpllib_RIDs = c(0295, 0413, 0619, 0685, 0729, 0782, 0938, 0954, 1018, 1155,
-%                  0907, 0981, 0448, 0553, 0814, 1130, 0698, 1339, 1095, 0991,
-%                  0159)
-% tab <- summary(DX.bl ~ AGE + PTGENDER + PTEDUCAT + PTETHCAT + CDRSB + ADAS13 +
-%                MMSE, data = adnimerge, subset = VISCODE == 'bl' & RID %in%
-%                scr_tmpllib_RIDs, method = "reverse", test=FALSE, overall=TRUE)
-% 
-% latex(tab, landscape=FALSE, ctable=FALSE, file="", size="scriptsize",
-%       caption="ADNI1 Complete 1Yr Template Library demographics", 
-%       title="tab:ADNI1-scr-tmpllib-demographics")
-% @
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
 
 \bibliographystyle{plainnat}
 \bibliography{references}
