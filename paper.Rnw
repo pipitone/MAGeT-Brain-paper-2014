@@ -772,6 +772,17 @@ hippocampal volumes of established automated segmentation methods to \mb
 segmentations.  
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% ADNI1-COMPLETE
+% Prepares the data in a the form needed for plotting.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+<<ADNI-src-volumes-prep,echo=F,cache=T>>=
+totals.complete  <- read.csv('data/cache/ADNI1:totals.complete.csv')
+totals           <- read.csv('data/cache/ADNI1:totals.csv')
+package_totals   <- read.csv('data/cache/ADNI1:package_totals.csv')
+@
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                                                                             
 % ADNI1 Complete 1Yr Dataset Demographics Table 
 %                                                                             
@@ -781,7 +792,7 @@ yr1 = read.csv("data/ADNI_baseline_volumes/ADNI1_Complete_1Yr_1.5T_11_15_2012.cs
 yr1$VISCODE <- factor(yr1$Visit, levels = c(1,2,3,4), labels=c("bl","m03","m06","m12"))
 yr1 = subset(yr1, !grepl("Scaled_2", Description))
 yr1 = yr1[,c("RID","VISCODE")]
-
+yr1 = 
 adnimerge.yr1 = merge(adnimerge, yr1) 
 tab <- summary(DX.bl ~ AGE + PTGENDER + PTEDUCAT + PTETHCAT + CDRSB + ADAS13 +
                MMSE, data = adnimerge.yr1, 
@@ -1067,14 +1078,14 @@ error = ddply(casted, c("file", "region"), function(df) {
 
 levels(error$region) <-list("CA1"="X1", "CA1"="X101", 
                             "Subiculum"="X2","Subiculum"="X102", 
-                            "CA4"="X4","CA4"="X104", 
+                            "CA4/DG"="X4","CA4/DG"="X104", 
                             "CA2/CA3"="X5","CA2/CA3"="X105", 
-                            "Dentate"="X6","Dentate"="X106")
+                            "SR/SL/SM"="X6","SR/SL/SM"="X106")
 melted = melt(error,id.vars=c("file", "region"))
 melted = rename(melted, c("variable"="measure", "value"="percenterr"))
-levels(melted$measure) <- list("WA Resampled"="resampled",
-                               "MAGeT + WA Resampled" = "mb_0.9mm",
-                               "MAGeT + WA BRAVO"="mb_bravo")
+levels(melted$measure) <- list("Subsampled"="resampled",
+                               "MAGeT + Subsampled" = "mb_0.9mm",
+                               "MAGeT + BRAVO"="mb_bravo")
 
 ggplot(melted, aes(y=percenterr,x=region,colour=measure)) +
   geom_boxplot() +
@@ -1196,17 +1207,6 @@ and FreeSurfer both produce volumes in close agreement with each other, but
 which are consistently larger than manually segmented volumes in each disease
 category.  
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% ADNI1-COMPLETE
-% Prepares the data in a the form needed for plotting.
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-<<ADNI-src-volumes-prep,echo=F,cache=T>>=
-totals.complete  <- read.csv('data/cache/ADNI1:totals.complete.csv')
-totals           <- read.csv('data/cache/ADNI1:totals.csv')
-package_totals   <- read.csv('data/cache/ADNI1:package_totals.csv')
-@
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ADNI1 1yr Complete Dataset Package Totals & Failures
 %                        
@@ -1226,22 +1226,61 @@ latex(package_totals, file="", size="scriptsize",
 
 \begin{figure}[h]
 <<ADNI-scr-volumes-boxplot,dependson='ADNI-baseline-volumes-prep',cache=T,fig.width=6,fig.height=4>>=
-snt.tests <- ddply(totals.complete, c("DX"), function(df) {
-  data.frame( corr = cor(df$SNT, df$MAGeT),
-              value = -Inf) 
-})
-
 qplot(DX,value,data=melt(totals.complete,measure.vars=c("FS", "FSL", "MAPER","MAGeT","SNT")),
       colour=variable,geom="boxplot") + 
-      geom_text(aes(y=value,x=DX, vjust=-1.4, size=1,
-                    label=paste("r==", signif(corr, digits=3))), 
-            colour='black',parse=TRUE, data=snt.tests) +
-      xlab("Diagnosis") + ylab("Total Hippocampal Volume (mm3)")
+      #geom_text(aes(y=value,x=DX, vjust=-1.4, size=1,
+      #              label=paste("r==", signif(corr, digits=3))), 
+      #      colour='black',parse=TRUE, data=snt.tests) +
+      xlab("Diagnosis") + 
+      ylab(expression(paste("Total hippocampal volume (", mm^3, ")")))
 @
   \caption{Comparison of hippocampus volumes obtained by FreeSurfer (FS), FSL, 
   MAPER, \mb (MAGeT) and manual (SNT).}
   \label{fig:ADNI-scr-volumes-boxplot}
 \end{figure}
+
+\begin{figure}[h]
+<<ADNI-scr-volumes-plot,dependson='ADNI-baseline-volumes-prep',cache=T,fig.width=6,fig.height=4>>=
+melted=melt(totals.complete, measure.vars=c("FS", "FSL", "MAPER","MAGeT"), 
+            variable.name = "method", value.name = "volume")
+
+snt.tests <- ddply(totals.complete, c("DX"), function(df) {
+  data.frame( corr = cor(df$SNT, df$MAGeT),
+              value = -Inf) 
+})
+
+ggplot(data=melted, aes(x=SNT, y=volume, colour=method)) + 
+      geom_point() + 
+      geom_smooth(method="lm") + 
+      #geom_text(aes(y=value,x=DX, vjust=-1.4, size=1,
+      #              label=paste("r==", signif(corr, digits=3))), 
+      #      colour='black',parse=TRUE, data=snt.tests) +
+      xlab(expression(paste("Manual total hippocampal volume (", mm^3, ")"))) + 
+      ylab(expression(paste("Total hippocampal volume (", mm^3, ")")))
+@
+  \caption{Comparison of hippocampus volumes obtained by FreeSurfer (FS), FSL, 
+  MAPER, \mb (MAGeT) and manual (SNT).}
+  \label{fig:ADNI-scr-volumes-plot}
+\end{figure}
+
+<<ADNI-scr-volumes-table,dependson='ADNI-baseline-volumes-prep',cache=T,results='asis'>>=
+melted=melt(totals.complete, measure.vars=c("FS", "FSL", "MAPER","MAGeT"), 
+            variable.name = "method", value.name = "volume")
+
+snt.tests <- ddply(totals.complete, c("DX"), function(df) {
+  round(data.frame( MAGeT = cor(df$SNT, df$MAGeT),
+              MAPER = cor(df$SNT, df$MAGeT),
+              FS    = cor(df$SNT, df$FS),
+              FSL   = cor(df$SNT, df$FSL)
+              ), 2)
+})
+
+latex(snt.tests, #file="", 
+      size="scriptsize",
+      caption="", row.names="",
+      title="")
+@
+ 
 
 % paired t-test against SNT to show similarity (should be low) 
 % Kruskal-Willis against  (should be high?)
