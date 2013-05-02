@@ -5,9 +5,9 @@
 "LEAP (N=1)",30,0.838,"\cite{Wolz2010}",,"ADNI"
 ,,"0.84  (AD)","\cite{Coupe2011}",,"ADNI"
 "LEAP (N=300)",30,0.848,"\cite{Wolz2010}","the works.","ADNI"
-"prob. atlas in MNI space",16,"0.86  (AD)","\cite{Chupin2008}",,"ADNI"
+"prob. atlas in MNI space",16,"0.86  (AD)","\cite{Chupin2009}",,"ADNI"
 "AdaBoost + ",20,0.86,"\cite{Morra2008}","(.84 on right HC). 21 subjects used in total. LOOCV","ADNI"
-"prob. atlas in MNI space",16,"0.87  (CN)","\cite{Chupin2008}","CN is by LOOCV on 16 subjects
+"prob. atlas in MNI space",16,"0.87  (CN)","\cite{Chupin2009}","CN is by LOOCV on 16 subjects
 Validates by classifying AD/MCI/NX","ADNI"
 ,,"0.88  (CN)","\cite{Coupe2011}","(can’t find this... )","ADNI"
 "Multi-atlas",13,0.885,"\cite{Lotjonen2010} ","requires WM/GM/CSF segmentations in the atlas","ADNI"
