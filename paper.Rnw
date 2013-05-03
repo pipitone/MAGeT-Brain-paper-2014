@@ -337,7 +337,9 @@ the \mb algorithm when applied to different diseases: Alzheimer's disease
 Monte Carlo Cross-Validation (MCCV) \citep{Shao1993} was performed using a pool
 of images and manual hippocampal segmentations from ADNI1 dataset.  This form of
 cross-validation allows us to rigorously validate a large number of parameter
-settings of \mb.
+settings of \mb (atlas and template library sizes, registration algorithm, and 
+label fusion method) and select the best parameters to use in subsequent 
+experiments.
 
 \paragraph{ADNI1 dataset} 
 
@@ -351,7 +353,7 @@ semiautomatic tool (SNT, Medtronic Surgical Navigation Technologies, Louisville,
 CO; see Supplementary Materials).
 
 Clinical, demographic and pre-processed T1-weighted MRI were downloaded by the
-authors from the ADNI1 database (adni.loni.ucla.edu) between March 2012 and
+authors from the ADNI database (adni.loni.ucla.edu) between March 2012 and
 August 2012. The image dataset download was the "ADNI1:Complete 1Yr 1.5T"
 standardized dataset available from ADNI \footnote{
 \url{http://adni.loni.ucla.edu/methods/mri-analysis/adni-standardized-data/}}
@@ -393,10 +395,11 @@ a training set and a validation set. The method to be validated is then given
 the training data, and its output is compared with the validation set.
 
 In this experiment, our dataset consists of 69 1.5T images and corresponding
-manual segmentations taken from the ADNI1 project (see below for details). In each
-validation round, the training set is used as an atlas library for both \mb and
-basic multi-atlas. The remaining images are segmented by both methods, and the
-resulting segmentations are compared to the manual segmentations for the images.
+manual segmentations. In each validation round, the dataset is partitioned into 
+a training set consisting of images and their manual labels to be used as an atlas 
+library, and a validation set consisting of the remaining images segmented by both 
+\mb and multi-atlas. The resulting segmentations are compared to the manual 
+segmentations for the images.
 
 A total of ten validation rounds are perfomed on each subject in the dataset,
 over each combination of parameter settings. The parameter settings
@@ -532,7 +535,6 @@ volume measured in voxels.
 
 Reported subject segmentation accuracy is averaged over the ten validation
 rounds for each parameter setting. 
-
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1045,10 +1047,7 @@ schizophrenia parients, using the Winterburn atlases and a template library of
 segmentations are used as gold standards. 
 
 \mb produces hippocampus segmentation volumes that are highly correlated with 
-manual segmentation volumes (Figure \ref{fig:SZ-volumes}).  Additionally, as we 
-saw in the previous experiments, \mb volumes show a fixed bias towards smaller 
-volumes (although the bias is negligble), and a proportional bias towards 
-producing smaller segmentations for larger hippocampi (Figure \ref{fig:FEP-SZ-Bland-Altman}.
+manual segmentation volumes (Figure \ref{fig:SZ-volumes}). 
 
 \begin{figure}
 <<FEP-volumes,cache=FALSE,dependson="setup">>=
@@ -1066,34 +1065,6 @@ ggplot(data=casted, aes(x = Manual, y = MAGeT)) +
   \caption{{\bf First Episode Schizophrenic Patients.} Comparison of total
   HC volumes for \mb against manually rated Hippocampal volumes}
   \label{fig:SZ-volumes}
-\end{figure}
-
-\begin{figure}
-<<ADN1-FEP-Bland-Atlman, cache=TRUE, dependson='FEP-volumes', fig.width=4, fig.height=4>>=
-bland_altman_plot <- function(x, y) {
-  data = data.frame(x=x,y=y,diff=x-y)
-  upper = mean(data$diff) + 2 * sd(data$diff)
-  lower = mean(data$diff) - 2 * sd(data$diff)
-  return(ggplot(data, aes(x= x, y = diff)) + 
-    geom_hline(yintercept = mean(data$diff) + c(-2, 0, 2) * sd(data$diff), 
-               linetype=2, color='brown') + 
-    annotate("text", y = upper, x=Inf, 
-              label=paste("std =",round(upper,0)), 
-              hjust=1.1,vjust=1.5) + 
-    annotate("text", y = lower, x=Inf, 
-              label=paste("-std =",round(lower,0)), 
-              hjust=1.1,vjust=1.5) + 
-    geom_point())
-}
-
-bland_altman_plot(casted$Manual, casted$MAGeT) + 
-  xlab('Mean manual and MAGeT Brain total Hippocampus volume') + 
-  ylab('Manual - MAGeT Brain volume') + 
-  geom_smooth(method="lm", formula = y~x)
-@
-  \caption{Bland-Altman plot comparing manual and \mb hippocampal volumes 
-  when using five Winterburn atlases, and a 21 image template library.}
-  \label{fig:FEP-SZ-Bland-Altman}
 \end{figure}
 
 
@@ -1203,90 +1174,6 @@ latex(snt.tests, file="",
       title="")
 @
  
-
-% paired t-test against SNT to show similarity (should be low) 
-% Kruskal-Willis against  (should be high?)
-% post-hoc power analysis to say we can detect this change
-\begin{figure}[h]
-<<ADNI-scr-histogram-prep,cache=T>>=
-melted   = melt(totals.complete, measure.vars=c( "SNT","FSL","FS","MAPER","MAGeT"))
-binwidth = 250
-
-# prepare the normals
-grid <- with(melted, seq(min(value), max(value), length = 100))
-normaldf <- ddply(melted, c("variable", "DX"), function(df) {
-  data.frame( 
-    value = grid,
-    density = dnorm(grid, mean(df$value), sd(df$value)),
-    freq = length(df$value) * dnorm(grid, mean(df$value), sd(df$value)) * binwidth,
-    length = length(df$value)
-  )
-})
-
-testsdf <- ddply(melted, c("variable", "DX"), function(df) {
-  shapiro = shapiro.test(df$value)
-  data.frame(
-    shapiro.w = shapiro$statistic,
-    shapiro.p = shapiro$p.value,
-    mean = mean(df$value),
-    sd = sd(df$value)
-  )
-})
-
-
-melted.by.snt = melt(totals.complete, measure.vars=c("MAGeT","FSL", "FS", "MAPER"))
-snt.tests <- ddply(melted.by.snt, c("variable", "DX"), function(df) {
-  ks = ks.test(df$SNT, df$value)
-  data.frame( 
-    ks.D = ks$statistic,
-    ks.p = ks$p.value
-  )
-}) 
-@
-
-<<ADNI1-scr-histogram,dependson='ADNI-scr-histogram-prep',cache=T>>=
-
-ggplot(data=melted, aes(x=value)) + 
-  geom_histogram(binwidth=binwidth, alpha=0.8) + 
-  geom_line(aes(y=freq, colour='red'), data=normaldf) +
-  geom_text(aes(y=Inf,x=Inf,hjust=1.1,vjust=1.5,size=1, 
-                label=paste("list(W ==",signif(shapiro.w, digits=3), ", p == ", 
-                            round(shapiro.p,digits=3), ")")), 
-            parse=TRUE, data=testsdf) +
-  geom_text(aes(y=Inf,x=Inf,hjust=1.1,vjust=3,size=1, 
-                label=paste("list(D ==",signif(ks.D, digits=3), ", p == ", 
-                            round(ks.p,digits=3), ")")), 
-            parse=TRUE, data=snt.tests) + 
-  geom_text(aes(y=Inf,x=Inf,hjust=1.1,vjust=5.5,size=1, 
-                label=paste("sigma ==",signif(sd, digits=3))), 
-            parse=TRUE, data=testsdf) + 
-  geom_text(aes(y=Inf,x=Inf,hjust=1.1,vjust=6,size=1, 
-                label=paste("mu ==",signif(mean, digits=3))), 
-            parse=TRUE,data=testsdf) + 
-  #xlim(0, 10000) + 
-  ylim(0,40) + 
-  facet_grid(variable ~ DX) + 
-  scale_colour_discrete(guide="none") + 
-  scale_size_continuous(guide="none") + 
-  labs(x=expression(paste("Total hippocampal volume (", mm^3, ")")),
-       y="Frequency") + 
-  theme(axis.title.x = element_text(vjust=-0.1))
-@
-  \caption{{\bf ADNI Baseline cohort.} Comparison of total hippocampal volumes
-  as measured by SNT, FSL, FreeSurfer (FS), MAPER, and \mb (MAGeT). A
-  fitted normal curve is shown in red. $W$ is the Shapiro-Wilkes test statistic
-  measuring normality of the data (signficance indicates non-normality). $D$ is
-  the Kolmogorov-Smirnov test statistic measuring the goodness-of-fit between
-  the distribution of measured volumes and SNT volumes (significance indicates a
-  difference).}
-  \label{fig:ADNI-scr-histogram}
-\end{figure}
-
-\begin{figure}
-  \includegraphics[width=6in,height=3in]{figure/ADNI1_MAGeT_montage/figure.pdf}
-  \caption{A caption}
-  \label{fig:ADNI1-segmentation-montage}
-\end{figure}
 
 \FloatBarrier
 
