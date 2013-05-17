@@ -73,9 +73,10 @@ lm_eqn = function(m) {
 %\newcommand{\todo}[1]{\comment{TODO #1}}
 %\newcommand{\mc}[1]{\comment{MC: #1}}
 \begin{document}
+%\SweaveOpts{concordance=TRUE}
 
 \title{Bootstrapping Multi-atlas Hippocampal Segmentation with \mb}
-\author{Pipitone J., Winterburn J., Lerch J., Pruessner J., Lepage M., \\ 
+\author{Pipitone J., Winterburn J., Lett, T., Lerch J., Pruessner J., Lepage M., \\ 
 Voineskos A., Chakravarty M.M., and \\ 
 the Alzheimer's Disease Neuroimaging Initiative}
 \maketitle
@@ -234,48 +235,39 @@ be accurately identified using our multi-atlas framework.
 %%%%%                     MAGeT Brain Algorithm                            %%%%%
 
 \subsection{The \mb Algorithm}
-In this paper we will make a distinction between an atlas and a template image.
-The term {\it atlas} refers to two image volumes: an intensity image ({\it atlas
-image}) and a corresponding manual segmentation image ({\it atlas labels}). The
-term {\it template} refers to the {\it use} an any image and corresponding label
-image (whether the labels are manual or computed) as a model in the segmentation
-of another image.  The terms {\it atlas library} and {\it template library} mean
-a set of such images.  Additionally, we will use the terms {\it target} to refer
-to an intensity image for which we would like an segmentation.
+In this paper, we will use the term {\em label} to mean any segmentation (manual or 
+derived) of an MR image.  {\em Label propagation}, or {\em labelling}, is the 
+process by which two images are registered and the resulting transformation 
+is applied to the labels from one image to bring them into alignment with the 
+other image. We will use the term {\em atlas} to mean a manually segmented image,
+and the term {\em template} to mean an automatically segmented image (i.e. 
+via label propagation). The terms {\em atlas library} and {\em template library} 
+describe any set of such images.Additionally, we will use the term {\em target} 
+to refer to an unlabelled image that is undergoing segmentation.
 
-The simplest form of multi-atlas segmentation combines labellings derived from
-several atlases by way of label fusion \citep{Heckemann2006,Heckemann2011}. We
-will refer to this as {\em basic multi-atlas segmentation}. The schema as for
-this method is as follows: 
-\begin{enumerate}
-\item   An atlas library and set of target images are given as input. The atlas
-        library is used as a template library in the following steps; 
-\item   Each atlas intensity image is nonlinearly registered to each target 
-        intensity image; 
-\item   Label images from each atlas are propagated via the resulting
-        transformations to the target image space; and 
-\item   the resulting labels are fused to produce a single, definitive
-        segmentation. 
-\end{enumerate}       
-The particular registration and voting method used are left unspecified.
+The simplest form of multi-atlas segmentation, (which we will call {\em basic 
+multi-atlas segmentation}), involves three steps.  First, each labelled 
+input image (i.e. atlas or template) is registered to an unlabelled target image.
+Second, the labels from each image are propogated to the target image space. 
+Third, the labels are combined into a single labelling by way of a label fusion method 
+\citep{Heckemann2006, Heckemann2011}. This method is described in detail in other
+publications \citep{Collins2010,Heckemann2011,Aljabar2009}.
 
-\mb is best understood as an extension of the basic multi-atlas
-segmentation schema. Instead of using the atlas library to directly label the
-target images, a subset of the input images are selected as template images and
-then labelled.  The choice of targets used in the template library can be made
-to reflect the neuroanatomy or demographics of the target set as a whole (for
-instance, by sampling equally from cases and controls). Once the template
-library images have been chosen, a truncated version of basic multi-atlas
-segmentation is used to label the template library images without performing
-label fusion. Instead, each template image receives multiple labellings: one
-from each atlas image. A second round of basic multi-atlas segmentation uses the
-template library to segment the entire set of target images (including those
-images used in the template library). Label fusion in this final step fuses all
-labels from all templates. To summarize, figure \ref{alg:MAGeT} describes the
-\mb algorithm in pseudocode.  
+\mb bootstraps the creation of a large template library given a limited input atlas 
+library, and then uses the template library in basic multi-atlas segmentation. 
+Images for the template library are selected from a set of input target images, 
+either arbitrarily or so as to reflect the neuroanatomy or demographics of the 
+target set as a whole (for instance, by sampling equally from cases and controls). 
+The template library images are then labelled by each of the atlases. Basic 
+multi-atlas segmentation is then conducted using the template library
+to segment the entire set of target images (including the targets whose images
+are used in the construction of the template library).  Since each template
+library image has multiple labels (one from each atlas), the final number of 
+labels to be fused for each target may be quite large (i.e. \# of atlas $\times$ 
+\# of templates).
 
-Source code for \mb can be found at
-\url{http://github.com/pipitone/MAGeTbrain}.
+Figure \ref{alg:MAGeT} describes the \mb algorithm in pseudocode. Source code 
+for \mb can be found at \url{http://github.com/pipitone/MAGeTbrain}.
 
 \begin{algorithm}
   \scriptsize
@@ -320,12 +312,9 @@ subfield segmentation quality. The last two experiments assess the validity of
 the \mb algorithm when applied to different diseases: Alzheimer's disease
 (Experiment 3) and first episode schizophrenia patients (Experiment 4). 
 
-
 %The ADNI experiment includes comparison of volumes with other automated
 %segmentation methods. Evaluation is done by correlating volumes b/c overlap
 %metrics assume identical segmentation protocol. 
-
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%                                                                     %%%%%
@@ -484,18 +473,17 @@ These settings were adapted from the "reasonable starting point" given in the
 \ants manual 
 \footnote{\url{https://sourceforge.net/projects/advants/files/Documentation/}}.
 
-\subparagraph{Label fusion methods}
+\paragraph{Label fusion methods}
 Label fusion is a term given to the process of combining the information from
 several candidate labellings for an intensity image into a single labelling.  In
 this experiment we explore three fusion methods. 
 
-\begin{description}
-  \item[Voxel-wise Majority Vote] \hfill \\
+\subparagraph{Voxel-wise Majority Vote}
   Labels are propagated from all template library images to a target.  Each
   output voxel is given the most frequent label at that voxel location amongst
   all candidate labellings.  Ties are broken arbitrarily.
 
-  \item[Cross-correlation Weighted Majority Vote] \hfill \\
+\subparagraph{Cross-correlation Weighted Majority Vote}
   An optimal combination of targets from the template library has previously been
   shown to improve segmentation accuracy \citep{Aljabar2009,Collins2010}.  In this
   method, each template library image is ranked in similarity to each unlabelled 
@@ -510,13 +498,12 @@ this experiment we explore three fusion methods.
   The {\tt xcorr\_vol} utility from the \animal toolkit is used to calculate the
   cross-correlation similarity measure.  
  
-  \item[Normalised Mutual Information Weighted Majority Vote] \hfill \\
+\subparagraph{Normalised Mutual Information Weighted Majority Vote}
   This method is similar to cross-correlation weighted voting except that image
   similarity is calculated by the normalised mutual information score over the
   region of interest\citep{Studholme2001}.  The {\tt itk\_similarity} utility
   from the EZMinc toolkit\footnote{\url{https://github.com/vfonov/EZminc}} is
   used to calculate the normalised mutual information measure between to images.
-\end{description}
 
 \paragraph{Evaluation method}  
 
@@ -533,9 +520,20 @@ measure:
 where $A$ and $B$ are the regions being compared, and the cardinality is the
 volume measured in voxels. 
 
-Reported subject segmentation accuracy is averaged over the ten validation
-rounds for each parameter setting. 
+The manual segmentations (SNT) provided as part of the ADNI dataset are used as 
+the gold standard to compare with. We compare both \mb labels and multi-atlas 
+labels.  The segmentation accuracy reported is averaged over the ten validation
+rounds for each parameter setting.  
 
+In order to investigate the performance of \mb in a real world setting in which 
+only one set of atlas and template images are used, we explore the variability 
+in label agreement at fixed parameter settings when the choice for atlas and 
+template images is varied. This is achieved by first computing the standard 
+deviation and variance of DSC scores in each block 
+of ten validation rounds per subject. The distribution of these statistics across 
+all subjects is then compared between \mb and multi-atlas using a Student's 
+t-test. A significant difference between distributions is taken to show either
+a larger or smaller level of variability between methods. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%                                                                     %%%%%
@@ -567,10 +565,10 @@ in the dataset.
 
 In this experiment, the five $300\mu$-isotropic voxel Winterburn atlases are
 used as the atlas library for \mb segmentation. LOOCV is conducted separately
-for two different input datasets: the four Winterburn atlas subject BRAVO MR
-images (referred to as the {\em WA BRAVO} dataset), and the five
+for two different input datasets: the four Winterburn atlas subject T1 BRAVO
+images (referred to as the {\em BRAVO} dataset), and the five
 Winterburn atlas subject images resampled to 0.9mm-isotropic voxel resolution
-(referred to as the {\em WA Resampled} dataset. Each subject in the
+(referred to as the {\em Resampled} dataset. Each subject in the
 dataset is segmented by \mb with that subject's image excluded from the atlas
 library. The template library consists of 3T T1 images (0.9mm-isotropic
 voxels) of healthy subjects in addition to the images from the dataset being
@@ -580,10 +578,12 @@ The optimal size of template library, registration method, and label fusion
 method found in Experiment 1 are used. 
 
 \paragraph{Evaluation method}  
-The segmentation volumes of each hippocampal subregion are compared to the
-expert manual segmentations of the unmodified Winterburn atlases.  As a point of
-comparison, we also calculate the subregion volumes from the Winterburn atlas
-segmentations after downsampling to 0.9mm-isotropic voxels. 
+\mb performance is measured with respect to straight-forward nearest-neighbour
+resampling of the Winterburn atlas labels to 0.9mm-isotropic voxels (i.e. no 
+label propagation). The volumes of each hippocampal subregion in the downsampled
+Winterburn atlas labels are compared to the volumes obtained from the full 
+resolution Winterburn atlas labels, the \mb labels on the downsampled Winterburn 
+atlas images, and the \mb labels on the T1 BRAVO acquisitions. 
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -636,10 +636,9 @@ Experiment 1 are used.
 \paragraph{Evaluation method}
 The manual segmentation protocol used to segment the Winterburn atlases is
 similar to, but different from, the protocol used to segment the SZFEP dataset.
-Therefore, rather than use an overlap metric, \mb hippocampal volumes are
-compared to the corresponding manual segmentation volumes. 
-
-\todo{discuss Bland-Altman?  Or bias analysis}
+Therefore, rather than evaluate using an overlap metric, such as DSC, which 
+assumes a fixed segmentation protocol, we instead correlate whole hippocampus 
+volume between \mb and manual segmentations. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
@@ -784,15 +783,6 @@ deviation grows with the size of atlas library used.  A template library of 19
 images is sufficient to show significant decrease in variance and standard 
 deviation for 3-7 atlases. 
 
-Finally, \mb segmentation volumes show differential agreement with manual (SNT) 
-volumes throughout the range of hippocampal volumes (Figure 
-\ref{ADNI1-xval-Bland-Altman}). \mb shows a negligble fixed bias towards 
-producing smaller segmentations, and shows a slight proportional bias towards 
-smaller segmentations with larger hippocampi.
-\todo{Note limits of agreement?}
-
-\todo{Include multi-atlas 9-atlas in plot as a comparison} 
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ADNI1-XVAL: prep
 % Prepares the data in a the form needed for plotting.
@@ -877,24 +867,27 @@ data.stats = ddply(ANTSmajvote, c("subject", "label","atlases","templates.mb"), 
 stats.tests = ddply(data.stats, c("atlases","templates.mb"), function (df) {
   t.var = t.test(df$MA.var, df$MB.var)
   t.sd  = t.test(df$MA.sd , df$MB.sd)
+  diff_mean_var = mean(df$MA.var - df$MB.var)
+  diff_mean_sd  = mean(df$MA.sd -  df$MB.sd)
+  
+  # test statistic is positive if MA mean is larger than MB
+  # i.e. that MA has a greater mean of variances/SDs
+  # i.e. that MB has a smaller mean, and so is doing "better"
   data.frame(
     stat      = c("Variance", "Standard Deviation"),
     statistic = c(t.var$statistic, t.sd$statistic),
     p.value   = c(t.var$p.value, t.sd$p.value),
-    direction = c(t.var$statistic < 0, t.sd$statistic < 0)
+    direction = c(diff_mean_var, diff_mean_sd)
   )
 })
 
-ggplot(stats.tests, 
-  aes(x=templates.mb, y=p.value, colour=as.factor(atlases), 
-      size = abs(statistic))) + 
+ggplot(subset(stats.tests, direction > 0), 
+  aes(x=templates.mb, y=p.value, colour=as.factor(atlases))) + 
   facet_grid( . ~ stat) + 
-  geom_line(aes(size=0.1,area=0.1)) + 
-  geom_point(aes(shape = factor(direction))) + 
+  geom_line(size=1) +
+  geom_point(size=3) + 
   geom_hline(aes(yintercept=0.05, alpha=0.5), linetype='dashed') + 
   geom_hline(aes(yintercept=0.01, alpha=0.5), linetype='dashed') + 
-  scale_shape_discrete("t-statistic sign", labels=c("positive","negative")) + 
-  scale_size_area(name="t-statistic magnitude") + 
   scale_x_continuous(breaks=seq(1,20,by=2)) + 
   scale_y_log10(limits=c(0.001,1), breaks=c(0.01,0.05,0.1,1.0)) + 
   xlab( "Number of Templates" ) + 
@@ -903,64 +896,16 @@ ggplot(stats.tests,
   scale_alpha_continuous(guide='none') + 
   scale_linetype_discrete(guide='none') + 
   scale_size_continuous(guide='none') + 
-  opts(legend.direction = "horizontal", legend.position = "bottom")
+  theme(legend.direction = "horizontal", legend.position = "bottom")
 @
   \caption{{\bf Difference in variability of \mb vs. multi-atlas segmentation 
   accuracy.}
   Variability of segmentation accuracy within 10 rounds of validation per subject. 
   Standard deviation and variance is computed per subject for both \mb and 
   multi-atlas, and the distribution of these test statistics is compared with a 
-  t-test. The p-value of this test, is shown on the y-axis (scaled logarithmically).}
+  t-test. The p-value of this test, is shown on the y-axis (scaled logarithmically).
+  Only points where \mb mean variability is lower multi-atlas are shown.}
   \label{ADNI1-xval-variability}
-\end{figure}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% ADNI1-XVAL: Bland-Altman plots
-\begin{figure}
-<<ADN1-xval-Bland-Atlman, cache=TRUE, dependson='ADNI1-Xval-prep', fig.width=8, fig.height=8>>=
-df_subset = subset(all_data, 
-                      reg_method   == "ANTS" &
-                      method.mb    == "Majority Vote" &
-                      templates.mb %in% c(1,11,19) &
-                      atlases      %in% c(1,5,9) &
-                      volume.ma     < 10000)
-
-# get SNT data formatted like 
-snt   = read.csv("data/a2a_snt_volumes.csv")
-df_merged = merge(df_subset, snt, all.x = TRUE)
-
-hc_vol = ddply(df_merged, c("subject", "label", "atlases", "templates.mb"), function (df) {
-  data.frame(
-    snt = sum(df$volume.snt),
-    ma = sum(df$volume.ma),
-    mb = sum(df$volume.mb)
-  )
-})
-hc_vol$diff = hc_vol$snt - hc_vol$mb
-
-group.stats = ddply(hc_vol, c("atlases", "templates.mb"), function (df) {
-  data.frame(
-    mean = mean(df$diff),
-    sd   = sd(df$diff)
-  )
-})
-hc_vol = merge(hc_vol, group.stats)
-hc_vol$Atlases = hc_vol$atlases
-hc_vol$Templates = hc_vol$templates.mb
-
-ggplot(hc_vol, aes(x=ma, y = diff, group=Atlases)) + 
-    geom_hline(aes(yintercept = mean + c(-2, 0, 2) * sd, colour='brown'), 
-                linetype=2) + 
-    geom_point() + 
-    geom_smooth(method="lm") + 
-  facet_grid(Atlases~Templates, labeller = label_both) + 
-  xlab(expression('Mean manual and MAGeT-Brain total hippocampus volume ' (mm^3))) + 
-  ylab(expression('Manual - MAGeT-Brain total hippocampus volume ' (mm^3))) 
-@
-  \caption{Bland-Altman plots comparing manual and \mb hippocampal volumes 
-  when using a varying number of atlases and templates.}
-  \label{ADNI1-xval-Bland-Altman}
 \end{figure}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -1067,7 +1012,6 @@ ggplot(data=casted, aes(x = Manual, y = MAGeT)) +
   \label{fig:SZ-volumes}
 \end{figure}
 
-
 \FloatBarrier
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%                                                                     %%%%%
@@ -1099,6 +1043,10 @@ volumes, MAPER and MAGeT volumes across disease categories (Figure
 and FreeSurfer both produce volumes in close agreement with each other, but
 which are consistently larger than manually segmented volumes in each disease
 category.  
+
+Additionally \mb volumes show a fixed bias towards larger volumes by an 
+average $-205.2mm^3$, and a proportional bias towards producing smaller 
+segmentations for larger hippocampi (Figure \ref{fig:ADNI1-src-Bland-Altman}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ADNI1 1yr Complete Dataset Package Totals & Failures
@@ -1167,13 +1115,54 @@ snt.tests <- ddply(totals.complete, c("DX"), function(df) {
               FSL   = cor(df$SNT, df$FSL)
               ), 2)
 })
-
+caption = paste(
+  "Pearson correlation between manual (SNT) whole hippocampus volume", 
+  "and whole hippocampus volume by method.", sep=" ")
 latex(snt.tests, file="", 
       size="scriptsize",
-      caption="", row.names="",
+      caption=caption, row.names="",
       title="")
 @
  
+\begin{figure}
+<<ADN1-src-Bland-Atlman, cache=TRUE, dependson='ADNI-baseline-volumes-prep', fig.width=4, fig.height=4>>=
+melted=melt(totals.complete, measure.vars=c("FS", "FSL", "MAPER","MAGeT"), 
+            variable.name = "method", value.name = "volume")
+melted=subset(melted, method=="MAGeT")
+
+bland_altman_plot <- function(x, y) {
+  data = data.frame(x=x,y=y,diff=x-y)
+  upper = mean(data$diff) + 2 * sd(data$diff)
+  lower = mean(data$diff) - 2 * sd(data$diff)
+  return(ggplot(data, aes(x= x, y = diff)) + 
+    geom_hline(yintercept = mean(data$diff) + c(-2, 0, 2) * sd(data$diff), 
+               linetype=2, color='brown') + 
+    annotate("text", y = upper, x=Inf, 
+              label=paste("std =",round(upper,0)), 
+              hjust=1.1,vjust=1.5) + 
+    annotate("text", y = lower, x=Inf, 
+              label=paste("-std =",round(lower,0)), 
+              hjust=1.1,vjust=1.5) + 
+    geom_point())
+}
+
+
+melted$diff = melted$SNT - melted$volume
+limits = mean(melted$diff) + c(-2, 0, 2) * sd(melted$diff)
+
+ggplot(melted, aes(x= SNT, y = diff)) + 
+  geom_hline(yintercept = limits, linetype=2, color='brown') + 
+ annotate("text", y = limits, x=Inf, label=round(limits,1), 
+            hjust=1.1,vjust=-0.8, size=3) + 
+  geom_point() + 
+  xlab('Mean manual and MAGeT Brain total Hippocampus volume') + 
+  ylab('Manual - MAGeT Brain volume') + 
+  geom_smooth(method="lm", formula = y~x)
+@
+  \caption{Bland-Altman plot comparing manual (SNT) and \mb hippocampal volumes 
+  in the ADNI1 1.5T 1Yr Complete dataset.}
+  \label{fig:ADNI-scr-Bland-Altman}
+\end{figure}
 
 \FloatBarrier
 
