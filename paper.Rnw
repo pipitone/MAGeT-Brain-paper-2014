@@ -91,6 +91,7 @@ time and expertise to produce. We present an algorithm for the automatic
 segmentation of the hippocampus that minimizes the number of atlases needed
 while still achieving similar accuracy to multi-atlas approaches.
 \todo[inline]{finish}
+
 \end{abstract}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -216,15 +217,15 @@ accurate parcellations of the subfields.
 Here we address the issue of limiting the number of input atlases by tuning our
 algorithm, for segmentation of the entire hippocampus, using a multi-fold
 experiment performed on a subset Alzheimer's Disease Neuroimaging Initiative
-(ADNI) 1 dataset.  The tuning includes \todo{complete}. Based on the parameters
-we find in our experiment, we validate our algorithm using all of the data
-available in the ADNI Complete 1Yr sample and compare our segmentations to the
-other segmentations that are available through the ADNI informatics portal.  To
-ensure that we have not over-fit our parameters to the aging or
-neurodegenerative brain, we also apply our segmentations to a dataset of normal
-controls and individuals suffering from first episode psychosis. Finally, we
-perform a leave-one-out validation experiment to determine if the subfields can
-be accurately identified using our multi-atlas framework. 
+(ADNI) 1 dataset. Based on the parameters we find in our experiment, we validate
+our algorithm using all of the data available in the ADNI Complete 1Yr sample
+and compare our segmentations to the other segmentations that are available
+through the ADNI informatics portal.  To ensure that we have not over-fit our
+parameters to the aging or neurodegenerative brain, we also apply our
+segmentations to a dataset of normal controls and individuals suffering from
+first episode psychosis. Finally, we perform a leave-one-out validation
+experiment to determine if the subfields can be accurately identified using our
+multi-atlas framework. 
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -333,13 +334,14 @@ experiments.
 \paragraph{ADNI1 dataset} 
 
 69 1.5T images were arbitrarily selected from the baseline scans in the {\em
-\adnidataset} standardized dataset. 23 subjects were chosen from each
-disease category: cognitively normal (CN), mild cognitive impairment (MCI) and
+\adnidataset} standardized dataset. 23 subjects were chosen from each disease
+category: cognitively normal (CN), mild cognitive impairment (MCI) and
 Alzheimer's disease (AD). Demographics for this subset are shown in Table
 \ref{tab:ADNI1-xvalidation-demographics}.  Manual segmentations of the left and
-right whole hippocampi are available. These labels have been generated using a
-semiautomatic tool (SNT, Medtronic Surgical Navigation Technologies, Louisville,
-CO; see Supplementary Materials).
+right whole hippocampi are available. These labels have been generated using the
+SNT tool from Medtronic Surgical Navigation Technologies, Louisville, CO (see
+Supplementary Materials for detailed discussion of the manual segmentation
+process used).
 
 Clinical, demographic and pre-processed T1-weighted MRI were downloaded by the
 authors from the ADNI database (adni.loni.ucla.edu) between March 2012 and
@@ -477,13 +479,13 @@ These settings were adapted from the "reasonable starting point" given in the
 Label fusion is a term given to the process of combining the information from
 several candidate labellings for an intensity image into a single labelling.  In
 this experiment we explore three fusion methods. 
-
-\subparagraph{Voxel-wise Majority Vote}
+\begin{description}
+  \item[Voxel-wise Majority Vote]
   Labels are propagated from all template library images to a target.  Each
   output voxel is given the most frequent label at that voxel location amongst
   all candidate labellings.  Ties are broken arbitrarily.
 
-\subparagraph{Cross-correlation Weighted Majority Vote}
+  \item[Cross-correlation Weighted Majority Vote]
   An optimal combination of targets from the template library has previously been
   shown to improve segmentation accuracy \citep{Aljabar2009,Collins2010}.  In this
   method, each template library image is ranked in similarity to each unlabelled 
@@ -498,13 +500,13 @@ this experiment we explore three fusion methods.
   The {\tt xcorr\_vol} utility from the \animal toolkit is used to calculate the
   cross-correlation similarity measure.  
  
-\subparagraph{Normalised Mutual Information Weighted Majority Vote}
+  \item[Normalised Mutual Information Weighted Majority Vote]
   This method is similar to cross-correlation weighted voting except that image
   similarity is calculated by the normalised mutual information score over the
   region of interest\citep{Studholme2001}.  The {\tt itk\_similarity} utility
   from the EZMinc toolkit\footnote{\url{https://github.com/vfonov/EZminc}} is
   used to calculate the normalised mutual information measure between to images.
-
+\end{description}
 \paragraph{Evaluation method}  
 
 The Dice similarity coefficient (DSC) assesses the agreement between two
@@ -521,8 +523,7 @@ where $A$ and $B$ are the regions being compared, and the cardinality is the
 volume measured in voxels. 
 
 The manual segmentations (SNT) provided as part of the ADNI dataset are used as 
-the gold standard to compare with. We compare both \mb labels and multi-atlas 
-labels.  The segmentation accuracy reported is averaged over the ten validation
+the gold standard to compare with.  The segmentation accuracy reported is averaged over the ten validation
 rounds for each parameter setting.  
 
 In order to investigate the performance of \mb in a real world setting in which 
@@ -567,8 +568,8 @@ In this experiment, the five $300\mu$-isotropic voxel Winterburn atlases are
 used as the atlas library for \mb segmentation. LOOCV is conducted separately
 for two different input datasets: the four Winterburn atlas subject T1 BRAVO
 images (referred to as the {\em BRAVO} dataset), and the five
-Winterburn atlas subject images resampled to 0.9mm-isotropic voxel resolution
-(referred to as the {\em Resampled} dataset. Each subject in the
+Winterburn atlas subject images subsampled to 0.9mm-isotropic voxel resolution
+(referred to as the {\em Subsampled} dataset. Each subject in the
 dataset is segmented by \mb with that subject's image excluded from the atlas
 library. The template library consists of 3T T1 images (0.9mm-isotropic
 voxels) of healthy subjects in addition to the images from the dataset being
@@ -580,9 +581,9 @@ method found in Experiment 1 are used.
 \paragraph{Evaluation method}  
 \mb performance is measured with respect to straight-forward nearest-neighbour
 resampling of the Winterburn atlas labels to 0.9mm-isotropic voxels (i.e. no 
-label propagation). The volumes of each hippocampal subregion in the downsampled
+label propagation). The volumes of each hippocampal subregion in the subsampled
 Winterburn atlas labels are compared to the volumes obtained from the full 
-resolution Winterburn atlas labels, the \mb labels on the downsampled Winterburn 
+resolution Winterburn atlas labels, the \mb labels on the subsampled Winterburn 
 atlas images, and the \mb labels on the T1 BRAVO acquisitions. 
 
 
@@ -595,10 +596,11 @@ atlas images, and the \mb labels on the T1 BRAVO acquisitions.
 \subsubsection{Experiment 3: Application to the segmentation first episode
 schizophrenia patients}
  
-To validate that \mb algorithm works effectively with diseased brain images \mb
-is applied to a dataset of Schizophrenia patient MR images. The resulting
-segmentations are assessed for quality by comparison with expert manual
-segmentations.
+To validate that \mb algorithm works effectively in the context of other
+neuropsychiatric disorders, we use the Winterburn atlases with \mb to predict
+the hippocampal segmentation of dataset of Schizophrenia patient MR images. The
+resulting segmentations are assessed for quality by comparison with expert
+manual segmentations.
 
 \paragraph{SZ-FEP dataset}
 All patients were recruited and treated through the Prevention and Early
@@ -626,6 +628,7 @@ The hippocampus were traced following a validated protocol developed by Dr Jens
 Pruessner \todo{cite: (Pruessner et al., 2000)}. A recent update to this
 protocol by Dr J Pruessner in 2006 allows to accurately and consistently
 subdivide the hippocampus into three different subregions: head, body, and tail.
+We use these segmentations as to validate our implementation of \mb.
 
 \paragraph{Experiment details} 
 \mb is configured with an atlas library composed of the Winterburn T1 atlases
@@ -634,11 +637,13 @@ size of template library, registration method, and label fusion method found in
 Experiment 1 are used. 
 
 \paragraph{Evaluation method}
-The manual segmentation protocol used to segment the Winterburn atlases is
-similar to, but different from, the protocol used to segment the SZFEP dataset.
-Therefore, rather than evaluate using an overlap metric, such as DSC, which 
-assumes a fixed segmentation protocol, we instead correlate whole hippocampus 
-volume between \mb and manual segmentations. 
+The manual segmentation protocol used to segment the Winterburn atlases has some
+neuroanatomical differences in comparison to the protocol used to segment the
+SZFEP dataset.  Therefore, rather than evaluate using an overlap metric, such as
+DSC, which assumes a fixed segmentation protocol, we instead correlate whole
+hippocampus volume between \mb and manual segmentations. 
+
+\todo{done elsewhere?}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
@@ -747,7 +752,7 @@ In this experiment we conducted 10 rounds of \mb and multi-atlas segmentation of
 each of 69 subjects at a range of atlas and template library sizes, registration
 algorithm (\ants or \animal), and three label fusion techniques.  Hippocampal
 \mb-based segmentations using both \animal and \ants registration algorithm
-demonstrate good overlap with manually derived gold-standards (Figure
+demonstrate good overlap with SNT derived gold-standards (Figure
 \ref{fig:ADNI1-xval-k-mean}). Qualitatively, both \animal and \ants-based
 segmentations demonstrate trend overlap accuracy that increases with the size of
 atlas library and template library. Improvement in accuracy diminishes noticeably
@@ -777,7 +782,7 @@ DSC) is found when one atlas is used with a template library of 20 images.
 
 In addition to an improvement in accuracy over multi-atlas-based segmentation,
 \mb also shows a decrease in the variability of segmentation accuracy 
-(Figure \todo{ADNI1-xval-variability}).  The size of template library 
+(Figure \ref{ADNI1-xval-variability}).  The size of template library 
 necessary to reach a significant (p<0.5) decrease in variance and standard 
 deviation grows with the size of atlas library used.  A template library of 19
 images is sufficient to show significant decrease in variance and standard 
@@ -905,6 +910,7 @@ ggplot(subset(stats.tests, direction > 0),
   multi-atlas, and the distribution of these test statistics is compared with a 
   t-test. The p-value of this test, is shown on the y-axis (scaled logarithmically).
   Only points where \mb mean variability is lower multi-atlas are shown.}
+  \todo{note log scale}
   \label{ADNI1-xval-variability}
 \end{figure}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -921,14 +927,15 @@ This experiment explores \mb segmentations of hippocampal subfields. To
 achieve this, a leave-one-out validation is conducted in which lower-resolution
 images ($0.9mm^3$ voxels) of each Winterburn atlas subject is segmented using 
 the remaining Winterburn atlases. As a point of comparison, volumes of Winterburn 
-atlases when downsampled to $0.9mm^3$ voxels are also computed.
+atlases when subsampled to $0.9mm^3$ voxels are also computed.
 
-In general, across hippocampal subregions the percent error in volume between 
-\mb segmentations and the manual Winterburn atlas segmentations compares 
-favourably to error when resampling the atlas segmentations (Figure 
-\ref{fig:WAval-vol-boxplot}). In particular, the CA1, CA4, and Dentate subregions 
-all show near or smaller percent errors. The Sibiculum and CA2/CA3 subregions 
-show distinctly larger than resampling error. 
+In general, across hippocampal subregions the percent error in volume between
+\mb segmentations and the manual Winterburn atlas segmentations compares
+favourably to error when resampling the atlas segmentations (Figure
+\ref{fig:WAval-vol-boxplot}). In particular, the CA1, CA4, and Dentate
+subregions all show near or smaller percent errors. The Sibiculum and CA2/CA3
+subregions show distinctly larger \todo{what?} than resampling error. 
+\todo{note direction of change}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Winterburn-XVAL: compare resampling
@@ -965,14 +972,13 @@ ggplot(melted, aes(y=percenterr,x=region,colour=measure)) +
   \caption{{\bf Percent error in segmentation volume by hippocampus subregion.} 
   Percent error is measured against the volumes of of the unmodified Winterburn
   atlas segmentations.
-  {\bf WA Resampled} are volumes of the manual segmentations of the Winterburn
+  {\bf Subsampled} are volumes of the manual segmentations of the Winterburn
   atlases after resampling to $0.9mm^3$.  
-  {\bf MAGeT + WA Resampled} volumes are \mb segmentations of the Winterburn atlas
+  {\bf MAGeT + WA Subsampled} volumes are \mb segmentations of the Winterburn atlas
   images after resampling to $0.9mm^3$ voxels.
   {\bf MAGeT + WA BRAVO} volumes are \mb segmentations of T1 BRAVO images
   ($0.9mm^3$ voxels) acquired separately of four of the five Winterburn atlas
-  subjects. 
-  } 
+  subjects.} 
   \label{fig:WAval-vol-boxplot}
 \end{figure}
 
@@ -993,6 +999,7 @@ segmentations are used as gold standards.
 
 \mb produces hippocampus segmentation volumes that are highly correlated with 
 manual segmentation volumes (Figure \ref{fig:SZ-volumes}). 
+\todo{p-value}
 
 \begin{figure}
 <<FEP-volumes,cache=FALSE,dependson="setup">>=
@@ -1041,12 +1048,15 @@ Comparing total hippocampal volume, we find close agreement between manual
 volumes, MAPER and MAGeT volumes across disease categories (Figure
 \ref{fig:ADNI-scr-volumes-boxplot}, Figure \ref{fig:ADNI-scr-histogram}). FSL
 and FreeSurfer both produce volumes in close agreement with each other, but
-which are consistently larger than manually segmented volumes in each disease
-category.  
+which are consistently larger \todo{ADD AN ESTIMATE OF THE DIFFERENCE HERE} than
+manually segmented volumes in each disease category.  
 
 Additionally \mb volumes show a fixed bias towards larger volumes by an 
 average $-205.2mm^3$, and a proportional bias towards producing smaller 
-segmentations for larger hippocampi (Figure \ref{fig:ADNI1-src-Bland-Altman}.
+segmentations for larger hippocampi \todo{WHEN COMPARED TO SNT SEGMENTATIONS} (Figure \ref{fig:ADNI1-src-Bland-Altman}.
+
+Figure \ref{fig:ADNI-scr-subfields} shows the subfield volumes for the 69 ADNI1
+subjects used in Experiment 1. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ADNI1 1yr Complete Dataset Package Totals & Failures
@@ -1086,10 +1096,10 @@ melted=melt(totals.complete, measure.vars=c("FS", "FSL", "MAPER","MAGeT"),
             variable.name = "Method", value.name = "volume")
 
 df = totals.complete
-levels(melted) = c("FS" = ),
+levels(melted) = c("FS" = paste("FSL", round(cor(df$SNT, df$FS),2)),
                    "FSL"= paste("FSL", round(cor(df$SNT, df$FSL),2)),
                    "MAPER"= paste("MAPER", round(cor(df$SNT, df$MAPER),2)),
-                   "MAGeT"= paste("MAGeT", round(cor(df$SNT, df$FS),2)))
+                   "MAGeT"= paste("MAGeT", round(cor(df$SNT, df$MAGeT),2)))
 
 ggplot(data=melted, aes(x=SNT, y=volume, colour=Method)) + 
     geom_point() + 
