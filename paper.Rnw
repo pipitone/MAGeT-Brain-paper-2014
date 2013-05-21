@@ -66,7 +66,7 @@ lm_eqn = function(m) {
 \newcommand{\mb}{MAGeT-Brain }
 \newcommand{\ants}{ANTS }
 \newcommand{\animal}{ANIMAL }
-
+\newcommand{\adnidataset}{ADNI1:Complete 1Yr 1.5T }
 %notes and TODO formatting
 %\newcommand{\marginnote}[1]{\-\marginpar[\raggedleft\footnotesize #1]{\raggedright\footnotesize #1}}
 %\newcommand{\comment}[1]{\begin{kframe}{\textcolor{red}{#1}}\end{kframe}}
@@ -333,7 +333,7 @@ experiments.
 \paragraph{ADNI1 dataset} 
 
 69 1.5T images were arbitrarily selected from the baseline scans in the {\em
-ADNI1:Complete 1Yr 1.5T} standardized dataset. 23 subjects were chosen from each
+\adnidataset} standardized dataset. 23 subjects were chosen from each
 disease category: cognitively normal (CN), mild cognitive impairment (MCI) and
 Alzheimer's disease (AD). Demographics for this subset are shown in Table
 \ref{tab:ADNI1-xvalidation-demographics}.  Manual segmentations of the left and
@@ -343,7 +343,7 @@ CO; see Supplementary Materials).
 
 Clinical, demographic and pre-processed T1-weighted MRI were downloaded by the
 authors from the ADNI database (adni.loni.ucla.edu) between March 2012 and
-August 2012. The image dataset download was the "ADNI1:Complete 1Yr 1.5T"
+August 2012. The image dataset download was the "\adnidataset"
 standardized dataset available from ADNI \footnote{
 \url{http://adni.loni.ucla.edu/methods/mri-analysis/adni-standardized-data/}}
 \citep{Wyman2012}. This image collection contains uniformly preprocessed images
@@ -659,7 +659,7 @@ latex(tab, file="", ctable=FALSE,
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%                                                                     %%%%%
-%%%%%         EXPERIMENT 3: Application of \mb to the segmentation        %%%%%
+%%%%%         EXPERIMENT 4: Application of \mb to the segmentation        %%%%%
 %%%%%                       of ADNI subjects                              %%%%%
 %%%%%                                                                     %%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -672,13 +672,13 @@ compared to those produced by FreeSurfer, FSL, MAPER, and by expert manual
 segmentation.
 
 \paragraph{ADNI1 dataset revisited} 
-All images from the {\em ADNI1:Complete 1Yr 1.5T} standardized dataset described
+All images from the {\em \adnidataset} standardized dataset described
 in Experiment 1 are used.  Clinical and demographic data are shown in table
 \ref{tab:ADNI1-1.5T-Complete-1Yr-Dataset-Demographics}. 
 
 \paragraph{Experiment details} 
 \mb is configured with an atlas library composed of the Winterburn T1 atlases
-(see Experiment 2). All images from the ADN11 Complete 1Yr 1.5T dataset are
+(see Experiment 2). All images from the \adnidataset dataset are
 segmented. The optimal size of template library, registration method, and label
 fusion method found in Experiment 1 are used. The template library is composed
 of equal numbers of images from each disease class (AD, MCI, and cognitively
@@ -1003,8 +1003,8 @@ ggplot(data=casted, aes(x = Manual, y = MAGeT)) +
   geom_smooth(method="lm", formula=y~x) + 
   geom_point() + 
   geom_text(aes(x=3500, y=5000, label=lm_eqn(lm),hjust=0,size=1), parse=TRUE, data=data.frame()) +
-  xlab(expression("Manual left / right hippocampus volume " (mm^3))) + 
-  ylab(expression("MAGeT left / right hippocampus volume "  (mm^3))) + 
+  xlab(expression("Manual unilateral whole hippocampus volume " (mm^3))) + 
+  ylab(expression("MAGeT unilateral whole hippocampus volume "  (mm^3))) + 
   scale_size_continuous(guide="none") 
 @
   \caption{{\bf First Episode Schizophrenic Patients.} Comparison of total
@@ -1017,7 +1017,7 @@ ggplot(data=casted, aes(x = Manual, y = MAGeT)) +
 %%%%%                                                                     %%%%%
 %%%%%                           RESULTS                                   %%%%%
 %%%%%                                                                     %%%%%
-%%%%%         EXPERIMENT 3: Application of \mb to the segmentation        %%%%%
+%%%%%         EXPERIMENT 4: Application of \mb to the segmentation        %%%%%
 %%%%%                       of ADNI subjects                              %%%%%
 %%%%%                                                                     %%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1027,7 +1027,7 @@ disease patients}
 Based on the results from the ADNI1 Cross-Validation experiment, in this
 experiment \mb was configured with a template library of 21 randomly
 chosen subject images (7 from each disease class) and used majority vote label
-fusion. The entire ADNI1 Complete 1Yr 1.5T dataset was segmented by \mb and we 
+fusion. The entire \adnidataset dataset was segmented by \mb and we 
 now compare the resulting volumes with those obtained by manual segmentation (SNT), 
 and other automated segmentation techniques (MAPER, FreeSurfer, and FSL).  Table
 \ref{tab:ADN1-1.5T-Complete-1yr-Dataset-Segmentations} shows the total count of 
@@ -1073,7 +1073,7 @@ qplot(DX,value,data=melt(totals.complete,measure.vars=c("FS", "FSL", "MAPER","MA
       #              label=paste("r==", signif(corr, digits=3))), 
       #      colour='black',parse=TRUE, data=snt.tests) +
       xlab("Diagnosis") + 
-      ylab(expression(paste("Total hippocampal volume (", mm^3, ")")))
+      ylab(expression(paste("Bilateral whole hippocampal volume (", mm^3, ")")))
 @
   \caption{Comparison of hippocampus volumes obtained by FreeSurfer (FS), FSL, 
   MAPER, \mb (MAGeT) and manual (SNT).}
@@ -1083,46 +1083,31 @@ qplot(DX,value,data=melt(totals.complete,measure.vars=c("FS", "FSL", "MAPER","MA
 \begin{figure}[h]
 <<ADNI-scr-volumes-plot,dependson='ADNI-baseline-volumes-prep',cache=T,fig.width=6,fig.height=4>>=
 melted=melt(totals.complete, measure.vars=c("FS", "FSL", "MAPER","MAGeT"), 
-            variable.name = "method", value.name = "volume")
+            variable.name = "Method", value.name = "volume")
 
-snt.tests <- ddply(totals.complete, c("DX"), function(df) {
-  data.frame( corr = cor(df$SNT, df$MAGeT),
-              value = -Inf) 
-})
+df = totals.complete
+levels(melted) = c("FS" = ),
+                   "FSL"= paste("FSL", round(cor(df$SNT, df$FSL),2)),
+                   "MAPER"= paste("MAPER", round(cor(df$SNT, df$MAPER),2)),
+                   "MAGeT"= paste("MAGeT", round(cor(df$SNT, df$FS),2)))
 
-ggplot(data=melted, aes(x=SNT, y=volume, colour=method)) + 
-      geom_point() + 
-      geom_smooth(method="lm") + 
-      #geom_text(aes(y=value,x=DX, vjust=-1.4, size=1,
-      #              label=paste("r==", signif(corr, digits=3))), 
-      #      colour='black',parse=TRUE, data=snt.tests) +
-      xlab(expression(paste("Manual total hippocampal volume (", mm^3, ")"))) + 
-      ylab(expression(paste("Total hippocampal volume (", mm^3, ")")))
+ggplot(data=melted, aes(x=SNT, y=volume, colour=Method)) + 
+    geom_point() + 
+    geom_smooth(method="lm") + 
+    xlab(expression("Manual bilateral whole hippocampal volume " (mm^3))) + 
+    ylab(expression("Automated bilateral whole hippocampal volume " (mm^3))) +
+    annotate("text", y = c(3000,2500,2000,1500), x=Inf-100, size=3,
+              label = c(paste("FS r=", round(cor(df$SNT, df$FS),2)),
+                        paste("FSL r=", round(cor(df$SNT, df$FSL),2)),
+                        paste("MAPER r=", round(cor(df$SNT, df$MAPER),2)),
+                        paste("MAGeT r=", round(cor(df$SNT, df$MAGeT),2))),
+              hjust=1.1,vjust=1.5) +
+    theme(legend.direction = "horizontal", legend.position = "bottom")
 @
   \caption{Comparison of hippocampus volumes obtained by FreeSurfer (FS), FSL, 
   MAPER, \mb (MAGeT) and manual (SNT).}
   \label{fig:ADNI-scr-volumes-plot}
 \end{figure}
-
-<<ADNI-scr-volumes-table,dependson='ADNI-baseline-volumes-prep',cache=T,results='asis'>>=
-melted=melt(totals.complete, measure.vars=c("FS", "FSL", "MAPER","MAGeT"), 
-            variable.name = "method", value.name = "volume")
-
-snt.tests <- ddply(totals.complete, c("DX"), function(df) {
-  round(data.frame( MAGeT = cor(df$SNT, df$MAGeT),
-              MAPER = cor(df$SNT, df$MAGeT),
-              FS    = cor(df$SNT, df$FS),
-              FSL   = cor(df$SNT, df$FSL)
-              ), 2)
-})
-caption = paste(
-  "Pearson correlation between manual (SNT) whole hippocampus volume", 
-  "and whole hippocampus volume by method.", sep=" ")
-latex(snt.tests, file="", 
-      size="scriptsize",
-      caption=caption, row.names="",
-      title="")
-@
  
 \begin{figure}
 <<ADN1-src-Bland-Atlman, cache=TRUE, dependson='ADNI-baseline-volumes-prep', fig.width=4, fig.height=4>>=
@@ -1152,18 +1137,63 @@ limits = mean(melted$diff) + c(-2, 0, 2) * sd(melted$diff)
 
 ggplot(melted, aes(x= SNT, y = diff)) + 
   geom_hline(yintercept = limits, linetype=2, color='brown') + 
- annotate("text", y = limits, x=Inf, label=round(limits,1), 
+  annotate("text", y = limits, x=Inf, label=round(limits,1), 
             hjust=1.1,vjust=-0.8, size=3) + 
   geom_point() + 
-  xlab('Mean manual and MAGeT Brain total Hippocampus volume') + 
-  ylab('Manual - MAGeT Brain volume') + 
+  xlab('Mean of manual and MAGeT-Brain hippocampal volume') + 
+  ylab('Difference between Manual and MAGeT-Brain hippocampal volume') + 
   geom_smooth(method="lm", formula = y~x)
 @
   \caption{Bland-Altman plot comparing manual (SNT) and \mb hippocampal volumes 
-  in the ADNI1 1.5T 1Yr Complete dataset.}
+  in the \adnidataset dataset.}
   \label{fig:ADNI-scr-Bland-Altman}
 \end{figure}
 
+
+\begin{figure}
+<<ADN1-src-subfield, cache=TRUE, dependson='ADNI-baseline-volumes-prep', fig.width=4, fig.height=4>>=
+adni_69_RIDs = c(295,413,619,685,729,782,938,954,1018,1155,907,981,222,324,448,
+                 546,553,572,602,610,814,1341,675,681,731,1130,41,68,70,101,
+                 249,293,316,414,698,1206,1222,1339,751,1030,3,5,10,16,22,53,
+                 168,183,241,1205,328,1095,991,213,159,337,343,642,753,1109,
+                 1217,29,56,1188,1293,149,382,431,1202)
+mb    = read.csv("data/ADNI_baseline_volumes/ADNI1_1.5T_MAGeT_volumes.csv")
+
+# Get subjects, and diagnoses
+base = read.csv("data/ADNI_baseline_volumes/ADNI1_Screening_1.5T_11_15_2012.csv")
+base = subset(base, !grepl("Scaled_2", Description)) 
+base$VISCODE <- factor(base$Visit, levels = c(1,2,3,4), labels=c("bl","m03","m06","m12"))
+subjects = yr1[,c("Image.Data.ID", "RID","VISCODE")]  # we only need these fields
+dx = unique(adnimerge[c("DX.bl", "RID", "VISCODE")])
+subjects = merge(subjects, dx) 
+
+# Now create one data.frame with all the yr1 volume 
+# data we have from each datasource
+subregions = merge(subjects, mb, by.x="Image.Data.ID", by.y="SourceImageID", 
+                   all.x=TRUE)
+subregions = subset(subregions, VISCODE == "bl" & RID %in% adni_69_RIDs)
+attach(subregions)
+subregions$X1 = mean(X1, X101)
+subregions$X2 = mean(X2, X102)
+subregions$X4 = mean(X4, X104)
+subregions$X5 = mean(X5, X105)
+subregions$X6 = mean(X6, X106)
+detach(subregions)
+subregions = subregions[,!names(subregions) %in% c("Left_Hippo","Right_Hippo",
+                                                   "X101","X102","X103","X105",
+                                                   "X106")]
+subregions.melted = melt(subregions, measure.vars=c("X1","X2","X4","X5","X6"),
+                         variable.name="Subregion", value.name="Volume")
+levels(subregions.melted$Subregion) <-list("CA1"="X1", "CA2/CA3"="X5",
+                                           "CA4/DG"="X4", 
+                                           "SR/SL/SM"="X6",
+                                           "Subiculum"="X2")
+ggplot(subregions.melted, aes(x=Subregion, y=Volume)) +
+  geom_boxplot()
+@
+  \caption{}
+  \label{fig:ADNI-scr-subfields}
+\end{figure}
 \FloatBarrier
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
