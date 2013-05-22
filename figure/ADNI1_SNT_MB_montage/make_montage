@@ -8,7 +8,9 @@ cat AD MCI CN | while read stem; do
                                80 \
                                ${stem}.png
 done | parallel -j 8
-montage -geometry 600x200+10+10 -tile 1x10 -background black $(head -n10 CN | sed -e 's/$/.png/') CN.png
-montage -geometry 600x200+10+10 -tile 1x10 -background black $(head -n10 MCI | sed -e 's/$/.png/') MCI.png
-montage -geometry 600x200+10+10 -tile 1x10 -background black $(head -n10 AD | sed -e 's/$/.png/') AD.png
+
+margin=5
+montage -geometry +$margin+$margin -tile 1x10 -background black $(head -n10 CN | sed -e 's/$/.png/') CN.png
+montage -geometry +$margin+$margin -tile 1x10 -background black $(head -n10 MCI | sed -e 's/$/.png/') MCI.png
+montage -geometry +$margin+$margin -tile 1x10 -background black $(head -n10 AD | sed -e 's/$/.png/') AD.png
 montage -tile x1 -label '%t' -stroke white -fill white -pointsize 40 -geometry +2+2+ -background black CN.png MCI.png AD.png montage.png
