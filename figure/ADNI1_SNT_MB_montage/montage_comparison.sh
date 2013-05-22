@@ -22,13 +22,13 @@ mincreshape $tmp/isostep_cmp.mnc $tmp/cropped_cmp.mnc $window
 mincreshape $tmp/isostep_ana.mnc $tmp/cropped_ana.mnc $window
 
 mincpik -sagittal -auto_range -slice ${slice} $tmp/cropped_ana.mnc $tmp/ana_${slice}_sagittal.png 
-mincpik -sagittal -lookup -spectral -image_range 0 20 -slice ${slice} $tmp/cropped_lbl.mnc $tmp/lbl_${slice}_sagittal.png 
-mincpik -sagittal -lookup -spectral -image_range 0 20 -slice ${slice} $tmp/cropped_cmp.mnc $tmp/cmp_${slice}_sagittal.png 
+mincpik -sagittal -lookup -spectral -image_range 0 2 -slice ${slice} $tmp/cropped_lbl.mnc $tmp/lbl_${slice}_sagittal.png 
+mincpik -sagittal -lookup -spectral -image_range 0 4 -slice ${slice} $tmp/cropped_cmp.mnc $tmp/cmp_${slice}_sagittal.png 
 
 composite -dissolve 55 -tile -gravity south $tmp/ana_${slice}_sagittal.png $tmp/lbl_${slice}_sagittal.png $tmp/lbl_overlay_${slice}_sagittal.png 
 composite -dissolve 55 -tile -gravity south $tmp/ana_${slice}_sagittal.png $tmp/cmp_${slice}_sagittal.png $tmp/cmp_overlay_${slice}_sagittal.png 
 
-montage -tile x1 -geometry +2+2 -background black $tmp/ana_${slice}_sagittal.png \
+montage -tile x1 -geometry +0+0 -background black $tmp/ana_${slice}_sagittal.png \
                                    $tmp/lbl_overlay_${slice}_sagittal.png \
                                    $tmp/cmp_overlay_${slice}_sagittal.png  $out
-echo $tmp
+rm -rf $tmp

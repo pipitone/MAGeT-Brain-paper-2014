@@ -7,10 +7,11 @@ cat AD MCI CN | while read stem; do
                                $tals/mb_labels/${stem}_labels.mnc \
                                80 \
                                ${stem}.png
-done | parallel -j 8
+done | parallel -j 16
 
 margin=5
 montage -geometry +$margin+$margin -tile 1x10 -background black $(head -n10 CN | sed -e 's/$/.png/') CN.png
 montage -geometry +$margin+$margin -tile 1x10 -background black $(head -n10 MCI | sed -e 's/$/.png/') MCI.png
 montage -geometry +$margin+$margin -tile 1x10 -background black $(head -n10 AD | sed -e 's/$/.png/') AD.png
-montage -tile x1 -label '%t' -stroke white -fill white -pointsize 40 -geometry +2+2+ -background black CN.png MCI.png AD.png montage.png
+montage -tile x1 -label '%t' -stroke white -fill white -pointsize 40 -geometry +2+2+ -background black CN.png MCI.png AD.png montage_pic.png
+inkscape --export-png=montage.png montage.svg
