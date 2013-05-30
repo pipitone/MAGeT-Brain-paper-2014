@@ -19,12 +19,11 @@ library(plyr)
 options(digits=3)
 theme_set(theme_bw())
 
-bland_altman_plot <- function(x, y) {
-  data = data.frame(x=x,y=y,diff=x-y)
-  return(ggplot(data, aes(x= x, y = diff)) + 
+bland_altman_plot <- function(x, y, c) {
+  data = data.frame(x=x,y=y,diff=x-y, c=c)
+  return(ggplot(data, aes(x= x, y = diff, colour = as.factor(c))) + 
     geom_hline(yintercept = mean(data$diff) + c(-2, 0, 2) * sd(data$diff), 
-               linetype=2, color='brown') + 
-    geom_point())
+               linetype=2, color='brown') + geom_point())
 }
 
 lm_eqn = function(m) {
@@ -798,6 +797,18 @@ all_data_mean  <- read.csv('data/cache/ADNI-XVAL:all_data_mean.csv')
 @
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\begin{figure}
+<<ADN1-bland-altman, cache=TRUE, dependson='ADNI1-Xval-prep'>>=
+snt.unilateral.vols = read.csv('data/a2a_snt_volumes.csv')
+a2a.best = subset(all_data, atlases == 9 &
+                    templates.mb == 19 &
+                    reg_method=='ANTS' &
+                    method.mb =='Majority Vote')
+a2a.best = merge(a2a.best, snt.unilateral.vols)
+bland_altman_plot(a2a.best$volume.snt, a2a.best$volume.ma, a2a.best$DX) + geom_smooth(method="lm")
+@
+\end{figure}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ADNI1-XVAL: mean Kappa plot by atlases, templates, reg and voting method. 
 \begin{figure}
@@ -1164,12 +1175,11 @@ bland_altman_plot <- function(x, y) {
 melted$diff = melted$SNT - melted$volume
 limits = mean(melted$diff) + c(-2, 0, 2) * sd(melted$diff)
 
-ggplot(melted, aes(x= SNT, y = diff)) + 
-  facet_grid( DX ~ . ) + 
+ggplot(melted, aes(x= SNT, y = diff, colour=DX)) + 
   geom_hline(yintercept = limits, linetype=2, color='brown') + 
   annotate("text", y = limits, x=Inf, label=round(limits,1), 
             hjust=1.1,vjust=-0.8, size=3) + 
-  geom_point() + 
+  geom_point() +  
   xlab('Mean of manual and MAGeT-Brain hippocampal volume') + 
   ylab('Difference between Manual and MAGeT-Brain hippocampal volume') + 
   geom_smooth(method="lm", formula = y~x)
