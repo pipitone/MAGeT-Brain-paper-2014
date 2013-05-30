@@ -495,7 +495,8 @@ this experiment we explore three fusion methods.
   voxel-wise majority vote. The ROI is heuristically defined as the extent of all
   atlas labels after linear registration to the template, dilated by three voxels
   \citep{Chakravarty2012}.  The number of top ranked template library image labels
-  is a configurable parameter.
+  is a configurable parameter and displayed as the size of the template library
+  in the rest of the paper. 
 
   The {\tt xcorr\_vol} utility from the \animal toolkit is used to calculate the
   cross-correlation similarity measure.  
@@ -801,16 +802,18 @@ all_data_mean  <- read.csv('data/cache/ADNI-XVAL:all_data_mean.csv')
 % ADNI1-XVAL: mean Kappa plot by atlases, templates, reg and voting method. 
 \begin{figure}
 <<ADN1-xval-k-mean, cache=TRUE, dependson='ADNI1-Xval-prep'>>=
-ggplot(all_data_mean, 
-       aes(x=templates.mb,y=k.mb, colour=as.factor(atlases))) + 
+ggplot(subset(all_data_mean, (templates.mb*atlases) %% 2 == 1),
+       aes(x=templates.mb,y=k.mb, colour=as.factor(atlases))) + #as.factor((atlases*templates.mb) %% 2 ))) + 
   facet_grid(reg_method~method.mb) + 
   stat_summary(fun.y=mean,geom='line',
-               aes(y=k.mb, weight=1)) + 
+               aes(y=k.mb, weight=1, group=as.factor(atlases))) + 
+    stat_summary(fun.y=mean,geom='point',
+               aes(y=k.mb, weight=1, group=as.factor(atlases))) + 
   #stat_smooth(method='lm', formula=y~log(x)) + 
   scale_colour_hue(name="Atlases") +
   xlab( "Number of Templates" ) + 
   ylab( "Mean DSC" ) + 
-  opts(legend.direction = "horizontal", legend.position = "bottom")
+  theme(legend.direction = "horizontal", legend.position = "bottom")
 @
   \label{fig:ADNI1-xval-k_mean}
   \caption{
@@ -825,8 +828,8 @@ ggplot(all_data_mean,
 % ADNI1-XVAL: "increase" in mean kappa over multi-atlas
 \begin{figure}
 <<ADN1-Xval-k-diff,cache=TRUE,dependson='ADNI1-Xval-prep',fig.width=6,fig.height=4>>=
-ggplot(subset(all_data_mean, reg_method=="ANTS" & method.mb=="Majority Vote" &
-                templates.mb %in% seq(1,20,2)), 
+ggplot(subset(all_data_mean, reg_method=="ANTS" & 
+                method.mb=="Majority Vote" & (templates.mb*atlases) %% 2 == 1), 
        aes(x=templates.mb, y=k_diff, colour=as.factor(atlases))) + 
   #facet_grid(reg_method~method.y) + 
   stat_summary(fun.data=mean_cl_boot,geom='errorbar',
@@ -839,11 +842,11 @@ ggplot(subset(all_data_mean, reg_method=="ANTS" & method.mb=="Majority Vote" &
   geom_hline(aes(alpha=0.5, yintercept=0), linetype='dashed') + 
   scale_x_continuous(breaks=seq(1,20,2)) + scale_y_continuous(breaks=seq(-1,1,by=0.01)) + 
   scale_colour_hue(name="Atlases") +
-  scale_alpha_continuous(legend=FALSE) + 
-  scale_linetype_discrete(legend=FALSE) + 
+  scale_alpha_continuous(guide = "none") + 
+  scale_linetype_discrete(guide = "none") + 
   xlab( "Number of Templates" ) + 
   ylab( "Difference in mean DSC" ) +
-  opts(legend.direction = "horizontal", legend.position = "bottom")
+  theme(legend.direction = "horizontal", legend.position = "bottom")
 @
   \caption{The difference in mean DSC between \mb and multi-atlas segmentations for 
   a range of parameter settings.}
@@ -910,7 +913,6 @@ ggplot(subset(stats.tests, direction > 0),
   multi-atlas, and the distribution of these test statistics is compared with a 
   t-test. The p-value of this test, is shown on the y-axis (scaled logarithmically).
   Only points where \mb mean variability is lower multi-atlas are shown.}
-  \todo{note log scale}
   \label{ADNI1-xval-variability}
 \end{figure}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -989,7 +991,7 @@ ggplot(melted, aes(y=percenterr,x=region,colour=measure)) +
 %%%%%                       of schizophrenia patients                     %%%%%
 %%%%%                                                                     %%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Experiment 3 Results: Application to the segmentation first episode
+\subsection{Experiment 3 Results: Application to the segmentation of first episode
 \\ \mbox{schizophrenia patients}}
  
 In this experiment \mb is applied to a dataset of images of first episode
@@ -1017,6 +1019,17 @@ ggplot(data=casted, aes(x = Manual, y = MAGeT)) +
   \caption{{\bf First Episode Schizophrenic Patients.} Comparison of total
   HC volumes for \mb against manually rated Hippocampal volumes}
   \label{fig:SZ-volumes}
+\end{figure}
+
+\begin{figure}
+  \begin{centering}
+    \includegraphics[width=6in]{figure/FEP-montage.pdf}
+  \end{centering}
+  \caption{Sagittal slices from two subjects showing a comparison of the
+  original Winterburn atlas subfield segmentations (at 0.3mm3-isotropic voxel
+  resolution), the downsampled Winterburn segmentations (at 0.9mm3-isotropic
+  voxel resolution), and the MAGeT brain labels on the downsampled atlas image.}
+  \label{fig:FEP-montage}
 \end{figure}
 
 \FloatBarrier
@@ -1077,11 +1090,17 @@ latex(package_totals, file="", size="scriptsize",
 
 \begin{figure}[h]
 <<ADNI-scr-volumes-boxplot,dependson='ADNI-baseline-volumes-prep',cache=T,fig.width=6,fig.height=4>>=
+melted = melt(totals.complete,measure.vars=c("FS", "FSL", "MAPER","MAGeT"),
+              variable.name="Method", value.name="Volume")
+correlations = ddply(melted, c("DX","Method"), function (df) {
+  data.frame(
+    pearson = cor(df$SNT, df$Volume)
+  )
+})
+
 qplot(DX,value,data=melt(totals.complete,measure.vars=c("FS", "FSL", "MAPER","MAGeT","SNT")),
       colour=variable,geom="boxplot") + 
-      #geom_text(aes(y=value,x=DX, vjust=-1.4, size=1,
-      #              label=paste("r==", signif(corr, digits=3))), 
-      #      colour='black',parse=TRUE, data=snt.tests) +
+      #geom_text(aes(y=Inf,x=interaction(DX,Method), vjust=2, label=pearson, colour=Method), size=3, data=correlations) +
       xlab("Diagnosis") + 
       ylab(expression(paste("Bilateral whole hippocampal volume (", mm^3, ")")))
 @
@@ -1146,6 +1165,7 @@ melted$diff = melted$SNT - melted$volume
 limits = mean(melted$diff) + c(-2, 0, 2) * sd(melted$diff)
 
 ggplot(melted, aes(x= SNT, y = diff)) + 
+  facet_grid( DX ~ . ) + 
   geom_hline(yintercept = limits, linetype=2, color='brown') + 
   annotate("text", y = limits, x=Inf, label=round(limits,1), 
             hjust=1.1,vjust=-0.8, size=3) + 
@@ -1161,49 +1181,21 @@ ggplot(melted, aes(x= SNT, y = diff)) +
 
 
 \begin{figure}
-<<ADN1-src-subfield, cache=TRUE, dependson='ADNI-baseline-volumes-prep', fig.width=4, fig.height=4>>=
-adni_69_RIDs = c(295,413,619,685,729,782,938,954,1018,1155,907,981,222,324,448,
-                 546,553,572,602,610,814,1341,675,681,731,1130,41,68,70,101,
-                 249,293,316,414,698,1206,1222,1339,751,1030,3,5,10,16,22,53,
-                 168,183,241,1205,328,1095,991,213,159,337,343,642,753,1109,
-                 1217,29,56,1188,1293,149,382,431,1202)
-mb    = read.csv("data/ADNI_baseline_volumes/ADNI1_1.5T_MAGeT_volumes.csv")
-
-# Get subjects, and diagnoses
-base = read.csv("data/ADNI_baseline_volumes/ADNI1_Screening_1.5T_11_15_2012.csv")
-base = subset(base, !grepl("Scaled_2", Description)) 
-base$VISCODE <- factor(base$Visit, levels = c(1,2,3,4), labels=c("bl","m03","m06","m12"))
-subjects = yr1[,c("Image.Data.ID", "RID","VISCODE")]  # we only need these fields
-dx = unique(adnimerge[c("DX.bl", "RID", "VISCODE")])
-subjects = merge(subjects, dx) 
-
-# Now create one data.frame with all the yr1 volume 
-# data we have from each datasource
-subregions = merge(subjects, mb, by.x="Image.Data.ID", by.y="SourceImageID", 
-                   all.x=TRUE)
-subregions = subset(subregions, VISCODE == "bl" & RID %in% adni_69_RIDs)
-attach(subregions)
-subregions$X1 = mean(X1, X101)
-subregions$X2 = mean(X2, X102)
-subregions$X4 = mean(X4, X104)
-subregions$X5 = mean(X5, X105)
-subregions$X6 = mean(X6, X106)
-detach(subregions)
-subregions = subregions[,!names(subregions) %in% c("Left_Hippo","Right_Hippo",
-                                                   "X101","X102","X103","X105",
-                                                   "X106")]
-subregions.melted = melt(subregions, measure.vars=c("X1","X2","X4","X5","X6"),
-                         variable.name="Subregion", value.name="Volume")
-levels(subregions.melted$Subregion) <-list("CA1"="X1", "CA2/CA3"="X5",
-                                           "CA4/DG"="X4", 
-                                           "SR/SL/SM"="X6",
-                                           "Subiculum"="X2")
-ggplot(subregions.melted, aes(x=Subregion, y=Volume)) +
-  geom_boxplot()
-@
-  \caption{}
+  \begin{centering}
+    \includegraphics[width=6in]{figure/ADNI1_SNT_MB_montage/montage.pdf}
+  \end{centering}
+  \caption{Manual and MAGeT segmentation results for 30 ADNI1 subjects (10
+  subjects randomly selected from each disease category in the subject pool used
+  in Experiment 1). Sagittal slices are shown for subject unlabelled T1-weighted
+  anatomical image, SNT manual label (green), and \mb label (blue). Noted are
+  examples of common segmentation idiosyncracies: 
+  {\em (a)} over-estimation of hippocampal head and  
+  {\em (b)} translated manual segmentation by SNT; 
+  {\em (c)} under-estimation of hippocampal body and
+  {\em (d)} improper inclusion of the vestigial hippocampal sulcus by \mb.}
   \label{fig:ADNI-scr-subfields}
 \end{figure}
+
 \FloatBarrier
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1235,7 +1227,109 @@ latex(adni_lit, file="",
 @
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\begin{verbatim}
 
+Experiment 1: 
+- address the absence of weighted-voting effects. 
+  - hypothesis: the benefits of weighted voting only outweigh the resampling
+    error effects when choosing from a large library.  In this experiment, the 
+    template library (during weighted voting) consists of only 20 templates, so
+    the most we could hope for is a "squashing" upwards of the curve towards 
+    the 20-template limit (which is the same across all cases in this experiment).
+  - we do see a slight "squashing" effect, with XCORR more strongly than NMI. 
+    Perhaps in future experiments with larger template libraries, this could be
+    explored further.
+- Why don't we use STAPLE? What would we expect from STAPLE or other fusion methods? 
+  - couldn't get STAPLE to work with our image formats
+  - Idea: expect smoothness across range of templates (no even # dips, below)
+  - perhaps more sophisticated fusion methods would boost results over majority 
+    vote based techniques.
+
+- why does MAGeT brain show a dip in average Kappa when using an even number
+  templates. Does MA show this same pattern? (yes)
+  - Hypothesis: our voting method is biased when breaking ties to choose the 
+    label with the lowest numeric value.
+  - If we compute the total number of labels fused (atlases * templates) then 
+    both MB/MA perform worse when fusing an even number of labels. 
+
+- we only show a +0.02 increase in mean Kappa over multi-atlas, and this is when
+  using 1 atlas (which we know from Figure 2, is when we perform worst). Why does
+  this increase justify the extra effort involved in MB? 
+  - decrease in variability
+  - we are comparing "true" averages (see above)... does this make our criteria 
+    for a worthy improvement less strict? 
+    
+
+- how does MAGeT stack up, Kappa-wise, to other methods, in an absolute sense.
+- because of the extensive cross-validation in experiment 1, we are very likely
+  showing results that approach the true average of MB and MA on that dataset
+  (i.e. our mid 0.8 range result is a mean across 69 subjects and 10 repetitions
+  each).
+- even with this caveat, do we think we do well enough?  i.e. other than parameter 
+  tuning, to what extent does this experiment tell us about how MB would do in 
+  practice. 
+
+- effects we are seeing is not only averaging effects (Chakravarty et al. 2012). 
+
+- take aways: as in other studies (Aljabar, Heckemann) we find that performance
+  scales with the number of inputs (approx. log(n)), and that a large enough
+  template library can boost performance with a small number of atlases. The use 
+  of templates /can/ have a negative impact on performance (Figure 2), that is 
+  balanced by the improvement of growing the template library.  Likely the negative
+  impact on peformance is as a result of resampling/mislabelling error. In other 
+  words, tuning MAGeT brain involves balancing the tension between an improvement 
+  in peformance due to increase neuroanatomical capture and decreased peformance
+  due to resampling error. 
+
+Experiment 2: 
+- describe resampling error during downsampling (essentially partial volume effect 
+  due to averaging/majority vote in nearest neighbour selection)
+- Why would some structures have greater downsampling error than others? (i.e. what
+  is it about a structure that would make it especially prone to resampling error)
+  - since error is discretised to whole voxels, smaller regions will show larger
+    percent error
+  - average unilateral volume (approx; mm3): 
+     region   volume   downsampling error
+     CA1      800            2%
+     CA4/DG   600          -30%
+     SR/SL/SM 700           30%
+     Sibculum 350            0%
+     CA2/3    200           15%
+
+- observation: when downsampling error is small (<10 percent), MB error is larger, 
+  and vice versa when downsampling error is large.  Could this a case where the 
+  inevitable MAGeT resampling error outweighs the small downsampling error?
+- observation: MAGeT produces similar volumes for the downsampled and BRAVO images
+  which demonstrates reliability. Additionally, MB's error is in the same *direction*
+  as the downsampling error except for SR/SL/SM
+- for MB to show less error than resampling means that voting across templates is 
+  in aggregate performing better than local nearest neighbour fitting. presumably 
+  we'd see the same improvement with basic multiatlas as well.
+
+- take away: MB produces subregion volumes that are comparable or better than
+  resampling error, except for the CA2/3 where error is near 25 percent (but 
+  even then resampling error is ~15%)
+
+Experiment 3: 
+- what is an "acceptable" r^2 value? 
+- take away: MB has proven to be robust with atlases derived from three different
+  segmentation protocols (SNT, Winterburn, and now Pruessner) on three different
+  populations (older with AD progression; young and healthy; young and SZ). 
+  
+Experiment 4: 
+- address the smaller difference in mean volume across disease classes. smaller 
+  than every other method. 
+  
+- address the segmentation bias towards over-estimating smaller hippocampi, and 
+  underestimating larger HC
+  
+- visual inspection/QC reveals MB segmentations are satisfactory (failure rate 
+  is lower than the other methods (but we may be biased. :-). 
+  
+- take away: MB, with the Winterburn atlases, produces HC volumes more inline with
+  SNT than FSL/FS.  Comparable to MAPER but with far fewer atlases required. 
+
+\end{verbatim}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                               Conclusion 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
