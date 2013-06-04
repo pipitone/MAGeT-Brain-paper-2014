@@ -19,9 +19,56 @@ library(plyr)
 options(digits=3)
 theme_set(theme_bw())
 
+
+# Multiple plot function
+#
+# ggplot objects can be passed in ..., or to plotlist (as a list of ggplot objects)
+# - cols:   Number of columns in layout
+# - layout: A matrix specifying the layout. If present, 'cols' is ignored.
+#
+# If the layout is something like matrix(c(1,2,3,3), nrow=2, byrow=TRUE),
+# then plot 1 will go in the upper left, 2 will go in the upper right, and
+# 3 will go all the way across the bottom.
+#
+multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
+  require(grid)
+
+  # Make a list from the ... arguments and plotlist
+  plots <- c(list(...), plotlist)
+
+  numPlots = length(plots)
+
+  # If layout is NULL, then use 'cols' to determine layout
+  if (is.null(layout)) {
+    # Make the panel
+    # ncol: Number of columns of plots
+    # nrow: Number of rows needed, calculated from # of cols
+    layout <- matrix(seq(1, cols * ceiling(numPlots/cols)),
+                    ncol = cols, nrow = ceiling(numPlots/cols))
+  }
+
+ if (numPlots==1) {
+    print(plots[[1]])
+
+  } else {
+    # Set up the page
+    grid.newpage()
+    pushViewport(viewport(layout = grid.layout(nrow(layout), ncol(layout))))
+
+    # Make each plot, in the correct location
+    for (i in 1:numPlots) {
+      # Get the i,j matrix positions of the regions that contain this subplot
+      matchidx <- as.data.frame(which(layout == i, arr.ind = TRUE))
+
+      print(plots[[i]], vp = viewport(layout.pos.row = matchidx$row,
+                                      layout.pos.col = matchidx$col))
+    }
+  }
+}
+
 bland_altman_plot <- function(x, y, c) {
-  data = data.frame(x=x,y=y,diff=x-y, c=c)
-  return(ggplot(data, aes(x= x, y = diff, colour = as.factor(c))) + 
+  data = data.frame(x=x,y=y,diff=x-y, m = (x+y)/2, c=c)
+  return(ggplot(data, aes(x= m, y = diff, colour = as.factor(c))) + 
     geom_hline(yintercept = mean(data$diff) + c(-2, 0, 2) * sd(data$diff), 
                linetype=2, color='brown') + geom_point())
 }
@@ -523,8 +570,8 @@ where $A$ and $B$ are the regions being compared, and the cardinality is the
 volume measured in voxels. 
 
 The manual segmentations (SNT) provided as part of the ADNI dataset are used as 
-the gold standard to compare with.  The segmentation accuracy reported is averaged over the ten validation
-rounds for each parameter setting.  
+the gold standard to compare with.  The segmentation accuracy reported is averaged 
+over the ten validation rounds for each parameter setting.  
 
 In order to investigate the performance of \mb in a real world setting in which 
 only one set of atlas and template images are used, we explore the variability 
@@ -756,23 +803,20 @@ demonstrate good overlap with SNT derived gold-standards (Figure
 \ref{fig:ADNI1-xval-k-mean}). Qualitatively, both \animal and \ants-based
 segmentations demonstrate trend overlap accuracy that increases with the size of
 atlas library and template library. Improvement in accuracy diminishes noticeably
-with template libraries larger than ten images. 
+with template libraries larger than roughly ten images. 
 
 No marked difference in segmentation accuracy is seen when either \animal or \ants
-registration is used with different label fusion techniques, at any atlas or
-template library sizes.  In every parameter configuration, the use of \mb with
-\ants registration shows a pronounced increase in segmentation accuracy over \mb with \animal
-registration. In the remainder of this section, only results using the \ants
-registration algorithm will be shown.
+registration is used with any number of atlases or templates.  In every parameter 
+configuration, the use of \mb with \ants registration shows a pronounced increase
+in segmentation accuracy over \mb with \animal registration.  Surprisingly, the 
+label fusion method used does not significantly improve label accuracy, contrary 
+to the findings of Aljabar et al. \cite{Aljabar2009} when using weighted voting
+on much larger altas/template libraries. In the remainder of  this section, only 
+results using the \ants registration algorithm and majority vote fusion will 
+be shown.
 
-It is interesting to note that with an even number of templates, \mb shows a
-small decrease in performance relative to when one fewer template image is used.
-See section \todo{ref} for a discussion of this behaviour. In the remainder of
-this section, only results from odd-sized template libraries will be shown. 
-
-With an increasing number of templates, \mb-based segmentating using \ants
-registration and majority vote label fusion shows improvement in overlap
-accuracy over multi-atlas-based segmentation, using the same number of atlases
+With an increasing number of templates, \mb shows improvement in overlap
+accuracy over multi-atlas-based segmentation when using the same number of atlases
 and voting method (Figure \ref{fig:ADNI1-xva-k-diff}). The magnitude of improvement over
 multi-atlas-based segmentation decreases with an increasing number of atlases,
 with accuracy converging with 7 atlases.  Peak improvement in \mb accuracy (~0.02
@@ -787,6 +831,12 @@ necessary to reach a significant (p<0.5) decrease in variance and standard
 deviation grows with the size of atlas library used.  A template library of 19
 images is sufficient to show significant decrease in variance and standard 
 deviation for 3-7 atlases. 
+\todo{Tris: only show variance OR standard deviation because otherwise the story gets complicated... why compare measures?}
+
+It is interesting to note that with an even number of templates, \mb shows a
+small decrease in performance relative to when one fewer template image is used.
+See section \todo{ref} for a discussion of this behaviour. In the remainder of
+this section, only results from odd-sized template libraries will be shown. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ADNI1-XVAL: prep
@@ -797,15 +847,53 @@ all_data_mean  <- read.csv('data/cache/ADNI-XVAL:all_data_mean.csv')
 @
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
 \begin{figure}
-<<ADN1-bland-altman, cache=TRUE, dependson='ADNI1-Xval-prep'>>=
-snt.unilateral.vols = read.csv('data/a2a_snt_volumes.csv')
+<<ADN1-library-composition, cache=TRUE, dependson='ADNI1-Xval-prep'>>=
+# These composition datasheets describe the subjects and subject DX in the 
+# template and atlas libraries for each voting run
+atlas_comp = read.csv('data/a2a_ants/atlas_library_composition.csv')
+templ_comp = read.csv('data/a2a_ants/template_library_composition.csv')
 a2a.best = subset(all_data, atlases == 9 &
                     templates.mb == 19 &
                     reg_method=='ANTS' &
                     method.mb =='Majority Vote')
+
+cumulative_dist = 
+  ggplot(a2a.best, aes(x=k.mb)) + stat_ecdf() + scale_y_continuous(breaks=seq(0,1,0.1))
+
+a2a.best = subset(a2a.best, k.mb > 0.75) # drop the guys that suck
+
+a2a.best = merge(a2a.best, atlas_comp, by=c("timestamp","atlases"))
+a2a.best = merge(a2a.best, templ_comp, by.x=c("timestamp","templates.mb"), by.y=c("timestamp","templates"))
+a2a.best$templates_AD_percent = (a2a.best$templates_AD / 19) * 100
+a2a.best$templates_MCI_percent = (a2a.best$templates_MCI / 19) * 100
+a2a.best.melted = melt(a2a.best, measure.vars=c("templates_AD_percent", "templates_MCI_percent"))
+
+k_by_composition = 
+  ggplot(a2a.best.melted, aes(x=value, y=k.mb, colour=DX)) + facet_grid(variable ~ DX) + 
+  geom_boxplot(aes(group=as.factor(value), colour=DX)) +  geom_smooth(method="lm") 
+
+snt.unilateral.vols = read.csv('data/a2a_snt_volumes.csv')
 a2a.best = merge(a2a.best, snt.unilateral.vols)
-bland_altman_plot(a2a.best$volume.snt, a2a.best$volume.ma, a2a.best$DX) + geom_smooth(method="lm")
+
+# bland-altman plots
+bland_mb_overall = with(a2a.best, bland_altman_plot(volume.snt, volume.mb, DX) + 
+  geom_smooth(method="lm") + 
+  scale_y_continuous(breaks=seq(-500, 500, 50)))
+
+bland_ma_overall = with(a2a.best, bland_altman_plot(volume.snt, volume.ma, DX) + 
+  geom_smooth(method="lm") + 
+  scale_y_continuous(breaks=seq(-500, 500, 50)))
+
+# just the trials with a high percentage of MCI in the template library
+a2a.best.highMCI = subset(a2a.best, templates_MCI_percent > 50)
+
+bland_mb_highMCI = with(a2a.best.highMCI, bland_altman_plot(volume.snt, volume.ma, DX) + 
+  geom_smooth(method="lm") + 
+  scale_y_continuous(breaks=seq(-500, 500, 50)))
+
+  
 @
 \end{figure}
 
@@ -900,9 +988,9 @@ stats.tests = ddply(data.stats, c("atlases","templates.mb"), function (df) {
   )
 })
 
-ggplot(subset(stats.tests, direction > 0), 
+ggplot(subset(stats.tests, direction > 0, stat == "Variance"), 
   aes(x=templates.mb, y=p.value, colour=as.factor(atlases))) + 
-  facet_grid( . ~ stat) + 
+  #facet_grid( . ~ stat) + 
   geom_line(size=1) +
   geom_point(size=3) + 
   geom_hline(aes(yintercept=0.05, alpha=0.5), linetype='dashed') + 
@@ -910,7 +998,7 @@ ggplot(subset(stats.tests, direction > 0),
   scale_x_continuous(breaks=seq(1,20,by=2)) + 
   scale_y_log10(limits=c(0.001,1), breaks=c(0.01,0.05,0.1,1.0)) + 
   xlab( "Number of Templates" ) + 
-  ylab( "p-value" ) +
+  ylab( "Difference of variance during validation (p-value)" ) +
   scale_colour_hue(name="Atlases") +
   scale_alpha_continuous(guide='none') + 
   scale_linetype_discrete(guide='none') + 
@@ -919,11 +1007,12 @@ ggplot(subset(stats.tests, direction > 0),
 @
   \caption{{\bf Difference in variability of \mb vs. multi-atlas segmentation 
   accuracy.}
-  Variability of segmentation accuracy within 10 rounds of validation per subject. 
-  Standard deviation and variance is computed per subject for both \mb and 
-  multi-atlas, and the distribution of these test statistics is compared with a 
-  t-test. The p-value of this test, is shown on the y-axis (scaled logarithmically).
-  Only points where \mb mean variability is lower multi-atlas are shown.}
+  Variance of segmentation accuracy between \mb and multi-atlas segmentation 
+  is computed for each subject across all ten rounds of validation. Shown on the 
+  y-axis (scaled logarithmically) is the  p-value resulting from a t-test 
+  comparing the distribution of variances at each parameter setting 
+  (atlas/template library size). Only points where \mb mean variability is lower 
+  than multi-atlas are shown.}
   \label{ADNI1-xval-variability}
 \end{figure}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -947,8 +1036,12 @@ In general, across hippocampal subregions the percent error in volume between
 favourably to error when resampling the atlas segmentations (Figure
 \ref{fig:WAval-vol-boxplot}). In particular, the CA1, CA4, and Dentate
 subregions all show near or smaller percent errors. The Sibiculum and CA2/CA3
-subregions show distinctly larger \todo{what?} than resampling error. 
-\todo{note direction of change}
+subregions show distinctly larger volumes than resampling error. 
+\todo{note direction of change}. 
+
+Figure \ref{fig:subfield-montage} shows a qualitative comparision of \mb subfield
+segmentation.  
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Winterburn-XVAL: compare resampling
@@ -995,6 +1088,19 @@ ggplot(melted, aes(y=percenterr,x=region,colour=measure)) +
   \label{fig:WAval-vol-boxplot}
 \end{figure}
 
+
+\begin{figure}
+  \begin{centering}
+    \includegraphics[width=6in]{figure/subfield-montage.pdf}
+  \end{centering}
+  \caption{Sagittal slices from two subjects showing a comparison of the
+  original Winterburn atlas subfield segmentations (at 0.3mm3-isotropic voxel
+  resolution), the subsampled Winterburn segmentations (at 0.9mm3-isotropic
+  voxel resolution), and the MAGeT brain labels on the subsampled atlas image.}
+  \label{fig:subfield-montage}
+\end{figure}
+
+
 \FloatBarrier
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%                                                                     %%%%%
@@ -1032,17 +1138,6 @@ ggplot(data=casted, aes(x = Manual, y = MAGeT)) +
   \label{fig:SZ-volumes}
 \end{figure}
 
-\begin{figure}
-  \begin{centering}
-    \includegraphics[width=6in]{figure/FEP-montage.pdf}
-  \end{centering}
-  \caption{Sagittal slices from two subjects showing a comparison of the
-  original Winterburn atlas subfield segmentations (at 0.3mm3-isotropic voxel
-  resolution), the downsampled Winterburn segmentations (at 0.9mm3-isotropic
-  voxel resolution), and the MAGeT brain labels on the downsampled atlas image.}
-  \label{fig:FEP-montage}
-\end{figure}
-
 \FloatBarrier
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%                                                                     %%%%%
@@ -1068,19 +1163,32 @@ are included in the following analysis (a total of
 \Sexpr{length(totals.complete$RID)} images; Table 
 \ref{tab:ADNI1-1.5T-Complete-1Yr-Dataset-Method-Totals}).
  
-Comparing total hippocampal volume, we find close agreement between manual
-volumes, MAPER and MAGeT volumes across disease categories (Figure
-\ref{fig:ADNI-scr-volumes-boxplot}, Figure \ref{fig:ADNI-scr-histogram}). FSL
-and FreeSurfer both produce volumes in close agreement with each other, but
-which are consistently larger \todo{ADD AN ESTIMATE OF THE DIFFERENCE HERE} than
-manually segmented volumes in each disease category.  
+We find a close relationship in total bilateral hippocampal volume between
+all methods and manually segmented volumes (Figure \ref{fig:ADNI-scr-volumes-plot}). 
+Volumes are correlated with Pearson-r > 0.78 for all methods across disease categories.
+Within disease categories (Figure \ref{fig:ADNI-scr-volumes-boxplot}),
+\mb is consistently well correlated to manual volumes (Pearson-r > 0.85), but appears to 
+slightly over-estimate the volume of the AD hippocampus. 
 
-Additionally \mb volumes show a fixed bias towards larger volumes by an 
-average $-205.2mm^3$, and a proportional bias towards producing smaller 
-segmentations for larger hippocampi \todo{WHEN COMPARED TO SNT SEGMENTATIONS} (Figure \ref{fig:ADNI1-src-Bland-Altman}.
+To investigate the level of agreement with manually segmented hippocampal volumes, 
+we constructed Bland-Altman plots for each method (Figure \ref{fig:ADNI1-src-Bland-Altman}).  
+As Bland \& Altman, 1985 \cite{Bland1986} noted, high 
+correlation amongst measures of the same quantity does not necessarily 
+imply agreement (as correlation can be driven by a large range in true values, 
+for instance).  What is most striking in Figure \ref{fig:ADNI1-src-Bland-Altman}
+is that all methods show an obvious proportional bias: FreeSurfer and FSL 
+markedly under-estimate smaller hippocampi and over-estimate large hippocampi, 
+whereas MAPER and \mb more conservatively show the reverse bias.  Additionally, 
+all methods show a fixed bias, with FreeSurfer and FSL most dramatically 
+over-estimating hippocampal volume by $2600mm^3$ and $2800mm^3$ on average, respectively, 
+and MAPER and \mb within $250mm^3$ on average. 
 
-Figure \ref{fig:ADNI-scr-subfields} shows the subfield volumes for the 69 ADNI1
-subjects used in Experiment 1. 
+Figure \ref{fig:ADNI-scr-subfields} shows a qualitative comparison of \mb and 
+manual (SNT) hippocampal segmentations for 10 randomly selected subjects in 
+each disease category, and illustrates some of the common errors found during 
+visual inspection. Mostly frequently, we find \mb improperly includes the vestigial
+hippocampal sulcus and, although not anatomically incorrect, \mb under-estimates 
+the hippocampal body in comparison to the manual (SNT) segmentation.  
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ADNI1 1yr Complete Dataset Package Totals & Failures
@@ -1100,7 +1208,7 @@ latex(package_totals, file="", size="scriptsize",
 
 
 \begin{figure}[h]
-<<ADNI-scr-volumes-boxplot,dependson='ADNI-baseline-volumes-prep',cache=T,fig.width=6,fig.height=4>>=
+<<ADNI-scr-volumes-boxplot,dependson='ADNI-baseline-volumes-prep',cache=T,fig.width=7,fig.height=4>>=
 melted = melt(totals.complete,measure.vars=c("FS", "FSL", "MAPER","MAGeT"),
               variable.name="Method", value.name="Volume")
 correlations = ddply(melted, c("DX","Method"), function (df) {
@@ -1111,12 +1219,15 @@ correlations = ddply(melted, c("DX","Method"), function (df) {
 
 qplot(DX,value,data=melt(totals.complete,measure.vars=c("FS", "FSL", "MAPER","MAGeT","SNT")),
       colour=variable,geom="boxplot") + 
-      #geom_text(aes(y=Inf,x=interaction(DX,Method), vjust=2, label=pearson, colour=Method), size=3, data=correlations) +
+      geom_text(aes(y=-Inf,x=c(.7,.85,1,1.15, 1.7,1.85,2,2.15, 2.7,2.85,3,3.15), vjust=-5, label=round(pearson,2)), 
+                colour = 'black', size=3, data=correlations) +
       xlab("Diagnosis") + 
-      ylab(expression(paste("Bilateral whole hippocampal volume (", mm^3, ")")))
+      ylab(expression(paste("Bilateral whole hippocampal volume (", mm^3, ")"))) + 
+      theme(legend.direction = "horizontal", legend.position = "bottom")
 @
   \caption{Comparison of hippocampus volumes obtained by FreeSurfer (FS), FSL, 
-  MAPER, \mb (MAGeT) and manual (SNT).}
+  MAPER, \mb (MAGeT) and manual (SNT) by disease category.  Pearson correlation 
+  with manual volumes are shown below each box-and-whisker.}
   \label{fig:ADNI-scr-volumes-boxplot}
 \end{figure}
 
@@ -1126,10 +1237,6 @@ melted=melt(totals.complete, measure.vars=c("FS", "FSL", "MAPER","MAGeT"),
             variable.name = "Method", value.name = "volume")
 
 df = totals.complete
-levels(melted) = c("FS" = paste("FSL", round(cor(df$SNT, df$FS),2)),
-                   "FSL"= paste("FSL", round(cor(df$SNT, df$FSL),2)),
-                   "MAPER"= paste("MAPER", round(cor(df$SNT, df$MAPER),2)),
-                   "MAGeT"= paste("MAGeT", round(cor(df$SNT, df$MAGeT),2)))
 
 ggplot(data=melted, aes(x=SNT, y=volume, colour=Method)) + 
     geom_point() + 
@@ -1145,47 +1252,37 @@ ggplot(data=melted, aes(x=SNT, y=volume, colour=Method)) +
     theme(legend.direction = "horizontal", legend.position = "bottom")
 @
   \caption{Comparison of hippocampus volumes obtained by FreeSurfer (FS), FSL, 
-  MAPER, \mb (MAGeT) and manual (SNT).}
+  MAPER, \mb (MAGeT) and manual (SNT). Pearson correlation with manual volumes
+  are shown for each method.}
   \label{fig:ADNI-scr-volumes-plot}
 \end{figure}
  
 \begin{figure}
-<<ADN1-src-Bland-Atlman, cache=TRUE, dependson='ADNI-baseline-volumes-prep', fig.width=4, fig.height=4>>=
+<<ADN1-src-Bland-Atlman, cache=TRUE, dependson='ADNI-baseline-volumes-prep', fig.width=6, fig.height=6>>=
 melted=melt(totals.complete, measure.vars=c("FS", "FSL", "MAPER","MAGeT"), 
             variable.name = "method", value.name = "volume")
-melted=subset(melted, method=="MAGeT")
-
-bland_altman_plot <- function(x, y) {
-  data = data.frame(x=x,y=y,diff=x-y)
-  upper = mean(data$diff) + 2 * sd(data$diff)
-  lower = mean(data$diff) - 2 * sd(data$diff)
-  return(ggplot(data, aes(x= x, y = diff)) + 
-    geom_hline(yintercept = mean(data$diff) + c(-2, 0, 2) * sd(data$diff), 
-               linetype=2, color='brown') + 
-    annotate("text", y = upper, x=Inf, 
-              label=paste("std =",round(upper,0)), 
-              hjust=1.1,vjust=1.5) + 
-    annotate("text", y = lower, x=Inf, 
-              label=paste("-std =",round(lower,0)), 
-              hjust=1.1,vjust=1.5) + 
-    geom_point())
-}
-
-
 melted$diff = melted$SNT - melted$volume
-limits = mean(melted$diff) + c(-2, 0, 2) * sd(melted$diff)
+melted$mean = ( melted$SNT + melted$volume ) / 2
+limits = ddply(melted, c("method"), function (df) { 
+  data.frame(
+    y = mean(df$diff) + c(-1.96,0,2) * sd(df$diff) 
+)}) 
 
-ggplot(melted, aes(x= SNT, y = diff, colour=DX)) + 
-  geom_hline(yintercept = limits, linetype=2, color='brown') + 
-  annotate("text", y = limits, x=Inf, label=round(limits,1), 
-            hjust=1.1,vjust=-0.8, size=3) + 
+ggplot(melted, aes(x= mean, y = diff, colour=DX)) + 
+  facet_wrap( ~ method, nrow=2, scales="free") + 
   geom_point() +  
-  xlab('Mean of manual and MAGeT-Brain hippocampal volume') + 
-  ylab('Difference between Manual and MAGeT-Brain hippocampal volume') + 
-  geom_smooth(method="lm", formula = y~x)
+  geom_hline(aes(yintercept = y), linetype="dashed", colour="brown", data=limits) + 
+  geom_text(aes(y = y, x=Inf, label=round(y,0)), colour="black", data = limits, hjust=1.1,vjust=-0.8, size=3) + 
+  xlab('Mean of manual and automated total hippocampal volume') + 
+  ylab('Difference between manual and automated total hippocampal volume') + 
+  scale_y_continuous(breaks=seq(-10000,4000, 1000)) + 
+  scale_x_continuous(breaks=seq(0,10000, 1000)) + 
+  geom_smooth(method="lm", formula = y~x) + 
+  theme(legend.direction = "horizontal", legend.position = "bottom")
 @
-  \caption{Bland-Altman plot comparing manual (SNT) and \mb hippocampal volumes 
-  in the \adnidataset dataset.}
+  \caption{Bland-Altman plot comparing manual (SNT) and automated total hippocampal volumes 
+  in the \adnidataset dataset.  The overall mean difference, and limits of 
+  agreement ($\pm 1.96SD$) are shown by dashed horizontal lines.}
   \label{fig:ADNI-scr-Bland-Altman}
 \end{figure}
 

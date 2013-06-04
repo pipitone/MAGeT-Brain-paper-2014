@@ -15,3 +15,4 @@ montage -geometry +$margin+$margin -tile 1x10 -background black $(head -n10 MCI 
 montage -geometry +$margin+$margin -tile 1x10 -background black $(head -n10 AD | sed -e 's/$/.png/') AD.png
 montage -tile x1 -label '%t' -stroke white -fill white -pointsize 40 -geometry +2+2+ -background black CN.png MCI.png AD.png montage_pic.png
 inkscape --export-png=montage.png montage.svg
+inkscape --export-pdf=montage.pdf montage.svg

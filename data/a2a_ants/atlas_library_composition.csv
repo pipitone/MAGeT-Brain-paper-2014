@@ -1,4 +1,4 @@
-"subject","timestamp","atlases","atlases_AD","atlases_MCI","atlases_CN"
+"atlas_id","timestamp","atlases","atlases_AD","atlases_MCI","atlases_CN"
 "009_S_0751","2012-12-28.16-02-07-gpc-f146n074_002_S_0295",1,0,0,1
 "021_S_0343","2012-12-28.16-02-07-gpc-f146n074_002_S_0295",2,1,0,1
 "002_S_0685","2012-12-28.16-02-07-gpc-f146n074_002_S_0295",3,1,0,2

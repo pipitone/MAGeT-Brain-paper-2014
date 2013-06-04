@@ -1,4 +1,4 @@
-"subject","timestamp","templates","templates_AD","templates_MCI","templates_CN"
+"template_id","timestamp","templates","templates_AD","templates_MCI","templates_CN"
 "002_S_0782","2012-12-28.16-02-07-gpc-f146n074_002_S_0295",1,0,1,0
 "098_S_0149","2012-12-28.16-02-07-gpc-f146n074_002_S_0295",2,1,1,0
 "116_S_0382","2012-12-28.16-02-07-gpc-f146n074_002_S_0295",3,1,1,1

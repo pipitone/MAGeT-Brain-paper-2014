@@ -41,9 +41,9 @@ mb[mb$method != 'majvote',]$templates = mb[mb$method != 'majvote',]$top_n
 
 # aggregate over batches
 ma_mean = aggregate(k ~ subject + reg_method + approach + method + atlases +
-                    templates + top_n + label, data = ma, mean)
+                    templates + top_n + label + volume, data = ma, mean)
 mb_mean = aggregate(k ~ subject + reg_method + approach + method + atlases +
-                    templates + top_n + label, data = mb, mean)                    
+                    templates + top_n + label + volume, data = mb, mean)                    
 
 all_data = merge(ma, mb, by=c("timestamp", "atlases", "batch", "label",
                               "reg_method", "subject"), 
