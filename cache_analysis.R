@@ -1,3 +1,8 @@
+library(Hmisc)
+library(reshape2)
+library(ADNIMERGE)
+library(plyr)
+
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 # ADNI1-XVAL: prep
 # Prepares the data in a the form needed for plotting.
@@ -8,8 +13,8 @@ t_data       = read.csv(gzfile('data/a2a_tracc/results_xfmjoin_2013_04_04.csv.gz
 diagnoses    = read.csv('data/a2a_diagnoses.csv')
 
 # simplify the data
-t_data       = subset(t_data, atlases %in% seq(1,9,1))
-a_data       = subset(a_data, atlases %in% seq(1,9,1))
+t_data       = subset(t_data, atlases %in% c(1,3,5,7,9))
+a_data       = subset(a_data, atlases %in% c(1,3,5,7,9))
 t_data$se    = NULL
 t_data$sn    = NULL
 t_data$j     = NULL
@@ -32,18 +37,15 @@ a_mb = subset(a_data, approach=="mb")
 ma = rbind(t_ma,a_ma)
 mb = rbind(t_mb,a_mb)
 
-ma$num_labels = ma$atlases
-mb$num_labels = mb$atlases * mb$templates 
-
 # set up a few equivalences for multi-atlas, to make nomenclature simpler
 ma$templates =  ma$atlases  # because no template library
 mb[mb$method != 'majvote',]$templates = mb[mb$method != 'majvote',]$top_n 
 
 # aggregate over batches
 ma_mean = aggregate(k ~ subject + reg_method + approach + method + atlases +
-                    templates + top_n + label + volume, data = ma, mean)
+                    templates + top_n + label, data = ma, mean)
 mb_mean = aggregate(k ~ subject + reg_method + approach + method + atlases +
-                    templates + top_n + label + volume, data = mb, mean)                    
+                    templates + top_n + label, data = mb, mean)                    
 
 all_data = merge(ma, mb, by=c("timestamp", "atlases", "batch", "label",
                               "reg_method", "subject"), 
@@ -128,15 +130,14 @@ package_totals = data.frame(
 all_qc = subset(combined, TEMPQC != "Fail" & MAGeT_QC == 1 | FSL_QC == 1 )
 
 attach(all_qc)
-totals = data.frame(RID = RID, VISCODE = VISCODE, DX = factor(DX.bl),
-                  MAGeT = MAGeT_L + MAGeT_R, 
-                  MAPER = MAPER_L + MAPER_R, 
-                  SNT   = SNT_L + SNT_R, 
-                  FS    = FS_L + FS_R, 
-                  FSL   = FSL_L + FSL_R)
+means = data.frame(RID = RID, VISCODE = VISCODE, DX = factor(DX.bl),
+                  MAGeT = (MAGeT_L + MAGeT_R)/2, 
+                  MAPER = (MAPER_L + MAPER_R)/2,
+                  SNT   = (SNT_L + SNT_R)/2, 
+                  FS    = (FS_L + FS_R/2),
+                  FSL   = (FSL_L + FSL_R)/2)
 detach(all_qc)
-totals.complete = na.omit(totals)
+means.complete  = na.omit(means)
 
-write.csv(totals.complete, 'data/cache/ADNI1:totals.complete.csv')
-write.csv(totals,          'data/cache/ADNI1:totals.csv')
+write.csv(means.complete,  'data/cache/ADNI1:means.complete.csv')
 write.csv(package_totals,  'data/cache/ADNI1:package_totals.csv')
