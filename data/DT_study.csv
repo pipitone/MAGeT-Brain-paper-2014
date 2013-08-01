@@ -1,0 +1,17 @@
+ID,Sex,Ethnicity,Age,Handedness,Education,Diagnosis
+H008,Male,Caucasian,59,R,16,Control
+H010,Male,Caucasian,30,R,14,Control
+H013,Female,Caucasian,63,R,18,Control
+H016,Female,Caucasian,70,R,14,Control
+H034,Female,Caucasian,51,R,13,Control
+H146,Female,Hispanic,31,R,13,Control
+H147,Male,Caucasian,69,R,18,Control
+H149,Female,Caucasian,56,R,12,Control
+H150,Male,Caucasian,45,R,18,Control
+H151,Female,Caucasian,31,R,18,Control
+H152,Female,Caucasian,66,R,16,Control
+H153,Female,Caucasian,52,R,12,Control
+H155,Male,Cacasian,54,R,,Control
+H156,Female,Cacasian,26,R,18,Control
+H157,Female,Caucasian,66,R,0.01,Control
+H158,Male,Caucasian,24,L,14,Control

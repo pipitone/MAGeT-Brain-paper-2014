@@ -19,7 +19,6 @@ library(plyr)
 options(digits=3)
 theme_set(theme_bw(base_size = 12))
 
-
 lm_eqn = function(m) {
   l <- list(a = format(coef(m)[1], digits = 2),
       b = format(abs(coef(m)[2]), digits = 2),
@@ -41,7 +40,9 @@ lm_eqn = function(m) {
 \usepackage{titlesec, siunitx}
 \usepackage[round,authoryear]{natbib}
 \usepackage[section]{placeins}  % keep floats in their place.
-\usepackage{authblk}    % Listing Author affiliations
+\usepackage{authblk}            % Listing Author affiliations
+\usepackage[hypcap]{caption}
+
 
 %draft mode
 \usepackage[colorinlistoftodos, textwidth=4cm, shadow]{todonotes}
@@ -141,7 +142,7 @@ model-based segmentation methods \citep{Haller1997,Csernansky1998}, an MRI atlas
 that was previously manually labelled by an expert rater is matched to target
 images using nonlinear registration methods.  The resulting nonlinear
 transformation is applied to the manual labels (ie. {\em label propagation}) to
-apply them to the target image.  While this methodology has been used
+move them into the target image space.  While this methodology has been used
 successfully in several contexts
 \citep{Chakravarty2008,Chakravarty2009,Collins1995,Haller1997}, it is limited
 in accuracy by the introduction of errors due inaccuracies in the nonlinear
@@ -323,15 +324,13 @@ The following section describes the experiments we conducted to assess the
 segmentation quality of the \mb algorithm. The first two experiments assess the
 validity of \mb using a cross-validation design. Experiment 1 investigates the
 accuracy of \mb whole hippocampus segmentation over a wide range of parameter
-settings. This enables us to choose the parameter settings offering the best
-performance for use in subsequent experiments. Experiment 2 tests hippocampal
-subfield segmentation quality. The last two experiments assess the validity of
-the \mb algorithm when applied to different diseases: Alzheimer's disease
-(Experiment 3) and first episode schizophrenia patients (Experiment 4). 
-
-%The ADNI experiment includes comparison of volumes with other automated
-%segmentation methods. Evaluation is done by correlating volumes b/c overlap
-%metrics assume identical segmentation protocol. 
+settings. The results of this experiment enable us to choose the parameter
+settings offering the best performance for use in subsequent experiments.
+Experiment 2 tests hippocampal subfield segmentation quality. The last two
+experiments assess the validity of the \mb algorithm when applied to different
+diseases: first episode schizophrenia (Experiment 3), and Alzheimer's disease
+(Experiment 4). Additionally, in experiment 4, we compare \mb segmentations with
+those of well-known automated and manual methods and assess segmentation bias. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%                                                                     %%%%%
@@ -383,12 +382,15 @@ adni_69_RIDs = c(295,413,619,685,729,782,938,954,1018,1155,907,981,222,324,448,
                  249,293,316,414,698,1206,1222,1339,751,1030,3,5,10,16,22,53,
                  168,183,241,1205,328,1095,991,213,159,337,343,642,753,1109,
                  1217,29,56,1188,1293,149,382,431,1202)
-tab <- summary(DX.bl ~ AGE + PTGENDER + PTEDUCAT + PTETHCAT + CDRSB + ADAS13 +
+tab <- summary(DX.bl ~ AGE + PTGENDER + PTEDUCAT + CDRSB + ADAS13 +
                MMSE, data = adnimerge, subset = VISCODE == 'bl' & RID %in%
                adni_69_RIDs, method = "reverse", test=FALSE, overall=TRUE)
-
+caption = paste(
+  "\\textbf{ADNI-1 cross-validation subset demographics.}", 
+  "Clinical Dementia Rating-Sum of Boxes (CDR-SB), Alzheimer's Disease",
+  "Assessment Scale (ADAS), Mini–Mental State Examination (MMSE).", sep=" ") 
 latex(tab, file="", size="scriptsize",landscape=FALSE, ctable=FALSE,
-      caption="ADNI-1 cross-validation subset demographics", 
+      caption=caption, caption.loc = c("top"),
       title="tab:ADNI1-xvalidation-demographics")
 @
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -437,15 +439,16 @@ estimating smaller deformations on data blurred with a Gaussian kernel with a
 smaller FWHM. The final transformation is a set of local translations defined on
 a bed of equally spaced nodes that were estimated through the optimization of
 the correlation coefficient.  For the purposes of this work we used the
-regularization parameters optimized in \citet{Robbins2004}, displayed in table
+regularization parameters optimized in \citet{Robbins2004}, displayed in Table
 \ref{tab:ANIMAL-params}. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ANIMAL parameters                    
 %                                     
-\begin{table}[!tbp]
+\begin{table*}[!tbp]
+\scriptsize
+\caption{\textbf{\animal registration parameters.} \label{tab:ANIMAL-params}}
 \begin{center}
-\caption{\animal  registration parameters}
 \begin{tabular}{l | c c c}
 \hline 
 Parameters        & Stage 1 & Stage 2 & Stage 3  \tabularnewline
@@ -459,8 +462,7 @@ Lattice Diameter  &24x24x24 &12x12x12 & 6x6x6    \tabularnewline
 \hline
 \end{tabular}
 \end{center}
-\label{tab:ANIMAL-params}
-\end{table}
+\end{table*}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subparagraph{Automatic Normalization Tools (\ants)}
@@ -592,10 +594,46 @@ subject images allows us to assess \mb in a typical segmentation scenario
 (high-resolution atlases and lower-resolution subjects).  The template library
 is composed of the subject images, plus an additional set of 3T T1 images
 (0.9mm-isotropic voxels) of healthy subjects acquired separately (Table
-\ref{table:WAval-healthy-demographics}). The optimal size of template library,
+\ref{tab:WAval-healthy-demographics}). The optimal size of template library,
 registration method, and label fusion method found in Experiment 1 are used.
 Each resampled Winterburn atlas subject image is segmented by \mb with that
 subject's image excluded from the atlas library.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Subfield Validation Template library demographics (healthy controls)
+%                                     
+<<WAval-healthy-demographics, echo=F, results="asis",cache=FALSE>>=
+master = read.csv('data/DT_study.csv')
+tab <- summary(~Age + Sex + Education + Handedness, 
+               data = master, method="reverse", na.rm = TRUE, test=FALSE)
+caption = paste(
+  "\\textbf{ADNI-1 cross-validation subset demographics.}", 
+  "Clinical Dementia Rating-Sum of Boxes (CDR-SB), Alzheimer's Disease",
+  "Assessment Scale (ADAS), Mini–Mental State Examination (MMSE).", sep=" ") 
+latex(tab, file="", size="scriptsize",landscape=FALSE, ctable=FALSE,
+      caption=caption, caption.loc = c("top"),
+      title="tab:ADNI1-xvalidation-demographics")
+@
+\begin{table*}[!tbp]
+\scriptsize
+\caption{\textbf{Subfield validation template library demographics.}
+\label{tab:WAval-healthy-demographics}}
+\begin{center}
+\begin{tabular}{l | c c c}
+\hline 
+Parameters        & Stage 1 & Stage 2 & Stage 3  \tabularnewline
+\hline 
+Model Blur (FWHM) &   8     &    8    &   4      \tabularnewline
+Input Blur (FWHM) &   8     &    8    &   4      \tabularnewline
+Iterations        &   30    &    30   &   10     \tabularnewline
+Step              &   8x8x8 &  4x4x4  &   2x2x2  \tabularnewline
+Sub-Lattice       &   6     &    6    &   6      \tabularnewline
+Lattice Diameter  &24x24x24 &12x12x12 & 6x6x6    \tabularnewline
+\hline
+\end{tabular}
+\end{center}
+\end{table*}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 We reproduce this experiment in a separate LOOCV run in which the resampled 
 Winterburn atlas subject images are substituted for separately acquired T1 
@@ -643,7 +681,7 @@ for each participant using a three-dimensional (3D) gradient echo pulse sequence
 with sagittal volume excitation (repetition time=22ms, echo time=9.2ms, flip
 angle=$30{\circ}$, 180 1mm contiguous sagittal slices). The rectangular
 field-of-view for the images was 256mm (SI)$\times$204mm (AP).  Subject
-demographics are shown in table \ref{tab:SZFEP-Demographics}. 
+demographics are shown in Table \ref{tab:SZFEP-Demographics}. 
 
 Each subject hippocampus is traced following a validated segmentation protocol 
 \citep{Pruessner2000}. 
@@ -669,12 +707,16 @@ Specifically, Pearson correlation is used.
 % First Episode SZ Demographics Table
 %
 <<FEP-SZ-demographics, echo=F, results="asis",cache=FALSE>>=
+caption = paste(
+  "\\textbf{Schizophrenia First Episode Patient Demographics.}",
+  "Clinical Dementia Rating-Sum of Boxes (CDR-SB), Alzheimer's Disease",
+  "State Examination (MMSE).", sep=" ") 
 fep_sz_demographics = read.csv("data/SZ_demographics.csv", na.strings=c("","."))
 fep_sz_demographics = subset(fep_sz_demographics, Anon <= 81)
 tab <- summary(DX ~ Age + Gender + Handedness + Education + SES + FSIQ,
                data=fep_sz_demographics, method = "reverse", test = FALSE)
-latex(tab, file="", ctable=FALSE,
-      caption="Schizophrenia First Episode Patient Demographics",
+latex(tab, file="", size="scriptsize",landscape=FALSE, ctable=FALSE,
+      caption=caption, caption.loc = c("top"),
       title="tab:SZFEP-Demographics")
 @
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -697,8 +739,8 @@ segmentation.
 
 \paragraph{ADNI1 dataset revisited} 
 All images from the {\em \adnidataset} standardized dataset described
-in Experiment 1 are used.  Clinical and demographic data are shown in table
-\ref{tab:ADNI1-1.5T-Complete-1Yr-Dataset-Demographics}. 
+in Experiment 1 are used.  Clinical and demographic data are shown in Table
+\ref{tab:ADNI1-Dataset-Demographics}. 
 
 \paragraph{Experiment details} 
 \mb is configured with an atlas library composed of the Winterburn T1 atlases
@@ -734,7 +776,7 @@ package_totals   <- read.csv(gzfile('data/cache/ADNI1:package_totals.csv.gz'))
 %                                                                             
 % ADNI1 Complete 1Yr Dataset Demographics Table 
 %                                                                             
-<<ADNI-demographics, echo=F, results="asis",cache=FALSE>>=
+<<ADNI1-Dataset-Demographics, echo=F, results="asis",cache=FALSE>>=
 # RID < 2000 ensures only ADNI1 patients
 yr1 = read.csv("data/ADNI_baseline_volumes/ADNI1_Complete_1Yr_1.5T_11_15_2012.csv")
 yr1$VISCODE <- factor(yr1$Visit, levels = c(1,2,3,4), labels=c("bl","m03","m06","m12"))
@@ -742,14 +784,18 @@ yr1 = subset(yr1, !grepl("Scaled_2", Description))
 yr1 = yr1[,c("RID","VISCODE")]
 yr1 = 
 adnimerge.yr1 = merge(adnimerge, yr1) 
-tab <- summary(DX.bl ~ AGE + PTGENDER + PTEDUCAT + PTETHCAT + CDRSB + ADAS13 +
+tab <- summary(DX.bl ~ AGE + PTGENDER + PTEDUCAT + CDRSB + ADAS13 +
                MMSE, data = adnimerge.yr1, 
                #subset = RID %in% yr1$RID & VISCODE %in% c('bl','m06','m12'),   
                method = "reverse", test=FALSE, overall=TRUE)
-
-latex(tab, file="", size="scriptsize", 
-    caption="ADNI1 1.5T Complete 1Yr dataset demographics",
-    label="tab:ADN1-1.5T-Complete-1Yr-Dataset-Demographics")
+caption = paste(
+  "\\textbf{ADNI1 1.5T Complete 1Yr dataset demographics.}", 
+  "Clinical Dementia Rating-Sum of Boxes (CDR-SB), Alzheimer's Disease",
+  "Assessment Scale (ADAS), Mini–Mental State Examination (MMSE).", sep=" ") 
+latex(tab, file="", size="scriptsize",landscape=FALSE, ctable=FALSE,
+    caption=caption, caption.loc = c("top"),
+    title="tab:ADNI1-Dataset-Demographics",
+    label="tab:ADNI1-Dataset-Demographics")
 @
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -789,7 +835,7 @@ the \ants registration algorithm and majority vote fusion will be shown.
 
 With an increasing number of templates, \mb shows improvement in overlap
 accuracy over multi-atlas-based segmentation when using the same number of atlases
-and voting method (Figure \ref{fig:ADNI1-xva-k-diff}). The magnitude of improvement over
+and voting method (Figure \ref{fig:ADNI1-xval-k-diff}). The magnitude of improvement over
 multi-atlas-based segmentation decreases with an increasing number of atlases,
 with accuracy converging with 7 atlases.  Peak improvement in \mb accuracy (~0.02
 DSC) is found when one atlas is used with a template library of 20 images.
@@ -869,7 +915,7 @@ all_data_mean  <- read.csv(gzfile('data/cache/ADNI-XVAL:all_data_mean.csv.gz'))
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ADNI1-XVAL: mean Kappa plot by atlases, templates, reg and voting method. 
 \begin{figure}
-<<ADN1-xval-k-mean, cache=TRUE, dependson='ADNI1-Xval-prep', fig.width=7, fig.height=7>>=
+<<fig:ADNI1-xval-k-mean, cache=TRUE, dependson='ADNI1-xval-prep', fig.width=7, fig.height=7>>=
 stderr <- function(x) sqrt(var(x)/length(x))
 ggplot(subset(all_data_mean, (templates.mb*atlases) %% 2 == 1),
        aes(x=templates.mb,y=k.mb, colour=as.factor(atlases))) + #as.factor((atlases*templates.mb) %% 2 ))) + 
@@ -888,19 +934,18 @@ ggplot(subset(all_data_mean, (templates.mb*atlases) %% 2 == 1),
   theme(legend.direction = "horizontal", legend.position = "bottom", 
         axis.text = element_text(size = 8))
 @
-  \label{fig:ADNI1-xval-k_mean}
   \caption{Mean Dice's Similarity Coefficient of \mb segmentations with manual
   segmentations (SNT) for 69 ADNI1 subjects vs. atlas and template library size,
   registration algorithm, and label fusion method. Points above zero indicate an
   \mb parameter settings yielding a higher mean DSC score than multi-atlas
-  segmentation using the same number of atlases.}
+  segmentation using the same number of atlases. \label{fig:ADNI1-xval-k-mean}}
 \end{figure}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ADNI1-XVAL: "increase" in mean kappa over multi-atlas
 \begin{figure}
-<<ADN1-Xval-k-diff,cache=TRUE,dependson='ADNI1-Xval-prep'>>=
+<<fig:ADN11-xval-k-diff,cache=TRUE,dependson='ADNI1-xval-prep'>>=
 ggplot(subset(all_data_mean, reg_method=="ANTS" & 
                 method.mb=="Majority Vote" & (templates.mb*atlases) %% 2 == 1), 
        aes(x=templates.mb, y=k_diff, colour=as.factor(atlases))) + 
@@ -923,8 +968,7 @@ ggplot(subset(all_data_mean, reg_method=="ANTS" &
 @
   \caption{Difference in mean Dice's Similarity Coefficient of \mb and
   multi-atlas segmentations with manual (SNT) segmentations for a range of atlas
-  and template library sizes.}
-  \label{ADNI1-xval-k-diff}
+  and template library sizes. \label{fig:ADNI1-xval-k-diff}}
 \end{figure}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -1144,7 +1188,11 @@ resulting volumes with those obtained by manual segmentation (SNT), and other
 automated segmentation techniques (MAPER, FreeSurfer, and FSL).  Table
 \ref{tab:ADNI1-1.5T-Complete-1Yr-Dataset-Method-Totals} shows the total count of
 segmentations available, including a count of those which have failed a quality
-control inspection. Only those images which had segmentations from every method
+control inspection. Quality control for FreeSurfer segmentations was provided along
+with the segmentations themselves from ADNI \cite{Hartig2010}. One author (MP) 
+inspected 
+
+Only those images which had segmentations from every method
 are included in the following analysis (a total of
 \Sexpr{length(means.complete$RID)} images).
  
@@ -1179,14 +1227,10 @@ the hippocampal body in comparison to the manual (SNT) segmentation.
 % ADNI1 1yr Complete Dataset Package Totals & Failures
 %                        
 <<ADNI-seg-package-totals, echo=F, results="asis",cache=FALSE>>=
-caption = paste(
-  "Pass/fail quality control indicators were supplied with the FreeSurfer",
-  "volumes downloaded from the ADNI website (we used the temporal lobe quality",
-  "control indicator, TEMPQC). One of the authors (MP) performed visual",
-  "quality inspection for MAGeT and FSL segmentations.", sep=" ")
-latex(package_totals, file="", size="scriptsize", 
-    caption = caption,
-    title = "",
+package_totals$Total <- NULL
+latex(package_totals, file="", size="scriptsize",landscape=FALSE, ctable=TRUE,
+    caption="\\adnidataset dataset segmentation totals and QC failures.", 
+    caption.loc = c("top"), rowname=NULL, 
     label="tab:ADNI1-1.5T-Complete-1Yr-Dataset-Method-Totals")
 @
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1371,13 +1415,13 @@ nonlinear registration methods such as \ants \citep{Avants2008} sufficiently fil
 sources of error such as nonlinear registration error and partial volume effects
 that arise through the use of nearest neighbour resampling. From our previous
 work on the \mb algorithm we have shown that these increases in error
-are not simply a smoothing or averaging effect \citep{MallarChakravarty2012}.  
+are not simply a smoothing or averaging effect \citep{MallarChakravarty2012}.
 
 Although, the goal of this manuscript was to not exhaustively test or validate
 multiple different voting strategies in the context of our segmentation
 algorithm, it is important to note that other strategies for voting are
 available.  For example, other groups have used the STAPLE algorithm
-\citep{Warfield2004} (or variants of the STAPLE algorithm \citep{Duchesne2012})
+\citep{Warfield2004} (or variants of the STAPLE algorithm \citep{Robitaille2012})
 which weights each segmentation based upon its estimated
 performance level with respect to the other available candidate segmentations.
 Further, the sensitivity and specificity parameters could also be tuned to
@@ -1403,13 +1447,24 @@ Another concern is the moderate-to-small improvement observed in \mb in
 comparison to multi-atlas segmentation when using the same number of atlases.
 The actual benefit in using \mb is consistency of the labelling regardless of
 atlas or template choice. This is an important consideration that few have
-touched on previously. The 10-fold Monte Carlo cross validation that we present
+touched on previously. The 10-fold Monte Carlo leave-one-out cross-validation that we present
 in Experiment 1 is amongst one of the most stringent performed in the
 multi-atlas/segmentation literature.  To the best of our knowledge other groups
-have only ever performed a 3-fold validation \citep{?}.  This suggests that
+have only ever performed cross-validation \citep{?}.  This suggests that
 our results are reflective of a true average over the choice of parameter
 settings and are independent of atlas or template choice (provided the input
 atlases are properly segmented).  
+
+% Validation in other works
+% Chupin 2009: LOOCV, 1-fold validation
+% Heckemann 2011: QC of segmentations, comparison across field strengths, 
+%                 agreement between two different atlas sets
+% Coupe 2012: LOOCV
+% Lotjonen 2010: LOOCV, 1-fold validation
+% Leung 2010: 1-fold, QC, classification
+% Wolz 2010: 1-fold over different leap settings, classification
+% Collins 2010: 1-fold validation, QC
+% 
 
 \todo[inline]{could we be seeing a ceiling effect... reaching the limit of what
 is achievable with a multi-atlas-based segmentation method}
