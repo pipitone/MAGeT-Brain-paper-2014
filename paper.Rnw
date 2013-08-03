@@ -141,7 +141,7 @@ are a necessary alternative to manual segmentation.  In the case of classical
 model-based segmentation methods \citep{Haller1997,Csernansky1998}, an MRI atlas
 that was previously manually labelled by an expert rater is matched to target
 images using nonlinear registration methods.  The resulting nonlinear
-transformation is applied to the manual labels (ie. {\em label propagation}) to
+transformation is applied to the manual labels (i.e. {\em label propagation}) to
 move them into the target image space.  While this methodology has been used
 successfully in several contexts
 \citep{Chakravarty2008,Chakravarty2009,Collins1995,Haller1997}, it is limited
@@ -158,7 +158,7 @@ with spatial constraints for class labels encoded using a Markov random field
 model to segment the entire brain.  
 
 More recently, many groups have been using multiple atlases to improve overall
-segmentation accuracy (ie. multi-atlas segmentation) over model-based approaches
+segmentation accuracy (i.e. multi-atlas segmentation) over model-based approaches
 \citep{Heckemann2006,Heckemann2011,Collins2010,Lotjonen2010,Aljabar2009,Leung2010,Wolz2010}.
 Each atlas image is registered to a target image, and label propagation is
 performed to produce several labellings of the target image (one from each
@@ -170,7 +170,7 @@ in order to reduce error from unrepresentative anatomy \citep{Aljabar2009}.
 This involves the selection of a subset of atlases using a similarity metric
 such a cross-correlation \citep{Aljabar2009} or normalized mutual information.
 Such selection has the added benefit of significantly reducing the number of
-nonlinear registrations.  For example Collins and Pruessner \citep{Collins2010}
+nonlinear registrations.  For example \citet{Collins2010}
 demonstrated that only 14 atlases, selected based on highest similarity between
 medial temporal lobe neuroanatomy as evaluated by normalized mutual information
 \citep{Studholme1999} from a library of 80 atlases, were required to achieve
@@ -216,8 +216,9 @@ target images is minimised at each step, effectively allowing for deformations
 between very dissimilar images to be broken up into sequences of smaller
 deformations.  Although \citet{Wolz2010} begin with an atlas library of 30 MR
 images, this method could theoretically work using a much smaller atlas library.
-In their validation, LEAP was used to segment the whole hippocampus in the ADNI1
-baseline dataset, achieving a mean Dice score of 0.85 with manual segmentations.
+In their validation, LEAP was used to segment the whole hippocampus in the
+ADNI-1 baseline dataset, achieving a mean Dice score of 0.85 with manual
+segmentations.
 
 To the best of our knowledge there are two other segmentation methods that
 attempt to define the hippocampal subfields using standard T1-weighted data.
@@ -391,7 +392,7 @@ caption = paste(
   "Assessment Scale (ADAS), Mini–Mental State Examination (MMSE).", sep=" ") 
 latex(tab, file="", size="scriptsize",landscape=FALSE, ctable=FALSE,
       caption=caption, caption.loc = c("top"),
-      title="tab:ADNI1-xvalidation-demographics")
+      label="tab:ADNI1-xvalidation-demographics")
 @
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -532,12 +533,12 @@ this experiment we explore three fusion methods.
 The Dice similarity coefficient (DSC) assesses the agreement between two
 segmentations. It is one of the most widely used measures of segmentation
 performance, and we use it as the basis of comparison in this experiment.
-Additionally, we report the Jaccard index, another commonly used similarity
-measure:
+%Additionally, we report the Jaccard index, another commonly used similarity
+%measure:
 
  \[\text{Dice's coefficient (DSC)} = \frac{2|A \cap B|}{|A| + |B|}\]
 
- \[\text{Jaccard (J)} = \frac{|A \cap B|}{|A \cup B|} = \frac{DSC}{(2-DSC)}\]
+% \[\text{Jaccard (J)} = \frac{|A \cap B|}{|A \cup B|} = \frac{DSC}{(2-DSC)}\]
 
 where $A$ and $B$ are the regions being compared, and the cardinality is the
 volume measured in voxels. 
@@ -612,27 +613,8 @@ caption = paste(
   "Assessment Scale (ADAS), Mini–Mental State Examination (MMSE).", sep=" ") 
 latex(tab, file="", size="scriptsize",landscape=FALSE, ctable=FALSE,
       caption=caption, caption.loc = c("top"),
-      title="tab:ADNI1-xvalidation-demographics")
+      title="tab:WAval-healthy-demographics")
 @
-\begin{table*}[!tbp]
-\scriptsize
-\caption{\textbf{Subfield validation template library demographics.}
-\label{tab:WAval-healthy-demographics}}
-\begin{center}
-\begin{tabular}{l | c c c}
-\hline 
-Parameters        & Stage 1 & Stage 2 & Stage 3  \tabularnewline
-\hline 
-Model Blur (FWHM) &   8     &    8    &   4      \tabularnewline
-Input Blur (FWHM) &   8     &    8    &   4      \tabularnewline
-Iterations        &   30    &    30   &   10     \tabularnewline
-Step              &   8x8x8 &  4x4x4  &   2x2x2  \tabularnewline
-Sub-Lattice       &   6     &    6    &   6      \tabularnewline
-Lattice Diameter  &24x24x24 &12x12x12 & 6x6x6    \tabularnewline
-\hline
-\end{tabular}
-\end{center}
-\end{table*}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 We reproduce this experiment in a separate LOOCV run in which the resampled 
@@ -976,12 +958,12 @@ ggplot(subset(all_data_mean, reg_method=="ANTS" &
 % ADNI1-XVAL: show variability of MAGeT over parameters
 \begin{figure}
 <<ADN1-Xval-variability, cache=TRUE, dependson='ADNI1-Xval-prep'>>=
-ants = subset(all_data_mean, 
+ants = subset(all_data, 
                      reg_method=="ANTS" & 
                      method.mb=="Majority Vote" &
                     templates.mb %in% seq(1,20,2))
 
-ants.stats = ddply(ants, c("subject", "atlases","templates.mb"), 
+ants.stats = ddply(ants, c("subject", "label", "atlases","templates.mb"), 
                    function (df) {
                      data.frame(
                        MA.sd  =  sd(df$k.ma),
@@ -991,7 +973,7 @@ ants.stats = ddply(ants, c("subject", "atlases","templates.mb"),
                        )
                    })
 
-stats.tests = ddply(data.stats, c("atlases","templates.mb"), function (df) {
+stats.tests = ddply(ants.stats, c("atlases","templates.mb"), function (df) {
   t.var = t.test(df$MA.var, df$MB.var)
   t.sd  = t.test(df$MA.sd , df$MB.sd)
   diff_mean_var = mean(df$MA.var - df$MB.var)
@@ -1018,7 +1000,7 @@ ggplot(subset(stats.tests, direction > 0 & stat == "Variance"),
   scale_x_continuous(breaks=seq(1,20,by=2)) + 
   scale_y_log10(limits=c(0.001,1), breaks=c(0.01,0.05,0.1,1.0)) + 
   xlab( "Number of Templates" ) + 
-  ylab( "Difference of variance during validation (p-value)" ) +
+  ylab( "Difference of variance during validation (p-value)") +
   scale_colour_hue(name="Atlases") +
   scale_alpha_continuous(guide='none') + 
   scale_linetype_discrete(guide='none') + 
@@ -1189,12 +1171,14 @@ automated segmentation techniques (MAPER, FreeSurfer, and FSL).  Table
 \ref{tab:ADNI1-1.5T-Complete-1Yr-Dataset-Method-Totals} shows the total count of
 segmentations available, including a count of those which have failed a quality
 control inspection. Quality control for FreeSurfer segmentations was provided along
-with the segmentations themselves from ADNI \cite{Hartig2010}. One author (MP) 
-inspected 
+with the segmentations from ADNI \cite{Hartig2010}. One of the authors (MP) 
+performed visual quality inspection for MAGeT and FSL segmentations using similar 
+quality control guidelines (if either hippocampus was under or over segmented
+by greater than 10mm in three or more slices then the segmentation did not pass). 
 
-Only those images which had segmentations from every method
-are included in the following analysis (a total of
-\Sexpr{length(means.complete$RID)} images).
+Only those images which had quality segmentations from each method are 
+included in the following analysis (a total of \Sexpr{length(means.complete$RID)}
+images).
  
 We find a close relationship in total bilateral hippocampal volume between
 all methods and manually segmented volumes (Figure \ref{fig:ADNI-volumes-plot}). 
@@ -1229,7 +1213,8 @@ the hippocampal body in comparison to the manual (SNT) segmentation.
 <<ADNI-seg-package-totals, echo=F, results="asis",cache=FALSE>>=
 package_totals$Total <- NULL
 latex(package_totals, file="", size="scriptsize",landscape=FALSE, ctable=TRUE,
-    caption="\\adnidataset dataset segmentation totals and QC failures.", 
+    caption="\\textbf{Number of segmented images and quality control failures of 
+             \\adnidataset dataset by method.}", 
     caption.loc = c("top"), rowname=NULL, 
     label="tab:ADNI1-1.5T-Complete-1Yr-Dataset-Method-Totals")
 @
@@ -1369,27 +1354,68 @@ and MNI coordinates}
 % Tabulation of segmentation accuracies of existing methods (ADNI)
 %
 <<ADNI1-literature, echo=F, results="asis",cache=FALSE>>=
-caption = paste(
-  "Survey of automated segmentation accuracy of the ADNI dataset",
-  sep=" ")
-
-tab = read.csv("data/ADNI-existing-work.csv")
-tab$Notes <- NULL
-
-adni_lit = subset(tab, Dataset=="ADNI")
-adni_lit$Dataset <- NULL
-other_lit = subset(tab, Dataset!="ADNI")
-other_lit$Dataset <- NULL
-
-latex(adni_lit, file="", 
-      size="scriptsize",
-      caption=caption, 
-      rowname=NULL,
-      col.just=c("p{1.5in}l","p{0.5in}","p{1.3in}","p{1.5in}"),
-      title="")
+# caption = 
+#   "\\textbf{Automated segmentation accuracy (overlap with manual labels) of the 
+#    ADNI dataset.} For each method, the number of manually labelled atlases used for 
+#    training, the best Dice's overlap measure, the disease classes measured, and 
+#    the validation procedure are shown. LOOCV = Leave-one-out cross-validation. 
+#    Some studies of automated segmentation of ADNI images are excluded because they 
+#    do not not provide overlap measures for the hippocampus \\cite{Heckemann2011, Chupin2009}.
+#   "
+# 
+# tab = read.csv("data/ADNI-existing-work.csv")
+# tab$Notes <- NULL
+# 
+# adni_lit = subset(tab, Dataset=="ADNI")
+# adni_lit$Dataset <- NULL
+# 
+# 
+# latex(adni_lit, #file="", 
+#       size="scriptsize",
+#       caption=caption, 
+#       rowname=NULL,
+#       col.just=c("p{2in}","p{1in}","p{1in}","p{1in}","p{1in}"),
+#       title="")
 @
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Tabulation of segmentation accuracies of existing methods (ADNI)
+%
+%
+<<mb-best-kappa, echo=F, cache=FALSE>>=
+ants.mean = subset(all_data_mean, reg_method=="ANTS" & method.mb=="Majority Vote" &      templates.mb == 19 & atlases == 9)
+mb.best.kappa = mean(ants.mean$k.mb)
+@
+
+\begin{table}[!tbp]
+\scriptsize
+\caption{\textbf{Automated segmentation accuracy (overlap with manual labels) of the 
+   ADNI dataset.} For each method, the number of manually labelled atlases used for 
+   training, the best Dice's overlap measure, the disease classes measured, and 
+   the validation procedure are shown. Unless specified, validation datasets are
+   composed equally of subjects diagnosed with Alzheimer's Disease (AD), Mild 
+   Cognitive Impairment (MCI), and Cognitively Normal (CN). LOOCV = Leave-one-out 
+   cross-validation. 
+   Some studies of automated segmentation of ADNI images are excluded because they 
+   do not not provide overlap measures for the hippocampus \cite{Heckemann2011,Chupin2009}.
+  \label{tab:other-methods}} 
+\begin{center}
+\begin{tabular}{ l  c  p{1in}  l  p{2in}  }
+\hline\hline
+Method & Atlases & DSC & Reference & Validation \tabularnewline
+\hline
+\mb                     &9 & \Sexpr{round(mb.best.kappa, digits=3)} & & 10 rounds of Monte Carlo CV on a pool of 69 subjects \tabularnewline
+LEAP                    &30&0.848                 &\cite{Wolz2010}  &Segmentation of 60 subjects\tabularnewline
+ACM (AdaBoost-based)    &21&0.862                 &\cite{Morra2008} &LOOCV on atlases\tabularnewline
+Patch-based label fusion&16&0.883 (CN) \newline 0.838 (AD)&\cite{Coupe2011e}&LOOCV on atlases\tabularnewline
+Multi-atlas             &30&0.885                 &\cite{Lotjonen2010}&Segmentation of 60 subjects\tabularnewline
+Multi-atlas + weighted fusion&20&0.898 (CN) \newline 0.798 (left HC, MCI) &\cite{Wang2011}  &10 rounds of Monte Carlo CV on 20 subjects, pool of 139 (CN/MCI)\tabularnewline
+Multi-atlas (MAPS)    &55&0.890                   &\cite{Leung2010}&Segmentation of 30 subjects (10 AD, MCI, and CN)\tabularnewline
+\hline
+\end{tabular}
+\end{center}
+\end{table}
 
 In this manuscript we have presented the implementation and validation of the
 \mb framework -- a methodology that requires very few input atlases in
@@ -1403,7 +1429,8 @@ that \mb provides accurate automatic identification of the hippocampal
 subfields despite contrast and resolution limitations in standard T1-weighted
 image volumes. 
 
-Throughout the cross validation in Experiment 1 (10-fold cross validation in the
+Throughout the cross validation in Experiment 1 (10-fold Monte Carlo cross 
+validation in the
 \adnidataset dataset subsample) we find that two parameter choices improve 
 segmentation accuracy: increasing the number of atlases, and the number of
 templates. However, after setting the parameters to 5 atlases and 15 templates
@@ -1449,22 +1476,27 @@ The actual benefit in using \mb is consistency of the labelling regardless of
 atlas or template choice. This is an important consideration that few have
 touched on previously. The 10-fold Monte Carlo leave-one-out cross-validation that we present
 in Experiment 1 is amongst one of the most stringent performed in the
-multi-atlas/segmentation literature.  To the best of our knowledge other groups
-have only ever performed cross-validation \citep{?}.  This suggests that
+multi-atlas/segmentation literature.  To the best of our knowledge, other groups
+using ADNI data for validation do at most a single round of leave-one-out-validation
+(Table \ref{tab:other-methods}), aside from \citep{Wang2011} who perform a 
+similar validation as us. The thoroughness of our validation suggests that
 our results are reflective of a true average over the choice of parameter
 settings and are independent of atlas or template choice (provided the input
 atlases are properly segmented).  
 
-% Validation in other works
+% Validation of ADNI in other works
 % Chupin 2009: LOOCV, 1-fold validation
 % Heckemann 2011: QC of segmentations, comparison across field strengths, 
 %                 agreement between two different atlas sets
-% Coupe 2012: LOOCV
+% Coupe 2011e: LOOCV
 % Lotjonen 2010: LOOCV, 1-fold validation
 % Leung 2010: 1-fold, QC, classification
 % Wolz 2010: 1-fold over different leap settings, classification
 % Collins 2010: 1-fold validation, QC
-% 
+% Morra 2008: LOOCV with 21 atlases, 2 manual raters
+% Wang 2011: 10 rounds of MCCV with 20 atlases and 20 subjects, chosen from 
+%            a pool of 139 images
+
 
 \todo[inline]{could we be seeing a ceiling effect... reaching the limit of what
 is achievable with a multi-atlas-based segmentation method}
