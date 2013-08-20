@@ -89,7 +89,7 @@ yr1 = subset(yr1, !grepl("Scaled_2", Description)) #TODO: remove Scaled_2?
 yr1$VISCODE <- factor(yr1$Visit, levels = c(1,2,3,4), labels=c("bl","m03","m06","m12"))
 subjects = yr1[,c("Image.Data.ID", "RID","VISCODE")]  # we only need these fields
 dx = unique(adnimerge[c("DX.bl", "RID", "VISCODE")])
-subjects = merge(subjects, dx) 
+subjects = merge(subjects, dx, all.x=TRUE) 
 
 # fetch just the columns we need, and do a little renaming
 mb_pruned     = data.frame(MAGeT_L = mb$Left_Hippo, 
@@ -104,8 +104,6 @@ fs_pruned     = data.frame(TEMPQC =fs$TEMPQC,
                            Source = fs$IMAGEUID)
 fsl_pruned    = data.frame(FSL_L=fsl$X17, 
                            FSL_R=fsl$X53, Source=fsl$Source)
-
-
 
 # Now create one data.frame with all the yr1 volume data we have from each datasource
 combined = merge(subjects, mb_pruned   , by.x="Image.Data.ID", by.y="Source", all.x=TRUE)
