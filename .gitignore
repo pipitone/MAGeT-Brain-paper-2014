@@ -9,3 +9,6 @@ cache
 *.tex
 *.swp
 .Rproj.user
+paper.dvi
+paper.idv
+*~
