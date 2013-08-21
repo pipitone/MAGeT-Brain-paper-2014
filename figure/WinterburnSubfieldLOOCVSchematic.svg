@@ -1,0 +1,595 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   inkscape:version="0.48.3.1 r9886"
+   version="1.1"
+   id="svg2"
+   height="316.1358"
+   width="626.31982"
+   sodipodi:docname="WinterburnSubfieldLOOCVSchematic.svg">
+  <defs
+     id="defs4" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.24748737"
+     inkscape:cx="1751.0645"
+     inkscape:cy="409.74515"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     showborder="true"
+     inkscape:showpageshadow="true"
+     inkscape:window-width="1419"
+     inkscape:window-height="868"
+     inkscape:window-x="18"
+     inkscape:window-y="0"
+     inkscape:window-maximized="0"
+     units="in"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(1877.0993,-928.04032)">
+    <g
+       id="g12255"
+       transform="matrix(0.19327313,0,0,0.19327313,-1509.4898,960.75854)">
+      <rect
+         y="-168.57256"
+         x="-472.80511"
+         height="183.16838"
+         width="203.52049"
+         id="rect2987-2"
+         style="fill:#d8f7ff;fill-opacity:1;stroke:#000000;stroke-width:1.42464316;stroke-opacity:1" />
+      <rect
+         y="-168.57256"
+         x="-247.85997"
+         height="183.16838"
+         width="203.52049"
+         id="rect2987-7"
+         style="fill:#d8f7ff;fill-opacity:1;stroke:#000000;stroke-width:1.42464316;stroke-opacity:1" />
+      <rect
+         y="-168.57256"
+         x="-22.914837"
+         height="183.16838"
+         width="203.52049"
+         id="rect2987-26"
+         style="fill:#d8f7ff;fill-opacity:1;stroke:#000000;stroke-width:1.42464316;stroke-opacity:1" />
+      <rect
+         y="-168.57256"
+         x="202.0303"
+         height="183.16838"
+         width="203.52049"
+         id="rect2987-5"
+         style="fill:#d8f7ff;fill-opacity:1;stroke:#000000;stroke-width:1.42464316;stroke-opacity:1" />
+      <rect
+         y="-168.57256"
+         x="-697.75024"
+         height="183.16838"
+         width="203.52049"
+         id="rect2987-2-44"
+         style="fill:#d8f7ff;fill-opacity:1;stroke:#000000;stroke-width:1.42464316;stroke-opacity:1" />
+    </g>
+    <flowRoot
+       xml:space="preserve"
+       id="flowRoot11803"
+       style="font-size:40px;font-style:normal;font-weight:normal;text-align:center;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       transform="matrix(0.19327313,0,0,0.19327313,-1496.9467,959.97764)"><flowRegion
+         id="flowRegion11805"><rect
+           id="rect11807"
+           width="1341.483"
+           height="80.81221"
+           x="-880.85303"
+           y="34.128418"
+           style="text-align:center;text-anchor:middle" /></flowRegion><flowPara
+         id="flowPara11809"><flowSpan
+   style="font-weight:bold"
+   id="flowSpan11821">Atlas library:</flowSpan> Winterburn 0.3mm-isotropic voxel atlases</flowPara></flowRoot>    <g
+       id="g12751"
+       transform="matrix(0.19327313,0,0,0.19327313,-1514.2987,960.75854)">
+      <rect
+         y="205.75337"
+         x="-1035.5791"
+         height="127.5153"
+         width="142.16695"
+         id="rect2987-2-4"
+         style="fill:#d8f7ff;fill-opacity:1;stroke:#000000;stroke-opacity:1" />
+      <rect
+         y="204.72943"
+         x="-872.07898"
+         height="128.57141"
+         width="142.85718"
+         id="rect2987-19-0-75"
+         style="fill:#d8d8d8;fill-opacity:1;stroke:#000000;stroke-opacity:1" />
+      <rect
+         y="204.72943"
+         x="-708.2218"
+         height="128.57141"
+         width="142.85718"
+         id="rect2987-2-2-6-8"
+         style="fill:#d8d8d8;fill-opacity:1;stroke:#000000;stroke-opacity:1" />
+      <rect
+         y="354.30084"
+         x="-1691.3649"
+         height="128.57141"
+         width="142.85718"
+         id="rect2987-7-6-2-8"
+         style="fill:#d8d8d8;fill-opacity:1;stroke:#000000;stroke-opacity:1" />
+      <rect
+         y="354.30084"
+         x="-1527.5077"
+         height="128.57141"
+         width="142.85718"
+         id="rect2987-26-82-8-3"
+         style="fill:#d8d8d8;fill-opacity:1;stroke:#000000;stroke-opacity:1" />
+      <rect
+         y="354.30084"
+         x="-1363.6505"
+         height="128.57141"
+         width="142.85718"
+         id="rect2987-5-3-1-0"
+         style="fill:#d8d8d8;fill-opacity:1;stroke:#000000;stroke-opacity:1" />
+      <rect
+         y="354.30084"
+         x="-1199.7933"
+         height="128.57141"
+         width="142.85718"
+         id="rect2987-19-0-7-6"
+         style="fill:#d8d8d8;fill-opacity:1;stroke:#000000;stroke-opacity:1" />
+      <rect
+         y="354.30084"
+         x="-1035.9362"
+         height="128.57141"
+         width="142.85718"
+         id="rect2987-2-2-6-1-2"
+         style="fill:#d8d8d8;fill-opacity:1;stroke:#000000;stroke-opacity:1" />
+      <rect
+         y="354.30084"
+         x="-872.07898"
+         height="128.57141"
+         width="142.85718"
+         id="rect2987-7-6-2-0-1"
+         style="fill:#d8d8d8;fill-opacity:1;stroke:#000000;stroke-opacity:1" />
+      <rect
+         y="354.30084"
+         x="-708.2218"
+         height="128.57141"
+         width="142.85718"
+         id="rect2987-26-82-8-8-7"
+         style="fill:#d8d8d8;fill-opacity:1;stroke:#000000;stroke-opacity:1" />
+      <rect
+         y="503.87225"
+         x="-1691.3649"
+         height="128.57141"
+         width="142.85718"
+         id="rect2987-5-3-1-9-4"
+         style="fill:#d8d8d8;fill-opacity:1;stroke:#000000;stroke-opacity:1" />
+      <rect
+         y="503.87225"
+         x="-1527.5077"
+         height="128.57141"
+         width="142.85718"
+         id="rect2987-5-3-1-9-1-0"
+         style="fill:#d8d8d8;fill-opacity:1;stroke:#000000;stroke-opacity:1" />
+      <rect
+         y="503.87225"
+         x="-1363.6505"
+         height="128.57141"
+         width="142.85718"
+         id="rect2987-2-2-6-1-2-5"
+         style="fill:#d8d8d8;fill-opacity:1;stroke:#000000;stroke-opacity:1" />
+      <rect
+         y="503.87225"
+         x="-1199.7933"
+         height="128.57141"
+         width="142.85718"
+         id="rect2987-7-6-2-0-1-6"
+         style="fill:#d8d8d8;fill-opacity:1;stroke:#000000;stroke-opacity:1" />
+      <rect
+         y="503.87225"
+         x="-1035.9362"
+         height="128.57141"
+         width="142.85718"
+         id="rect2987-26-82-8-8-7-3"
+         style="fill:#d8d8d8;fill-opacity:1;stroke:#000000;stroke-opacity:1" />
+      <rect
+         y="503.87225"
+         x="-872.07898"
+         height="128.57141"
+         width="142.85718"
+         id="rect2987-5-3-1-9-4-6"
+         style="fill:#d8d8d8;fill-opacity:1;stroke:#000000;stroke-opacity:1" />
+      <rect
+         y="503.87225"
+         x="-708.2218"
+         height="128.57141"
+         width="142.85718"
+         id="rect2987-5-3-1-9-1-0-4"
+         style="fill:#d8d8d8;fill-opacity:1;stroke:#000000;stroke-opacity:1" />
+      <rect
+         y="205.75337"
+         x="-1691.0078"
+         height="127.5153"
+         width="142.16695"
+         id="rect2987-2-4-0"
+         style="fill:#d8f7ff;fill-opacity:1;stroke:#000000;stroke-opacity:1" />
+      <rect
+         y="205.75337"
+         x="-1527.1508"
+         height="127.5153"
+         width="142.16695"
+         id="rect2987-2-4-00"
+         style="fill:#d8f7ff;fill-opacity:1;stroke:#000000;stroke-opacity:1" />
+      <rect
+         y="205.75337"
+         x="-1363.2936"
+         height="127.5153"
+         width="142.16695"
+         id="rect2987-2-4-06"
+         style="fill:#d8f7ff;fill-opacity:1;stroke:#000000;stroke-opacity:1" />
+      <rect
+         y="205.75337"
+         x="-1199.4363"
+         height="127.5153"
+         width="142.16695"
+         id="rect2987-2-4-1"
+         style="fill:#d8f7ff;fill-opacity:1;stroke:#000000;stroke-opacity:1" />
+    </g>
+    <flowRoot
+       xml:space="preserve"
+       id="flowRoot11811"
+       style="font-size:40px;font-style:normal;font-weight:normal;text-align:center;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       transform="matrix(0.19327313,0,0,0.19327313,-1513.302,960.75854)"><flowRegion
+         id="flowRegion11813"><rect
+           id="rect11815"
+           width="1139.452"
+           height="177.78685"
+           x="-1705.1375"
+           y="656.38239"
+           style="text-align:center;text-anchor:middle" /></flowRegion><flowPara
+         id="flowPara11817"><flowSpan
+   style="font-weight:bold"
+   id="flowSpan11819">Template library:</flowSpan> 5 resampled Winterburn atlas images + 16 healthy control T1 images (all images 0.9mm-isotrophic voxels)</flowPara></flowRoot>    <g
+       id="g12781"
+       transform="matrix(0.19327313,0,0,0.19327313,-1509.3661,960.75854)">
+      <rect
+         y="354.30084"
+         x="339.49039"
+         height="128.57141"
+         width="142.85718"
+         id="rect2987-19-0"
+         style="fill:#d8d8d8;fill-opacity:0.64593296;stroke:#000000;stroke-opacity:1" />
+      <rect
+         y="354.30084"
+         x="503.34756"
+         height="128.57141"
+         width="142.85718"
+         id="rect2987-2-2-6"
+         style="fill:#d8d8d8;fill-opacity:0.64593296;stroke:#000000;stroke-opacity:1" />
+      <rect
+         y="204.72943"
+         x="667.20471"
+         height="128.57141"
+         width="142.85718"
+         id="rect2987-7-6-2"
+         style="fill:#d8d8d8;fill-opacity:0.64593296;stroke:#000000;stroke-opacity:1" />
+      <rect
+         y="204.72943"
+         x="831.06189"
+         height="128.57141"
+         width="142.85718"
+         id="rect2987-26-82-8"
+         style="fill:#d8d8d8;fill-opacity:0.64593296;stroke:#000000;stroke-opacity:1" />
+      <rect
+         y="204.72943"
+         x="994.91907"
+         height="128.57141"
+         width="142.85718"
+         id="rect2987-5-3-1"
+         style="fill:#d8d8d8;fill-opacity:0.64593296;stroke:#000000;stroke-opacity:1" />
+      <rect
+         y="354.30084"
+         x="11.776003"
+         height="128.57141"
+         width="142.85718"
+         id="rect2987-19-0-7"
+         style="fill:#d8d8d8;fill-opacity:0.64593296;stroke:#000000;stroke-opacity:1" />
+      <rect
+         y="354.30084"
+         x="667.20471"
+         height="128.57141"
+         width="142.85718"
+         id="rect2987-2-2-6-4"
+         style="fill:#d8d8d8;fill-opacity:0.64593296;stroke:#000000;stroke-opacity:1" />
+      <rect
+         y="354.30084"
+         x="831.06189"
+         height="128.57141"
+         width="142.85718"
+         id="rect2987-7-6-2-3"
+         style="fill:#d8d8d8;fill-opacity:0.64593296;stroke:#000000;stroke-opacity:1" />
+      <rect
+         y="354.30084"
+         x="994.91907"
+         height="128.57141"
+         width="142.85718"
+         id="rect2987-26-82-8-0"
+         style="fill:#d8d8d8;fill-opacity:0.64593296;stroke:#000000;stroke-opacity:1" />
+      <rect
+         y="503.87225"
+         x="11.776003"
+         height="128.57141"
+         width="142.85718"
+         id="rect2987-5-3-1-8"
+         style="fill:#d8d8d8;fill-opacity:0.64593296;stroke:#000000;stroke-opacity:1" />
+      <rect
+         y="503.87225"
+         x="175.63318"
+         height="128.57141"
+         width="142.85718"
+         id="rect2987-19-0-9"
+         style="fill:#d8d8d8;fill-opacity:0.64593296;stroke:#000000;stroke-opacity:1" />
+      <rect
+         y="503.87225"
+         x="339.49039"
+         height="128.57141"
+         width="142.85718"
+         id="rect2987-2-2-6-1"
+         style="fill:#d8d8d8;fill-opacity:0.64593296;stroke:#000000;stroke-opacity:1" />
+      <rect
+         y="503.87225"
+         x="503.34756"
+         height="128.57141"
+         width="142.85718"
+         id="rect2987-7-6-2-0"
+         style="fill:#d8d8d8;fill-opacity:0.64593296;stroke:#000000;stroke-opacity:1" />
+      <rect
+         y="503.87225"
+         x="667.20471"
+         height="128.57141"
+         width="142.85718"
+         id="rect2987-26-82-8-8"
+         style="fill:#d8d8d8;fill-opacity:0.64593296;stroke:#000000;stroke-opacity:1" />
+      <rect
+         y="503.87225"
+         x="831.06189"
+         height="128.57141"
+         width="142.85718"
+         id="rect2987-5-3-1-9"
+         style="fill:#d8d8d8;fill-opacity:0.64593296;stroke:#000000;stroke-opacity:1" />
+      <rect
+         y="503.87225"
+         x="994.91907"
+         height="128.57141"
+         width="142.85718"
+         id="rect2987-5-3-1-9-1"
+         style="fill:#d8d8d8;fill-opacity:0.64593296;stroke:#000000;stroke-opacity:1" />
+      <rect
+         y="354.30084"
+         x="175.63318"
+         height="128.57141"
+         width="142.85718"
+         id="rect2987-19-0-6"
+         style="fill:#d8d8d8;fill-opacity:0.64593296;stroke:#000000;stroke-opacity:1" />
+      <rect
+         y="204.76074"
+         x="12.121119"
+         height="127.5153"
+         width="142.16695"
+         id="rect2987-2-4-0-4-6"
+         style="fill:#ff9b9b;fill-opacity:1;stroke:#000000;stroke-opacity:1" />
+      <rect
+         y="204.76074"
+         x="175.9783"
+         height="127.5153"
+         width="142.16695"
+         id="rect2987-2-4-00-6-2"
+         style="fill:#ff9b9b;fill-opacity:1;stroke:#000000;stroke-opacity:1" />
+      <rect
+         y="204.76074"
+         x="339.83548"
+         height="127.5153"
+         width="142.16695"
+         id="rect2987-2-4-06-1-1"
+         style="fill:#ff9b9b;fill-opacity:1;stroke:#000000;stroke-opacity:1" />
+      <rect
+         y="204.76073"
+         x="503.69266"
+         height="127.5153"
+         width="142.16695"
+         id="rect2987-2-4-1-9-2"
+         style="fill:#ff9b9b;fill-opacity:1;stroke:#000000;stroke-opacity:1" />
+    </g>
+    <flowRoot
+       transform="matrix(0.19327313,0,0,0.19327313,-1178.9621,961.11924)"
+       xml:space="preserve"
+       id="flowRoot11811-2"
+       style="font-size:40px;font-style:normal;font-weight:normal;text-align:center;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"><flowRegion
+         id="flowRegion11813-6"><rect
+           id="rect11815-9"
+           width="1139.452"
+           height="177.78685"
+           x="-1705.1375"
+           y="656.38239"
+           style="text-align:center;text-anchor:middle" /></flowRegion><flowPara
+         id="flowPara11817-5"><flowSpan
+   style="font-weight:bold"
+   id="flowSpan11819-5">Template library:</flowSpan> T1 BRAVO acquisitions of 4/5 Winterburn atlas subjects + 17 healthy control T1 images (all images 0.9m-isotropic voxels)</flowPara></flowRoot>    <g
+       id="g12774"
+       transform="matrix(0.19327313,0,0,0.19327313,-1514.301,960.75854)">
+      <rect
+         y="950.7146"
+         x="-871.72198"
+         height="127.5153"
+         width="142.16695"
+         id="rect2987-2-4-5"
+         style="fill:#d8f7ff;fill-opacity:1;stroke:#000000;stroke-opacity:1" />
+      <rect
+         y="950.7146"
+         x="-1527.1506"
+         height="127.5153"
+         width="142.16695"
+         id="rect2987-2-4-0-4"
+         style="fill:#d8f7ff;fill-opacity:1;stroke:#000000;stroke-opacity:1" />
+      <rect
+         y="950.7146"
+         x="-1363.2935"
+         height="127.5153"
+         width="142.16695"
+         id="rect2987-2-4-00-6"
+         style="fill:#d8f7ff;fill-opacity:1;stroke:#000000;stroke-opacity:1" />
+      <rect
+         y="950.7146"
+         x="-1199.4364"
+         height="127.5153"
+         width="142.16695"
+         id="rect2987-2-4-06-1"
+         style="fill:#d8f7ff;fill-opacity:1;stroke:#000000;stroke-opacity:1" />
+      <rect
+         y="950.7146"
+         x="-1035.5792"
+         height="127.5153"
+         width="142.16695"
+         id="rect2987-2-4-1-9"
+         style="fill:#d8f7ff;fill-opacity:1;stroke:#000000;stroke-opacity:1" />
+    </g>
+    <flowRoot
+       transform="matrix(0.19327313,0,0,0.19327313,-1494.4839,1088.0569)"
+       xml:space="preserve"
+       id="flowRoot11811-8"
+       style="font-size:40px;font-style:normal;font-weight:normal;text-align:center;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"><flowRegion
+         id="flowRegion11813-3"><rect
+           id="rect11815-99"
+           width="812.16351"
+           height="133.3401"
+           x="-1636.447"
+           y="442.23004"
+           style="text-align:center;text-anchor:middle" /></flowRegion><flowPara
+         id="flowPara11817-1"><flowSpan
+   style="font-weight:bold"
+   id="flowSpan11819-6">Subjects:</flowSpan> 5 resampled Winterburn atlas images (0.9mm-isotrophic voxels)</flowPara></flowRoot>    <g
+       id="g12804"
+       transform="matrix(0.19327313,0,0,0.19327313,-1509.3661,960.75854)">
+      <rect
+         y="949.72198"
+         x="258.95203"
+         height="127.5153"
+         width="142.16695"
+         id="rect2987-2-4-0-4-6-2"
+         style="fill:#ff9b9b;fill-opacity:1;stroke:#000000;stroke-opacity:1" />
+      <rect
+         y="949.72198"
+         x="422.11246"
+         height="127.5153"
+         width="142.16695"
+         id="rect2987-2-4-00-6-2-3"
+         style="fill:#ff9b9b;fill-opacity:1;stroke:#000000;stroke-opacity:1" />
+      <rect
+         y="949.72198"
+         x="585.27283"
+         height="127.5153"
+         width="142.16695"
+         id="rect2987-2-4-06-1-1-8"
+         style="fill:#ff9b9b;fill-opacity:1;stroke:#000000;stroke-opacity:1" />
+      <rect
+         y="949.72198"
+         x="748.43329"
+         height="127.5153"
+         width="142.16695"
+         id="rect2987-2-4-1-9-2-6"
+         style="fill:#ff9b9b;fill-opacity:1;stroke:#000000;stroke-opacity:1" />
+    </g>
+    <flowRoot
+       transform="matrix(0.19327313,0,0,0.19327313,-1179.8934,1090.5349)"
+       xml:space="preserve"
+       id="flowRoot11811-8-4"
+       style="font-size:40px;font-style:normal;font-weight:normal;text-align:center;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"><flowRegion
+         id="flowRegion11813-3-7"><rect
+           id="rect11815-99-5"
+           width="1010.1534"
+           height="157.58374"
+           x="-1636.447"
+           y="442.23004"
+           style="text-align:center;text-anchor:middle" /></flowRegion><flowPara
+         id="flowPara11817-1-8"><flowSpan
+   style="font-weight:bold"
+   id="flowSpan11819-6-9">Subjects:</flowSpan> 4 T1 BRAVO aquisitions of Winterburn atlas subjects  (0.9-isotrophic voxels)</flowPara></flowRoot>    <flowRoot
+       xml:space="preserve"
+       id="flowRoot12708"
+       style="font-size:50px;font-style:normal;font-weight:normal;text-align:center;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       transform="matrix(0.19327313,0,0,0.19327313,-1530.5615,960.75854)"><flowRegion
+         id="flowRegion12710"><rect
+           id="rect12712"
+           width="1260.6704"
+           height="185.86804"
+           x="-1676.8533"
+           y="1343.2861"
+           style="font-size:50px;text-align:center;text-anchor:middle" /></flowRegion><flowPara
+         id="flowPara12714"
+         style="font-weight:bold">Experiment 2a: LOOCV of Resampled Winterburn atlas images.</flowPara></flowRoot>    <flowRoot
+       xml:space="preserve"
+       id="flowRoot12716"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"><flowRegion
+         id="flowRegion12718"><rect
+           id="rect12720"
+           width="109.09647"
+           height="76.771591"
+           x="-577.80725"
+           y="1565.5197" /></flowRegion><flowPara
+         id="flowPara12722"></flowPara></flowRoot>    <flowRoot
+       transform="matrix(0.19327313,0,0,0.19327313,-1195.7238,957.86794)"
+       xml:space="preserve"
+       id="flowRoot12708-9"
+       style="font-size:50px;font-style:normal;font-weight:normal;text-align:center;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"><flowRegion
+         id="flowRegion12710-3"><rect
+           id="rect12712-3"
+           width="1260.6704"
+           height="185.86804"
+           x="-1676.8533"
+           y="1343.2861"
+           style="font-size:50px;text-align:center;text-anchor:middle" /></flowRegion><flowPara
+         id="flowPara12714-5"
+         style="font-weight:bold">Experiment 2b: LOOCV of T1 BRAVO acquisitions of Winterburn atlas subjects.</flowPara></flowRoot>    <rect
+       style="fill:none;stroke:#000000;stroke-width:0.19327313;stroke-opacity:1"
+       id="rect12810"
+       width="292.07208"
+       height="224.13019"
+       x="-1877.0027"
+       y="988.44012" />
+    <rect
+       style="fill:none;stroke:#000000;stroke-width:0.19327313;stroke-opacity:1"
+       id="rect12810-3"
+       width="292.07208"
+       height="224.13019"
+       x="-1542.9482"
+       y="988.4361" />
+  </g>
+</svg>
