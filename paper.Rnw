@@ -420,12 +420,12 @@ In this experiment, our dataset consists of 69 1.5T images and corresponding \gs
 segmentations. In each validation round, the dataset is partitioned into a
 training set consisting of images and their \gs segmentations to be used as an
 atlas library, and a validation set consisting of the remaining images segmented
-by both \mb and multi-atlas. The computed segmentations are compared to the
+by both \mb and multi-atlas. The computed segmentations were compared to the
 \gs segmentations (see below). 
 
-A total of ten validation rounds are performed on each subject in the dataset,
+A total of ten validation rounds were performed on each subject in the dataset,
 over each combination of parameter settings. The parameter settings
-we explore are: atlas library size (1-9), template library size (1-20),
+explored are: atlas library size (1-9), template library size (1-20),
 registration method (\ants or \animal), and label fusion method (majority vote,
 cross-correlation weighted majority vote, and normalized mutual information
 weighted majority vote).  A total of $10 \times 69 \times 9 \times 20 \times 2
@@ -747,27 +747,27 @@ latex(tab, file="", size="scriptsize",landscape=FALSE, ctable=FALSE,
 \subsubsection{Experiment 4: Application to the segmentation of Alzheimer's
 disease patients}
 
-To validate the \mb algorithm with respect to other established automated
-methods, \mb is applied to large dataset from the ADNI project and the
-resulting segmentations are compared to those produced by FreeSurfer, FSL,
-MAPER and by expert semi-automated manual segmentations (SNT).
+To validate \mb segmentation quality with respect to other established automated
+methods, \mb is applied to large dataset from the ADNI project and the resulting
+segmentations are compared to those produced by FreeSurfer, FSL, MAPER and by
+expert semi-automated manual segmentations (SNT).
 
 \paragraph{ADNI1 dataset revisited} 
-The $1919$ images from the {\em \adnidataset} standardized dataset, described
-in Experiment 1, were initially considered.  SNT and FreeSurfer hippocampal
-volumes were provided by ADNI, along with FreeSurfer quality control data
-(guidelines described in \citep{Hartig2010}). Clinical and demographic data for
+The {\em \adnidataset} standardized dataset contains $1919$ images in total.
+SNT and FreeSurfer hippocampal volumes for a subset of images are provided by
+ADNI, along with quality control data for each FreeSurfer segmentation
+(guidelines described in \citep{Hartig2010}).  Clinical and demographic data for
 the entire \adnidataset dataset are shown in Table
 \ref{tab:ADNI1-Dataset-Demographics}.
 
 \paragraph{Experiment details} 
 \mb was configured with an atlas library composed of the five Winterburn T1
-atlases (described in Experiment 2). The optimal size of template library,
+atlases (described in Experiment 2), and the size of template library,
 registration method, and label fusion method found in Experiment 1 were used.
-The FSL FIRST segmentation method was used  via the \verb+run_first_all+ script
+The FSL FIRST segmentation method was used via the \verb+run_first_all+ script
 according to the FIRST user guide
-\footnote{http://fsl.fmrib.ox.ac.uk/fsl/fslwiki/FIRST/UserGuide}.  All images
-from the \adnidataset dataset were segmented by both methods. 
+\footnote{http://fsl.fmrib.ox.ac.uk/fsl/fslwiki/FIRST/UserGuide}.  All images in
+the \adnidataset dataset were segmented by both methods. 
 
 One author (MP) performed visual quality inspection for MAGeT and FSL
 segmentations using similar quality control guidelines (if either hippocampus
