@@ -4,7 +4,6 @@
 %  - check tense: we are is have has 
 %  - update montages with TAL coordinates
 %  - add MAGeT brain diagram, and remove pseudocode
-%  - check that \gs is used instead of Manual 
 % Sweave/Knitr init
 <<setup, include=FALSE, cache=FALSE>>=
 library(knitr)
@@ -747,40 +746,39 @@ latex(tab, file="", size="scriptsize",landscape=FALSE, ctable=FALSE,
 \subsubsection{Experiment 4: Application to the segmentation of Alzheimer's
 disease patients}
 
-To validate \mb segmentation quality with respect to other established automated
-methods, \mb is applied to large dataset from the ADNI project and the resulting
-segmentations are compared to those produced by FreeSurfer, FSL, MAPER and by
-expert semi-automated manual segmentations (SNT).
+To validate \mb segmentation quality with respect to other established
+automated methods, \mb was applied to large dataset from the ADNI project and
+the resulting segmentations were compared to those produced by FreeSurfer, FSL,
+MAPER and the SNT \gs segmentations.
 
 \paragraph{ADNI1 dataset revisited} 
 The {\em \adnidataset} standardized dataset contains $1919$ images in total.
-SNT and FreeSurfer hippocampal volumes for a subset of images are provided by
+SNT and FreeSurfer hippocampal volumes for a subset of images were provided by
 ADNI, along with quality control data for each FreeSurfer segmentation
 (guidelines described in \citep{Hartig2010}).  Clinical and demographic data for
-the entire \adnidataset dataset are shown in Table
-\ref{tab:ADNI1-Dataset-Demographics}.
+the entire \adnidataset dataset are shown in Table \ref{tab:ADNI1-Dataset-Demographics}.
 
 \paragraph{Experiment details} 
 \mb was configured with an atlas library composed of the five Winterburn T1
-atlases (described in Experiment 2), and the size of template library,
-registration method, and label fusion method found in Experiment 1 were used.
-The FSL FIRST segmentation method was used via the \verb+run_first_all+ script
-according to the FIRST user guide
-\footnote{http://fsl.fmrib.ox.ac.uk/fsl/fslwiki/FIRST/UserGuide}.  All images in
-the \adnidataset dataset were segmented by both methods. 
+atlases (described in Experiment 2), and size of template library,
+registration method, and label fusion method were determined by the optimal
+settings found in Experiment 1.  The FSL FIRST segmentation method was used via
+the \verb+run_first_all+ script according to the FIRST user guide
+\footnote{http://fsl.fmrib.ox.ac.uk/fsl/fslwiki/FIRST/UserGuide}.  All images
+in the \adnidataset dataset were segmented by both methods. 
 
 One author (MP) performed visual quality inspection for MAGeT and FSL
 segmentations using similar quality control guidelines (if either hippocampus
 was under or over segmented by greater than 10mm in three or more slices then
 the segmentation did not pass).  Only images meeting the conditions of having
 segmentations from all methods (SNT, MAPER, FreeSurfer, FSL, and \mb) and also
-passing quality control inspection are included in the analysis.  
+passing quality control inspection were included in the analysis.  
 
 \paragraph{Evaluation method}
 As in Experiment 3, the SNT \gs and Winterburn hippocampal segmentation
 protocols differ in the neuroanatomical features delineated, and so we must
 assess \mb by the degree of correlation of average hippocampal volume across all
-subjects. Specifically, Pearson correlation is used. We also compute the
+subjects. Specifically, a Pearson correlation is used. We also compute the
 correlation in hippocampal volume between the existing, established automated
 segmentation methods: FSL, FreeSurfer, and MAPER.  Additionally, we evaluate the
 volume-related fixed and proportional biases in all segmentation methods using
@@ -1522,10 +1520,10 @@ Another concern is the moderate-to-small improvement observed in \mb in
 comparison to multi-atlas segmentation when using the same number of atlases.
 The actual benefit in using \mb is consistency of the labelling regardless of
 atlas or template choice. This is an important consideration that few have
-touched on previously. The 10-fold Monte Carlo leave-one-out cross-validation that we present
-in Experiment 1 is amongst one of the most stringent performed in the
-multi-atlas/segmentation literature. To the best of our knowledge, other groups
-using ADNI data for validation do at most a single round of
+touched on previously. The 10-fold Monte Carlo leave-one-out cross-validation
+that we present in Experiment 1 is amongst one of the most stringent performed
+in the multi-atlas/segmentation literature. To the best of our knowledge, other
+groups using ADNI data for validation do at most a single round of
 leave-one-out-validation (Table \ref{tab:other-methods}), aside from
 \citep{Wang2011} who perform a similar validation as us). The thoroughness of
 our validation suggests that our results are reflective of a true average over
