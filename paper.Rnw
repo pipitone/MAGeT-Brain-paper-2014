@@ -65,6 +65,10 @@ lm_eqn = function(m) {
 \newcommand{\adnidataset}{ADNI1:Complete 1Yr 1.5T }
 \newcommand{\FEPdataset}{SZ-FEP }
 \newcommand{\gs}{Gold Standard }
+\newcommand{\fsl}{FSL }
+\newcommand{\freesurfer}{FreeSurfer }
+\newcommand{\maper}{MAPER }
+
 
 % title and authors
 \title{Bootstrapping Multi-atlas Hippocampal Segmentation with \mb}
@@ -541,7 +545,6 @@ this experiment we explore three fusion methods.
 \end{description}
 
 \paragraph{Evaluation method}  
-
 The Dice similarity coefficient (DSC), also known as Dice's Kappa, assesses the
 agreement between two segmentations. It is one of the most widely used measures
 of segmentation accuracy, and we use it as the basis of comparison in this
@@ -705,7 +708,7 @@ optimal size of template library, registration method, and label fusion method
 found in Experiment 1 are used. 
 
 \paragraph{Evaluation method}
-The manual and Winterburn hippocampal segmentation protocols differ slightly in
+The Pruessner and Winterburn hippocampal segmentation protocols differ slightly in
 the neuroanatomical features that are delineated \citep{Winterburn2013}. This
 difference poses a problem for evaluation by measuring overlap.  That is, since
 different protocols will necessarily produce segmentations that do not perfectly
@@ -776,14 +779,12 @@ passing quality control inspection were included in the analysis.
 
 \paragraph{Evaluation method}
 As in Experiment 3, the SNT \gs and Winterburn hippocampal segmentation
-protocols differ in the neuroanatomical features delineated, and so we must
-assess \mb by the degree of correlation of average hippocampal volume across all
-subjects. Specifically, a Pearson correlation is used. We also compute the
-correlation in hippocampal volume between the existing, established automated
-segmentation methods: FSL, FreeSurfer, and MAPER.  Additionally, we evaluate the
-volume-related fixed and proportional biases in all segmentation methods using
-Bland-Altman plots \citep{Bland1986}.  
-
+protocols differ in the neuroanatomical features delineated, and so we 
+assessed \mb by the degree of (Pearson) correlation of average hippocampal volume
+across subjects. We also computed the correlation in hippocampal volume between
+the existing, established automated segmentation methods: FSL, FreeSurfer, and
+MAPER. Additionally, we evaluate the volume-related fixed and proportional
+biases in all segmentation methods using Bland-Altman plots \citep{Bland1986}.  
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ADNI1-COMPLETE
@@ -842,31 +843,48 @@ latex(tab, file="", size="scriptsize",landscape=FALSE, ctable=FALSE,
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Experiment 1 Results: Whole Hippocampus Cross-Validation}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% ADNI1-XVAL: prep
+% Prepares the data in a the form needed for plotting.
+<<ADNI1-xval-prep,dependson='ADNI1-xval-load',include=FALSE,cache=TRUE>>=
+all_data  <- read.csv(gzfile('data/cache/ADNI-XVAL:all_data.csv.gz'))
+all_data_mean  <- read.csv(gzfile('data/cache/ADNI-XVAL:all_data_mean.csv.gz'))
+
+mb.best.kappa = mean(subset(all_data_mean, reg_method   == "ANTS" & 
+                                  method.mb    == "Majority Vote" &
+                                  templates.mb == 19 & 
+                                  atlases      == 9)$k.mb)
+@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
 In this experiment we conducted 10 rounds of \mb and multi-atlas segmentation of
-each of 69 subjects at a range of atlas and template library sizes, registration
-algorithm (\ants or \animal), and three label fusion techniques.  Hippocampal
-\mb-based segmentations using both \animal and \ants registration algorithm
-demonstrate good overlap with SNT derived gold-standards (Figure
-\ref{fig:ADNI1-xval-k-mean}). Qualitatively, both \animal and \ants-based
-segmentations demonstrate trend overlap accuracy that increases with the size of
-atlas library and template library. Improvement in accuracy diminishes noticeably
-with template libraries larger than roughly ten images. 
+of 69 subjects using atlas and template library sizes varying from 1-9 and 1-20
+images respectively, two registration algorithms (\ants or \animal), and three
+label fusion techniques (unweighted, cross-correlation, and normalised mutual
+information weighted majority vote).  Hippocampal \mb-based segmentations using
+both \animal and \ants registration algorithm demonstrate good overlap with SNT
+\gs segmentations (maximum mean DSC of \Sexpr{round(mb.best.kappa, digits=3)}
+when using 9 atlases, 19 templates, ANTS registration, and majority vote label
+fusion); Figure \ref{fig:ADNI1-xval-k-mean}).  Qualitatively, both \animal and
+\ants-based segmentations demonstrate trend overlap accuracy that increases with
+the size of atlas library and template library. Improvement in accuracy plateaus
+with template libraries larger than ten images. 
 
-No marked difference in segmentation accuracy is seen when either \animal or \ants
-registration is used with any number of atlases or templates.  In every parameter 
-configuration, the use of \mb with \ants registration shows a pronounced increase
-in segmentation accuracy over \mb with \animal registration.  Surprisingly, the 
-label fusion method used does not significantly improve label accuracy, contrary 
-to the findings of \citet{Aljabar2009} when using weighted voting on much larger
-atlas/template libraries. In the remainder of  this section, only results using
-the \ants registration algorithm and majority vote fusion will be shown.
+The use of \mb with \ants registration shows a pronounced increase
+in segmentation accuracy over \mb with \animal registration, across all
+other variable settings we tested. Additionally, by itself, using a weighted
+voting strategy did not significantly improve segmentation accuracy, contrary to
+the findings of \citet{Aljabar2009} in basic multi-atlas segmentation. Given
+these findings, in the remainder of this section only results using the \ants
+registration algorithm and majority vote fusion will be shown.
 
-With an increasing number of templates, \mb shows improvement in overlap
-accuracy over multi-atlas-based segmentation when using the same number of atlases
-and voting method (Figure \ref{fig:ADNI1-xval-k-diff}). The magnitude of improvement over
-multi-atlas-based segmentation decreases with an increasing number of atlases,
-with accuracy converging with 7 atlases.  Peak improvement in \mb accuracy (~0.02
-DSC) is found when one atlas is used with a template library of 20 images.
+With an increasing number of templates, \mb shows improvement over
+multi-atlas-based segmentation in overlap accuracy when using the same number of
+atlases and voting method (Figure \ref{fig:ADNI1-xval-k-diff}). The two methods
+converge in accuracy when using seven atlases.  Peak improvement in \mb accuracy
+(~0.02 DSC) is found when one atlas is used with a template library of 19
+images.
 
 In addition to an improvement in accuracy over multi-atlas-based segmentation,
 \mb also shows a decrease in the variability of segmentation accuracy 
@@ -880,15 +898,6 @@ We have omitted results obtained when using an even number of atlases or
 templates since with this configuration we found significantly decreased
 performance. We believe this is as a result of an inherent bias in the majority
 vote fusion method used (see Discussion).  
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% ADNI1-XVAL: prep
-% Prepares the data in a the form needed for plotting.
-<<ADNI1-xval-prep,dependson='ADNI1-xval-load',include=FALSE,cache=TRUE>>=
-all_data  <- read.csv(gzfile('data/cache/ADNI-XVAL:all_data.csv.gz'))
-all_data_mean  <- read.csv(gzfile('data/cache/ADNI-XVAL:all_data_mean.csv.gz'))
-@
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 % \begin{figure}
@@ -959,13 +968,13 @@ ggplot(subset(all_data_mean, (templates.mb*atlases) %% 2 == 1),
   scale_colour_hue(name="Number of Atlases") +
   xlab( "Number of Templates" ) + 
   ylab( "Mean DSC" ) + 
-  theme(legend.direction = "horizontal", legend.position = "bottom", 
+  opts(legend.direction = "horizontal", legend.position = "bottom", 
         axis.text = element_text(size = 8))
 @
   \caption{Mean Dice's Similarity Coefficient of \mb segmentations with 
   SNT \gs segmentations for 69 ADNI1 subjects vs. atlas and template library
   size, registration algorithm, and label fusion method. Points above zero
-  indicate an \mb parameter settings yielding a higher mean DSC score than
+  indicate \mb parameter settings yielding a higher mean DSC score than
   multi-atlas segmentation using the same number of atlases.
   \label{fig:ADNI1-xval-k-mean}}
 \end{figure}
@@ -993,7 +1002,7 @@ ggplot(subset(all_data_mean, reg_method=="ANTS" &
   scale_linetype_discrete(guide = "none") + 
   xlab( "Number of Templates" ) + 
   ylab( "Difference in mean DSC" ) +
-  theme(legend.direction = "horizontal", legend.position = "bottom")
+  opts(legend.direction = "horizontal", legend.position = "bottom")
 @
   \caption{Difference in mean Dice's Similarity Coefficient of \mb and
   multi-atlas segmentations with \gs (SNT) segmentations for a range of atlas
@@ -1052,7 +1061,7 @@ ggplot(subset(stats.tests, direction > 0 & stat == "Variance"),
   scale_alpha_continuous(guide='none') + 
   scale_linetype_discrete(guide='none') + 
   scale_size_continuous(guide='none') + 
-  theme(legend.direction = "horizontal", legend.position = "bottom")
+  opts(legend.direction = "horizontal", legend.position = "bottom")
 @
   \caption{{\bf Difference in variability of \mb vs. multi-atlas segmentation 
   accuracy.}
@@ -1118,18 +1127,18 @@ levels(melted$measure) <- list("Subsampled"="resampled",
 ggplot(melted, aes(y=percenterr,x=region,colour=measure)) +
   geom_hline(aes(yintercept=0), colour="grey", size=1) + 
   geom_boxplot() +
-  labs(y=expression(paste("Percent error in volume relative to 0.3", mm^3, " Winterburn Atlases")), x="Region") +
+  labs(y="Percent error in volume", x="Subfield") +
   scale_colour_discrete("") + 
-  theme(legend.direction = "horizontal", legend.position = "bottom")
+  opts(legend.direction = "horizontal", legend.position = "bottom")
 @
-  \caption{{\bf Percent error in segmentation volume by hippocampus subregion.} 
-  Percent error is measured against the volumes of of the unmodified Winterburn
-  atlas segmentations.
+  \caption{{\bf Average percent error in hemispheric subfield volume.} 
+  Percent error is measured against the volumes of the unmodified Winterburn
+  atlas subfield segmentations.
   {\bf Subsampled} are volumes of the manual segmentations of the Winterburn
   atlases after resampling to $0.9mm^3$.  
-  {\bf MAGeT + WA Subsampled} volumes are \mb segmentations of the Winterburn atlas
+  {\bf MAGeT + Subsampled} volumes are \mb segmentations of the Winterburn atlas
   images after resampling to $0.9mm^3$ voxels.
-  {\bf MAGeT + WA BRAVO} volumes are \mb segmentations of T1 BRAVO images
+  {\bf MAGeT + BRAVO} volumes are \mb segmentations of T1 BRAVO images
   ($0.9mm^3$ voxels) acquired separately of four of the five Winterburn atlas
   subjects.} 
   \label{fig:WAval-vol-boxplot}
@@ -1231,11 +1240,11 @@ To investigate the level of agreement with SNT \gs hippocampal
 volumes, we constructed Bland-Altman plots for each method (Figure
 \ref{fig:ADNI-Bland-Altman}).  As \citet{Bland1986} noted, high correlation
 amongst measures of the same quantity does not necessarily imply agreement (as
-correlation can be driven by a large range in true values, for instance).  What
-is most striking in Figure \ref{fig:ADNI-Bland-Altman} is that all methods show
-an obvious proportional bias: FreeSurfer and FSL markedly under-estimate smaller
-hippocampi and over-estimate large hippocampi, whereas MAPER and \mb more
-conservatively show the reverse bias.  Additionally, all methods show a fixed
+correlation can be driven by a large range in true values, for instance).  All
+methods show an obvious proportional bias: FreeSurfer and FSL markedly
+under-estimate smaller hippocampi and over-estimate large hippocampi, whereas
+MAPER and \mb show a reverse, conservative bias (Figure
+\ref{fig:ADNI-Bland-Altman}).  Additionally, all methods show a fixed volume
 bias, with FreeSurfer and FSL most dramatically over-estimating hippocampal
 volume by $2600 mm^3$ and $2800 mm^3$ on average, respectively, and MAPER and
 \mb within $250 mm^3$ on average. 
@@ -1284,7 +1293,7 @@ qplot(DX,value,data=m2,
       #          colour = 'black', size=3, data=correlations) +
       xlab("Diagnosis") + 
       ylab(expression(paste("Hippocampal volume (", mm^3, ")"))) + 
-      theme(legend.direction = "horizontal", legend.position = "bottom")
+      opts(legend.direction = "horizontal", legend.position = "bottom")
 @
   \caption{Subject mean hippocampal volume as measured in the \adnidataset
 dataset by FreeSurfer, FSL, MAPER, \mb, and SNT \gs vs. disease
@@ -1310,7 +1319,7 @@ ggplot(data=melted, aes(x=SNT, y=volume, colour=Method)) +
                         paste("MAPER r =", round(cor(df$SNT, df$MAPER),2)),
                         paste("MAGeT r =", round(cor(df$SNT, df$MAGeT),2))),
               hjust=1.1,vjust=1.5) +
-    theme(legend.direction = "horizontal", legend.position = "bottom")
+    opts(legend.direction = "horizontal", legend.position = "bottom")
 @
   \caption{Subject mean hippocampal volume as measured in the \adnidataset
 dataset by each of the four automated methods investigated (FreeSurfer (FS),
@@ -1427,11 +1436,6 @@ and MNI coordinates}
 % Tabulation of segmentation accuracies of existing methods (ADNI)
 %
 %
-<<mb-best-kappa, echo=F, cache=FALSE>>=
-ants.mean = subset(all_data_mean, reg_method=="ANTS" & method.mb=="Majority Vote" &      templates.mb == 19 & atlases == 9)
-mb.best.kappa = mean(ants.mean$k.mb)
-@
-
 \begin{table}[!tbp]
 \scriptsize
 \caption{\textbf{Automated segmentation accuracy (overlap with SNT \gs labels)
@@ -1473,20 +1477,25 @@ that \mb provides accurate automatic identification of the hippocampal
 subfields despite contrast and resolution limitations in standard T1-weighted
 image volumes. 
 
-Throughout the cross validation in Experiment 1 (10-fold Monte Carlo cross 
-validation in the
-\adnidataset dataset subsample) we find that two parameter choices improve 
-segmentation accuracy: increasing the number of atlases, and the number of
-templates. However, after setting the parameters to 5 atlases and 15 templates
-there are diminishing returns with respect to this improvement. We were
-somewhat surprised to find that cross-correlation and normalized mutual
-information based weighted voting did little to improve segmentation accuracy.
-This suggests that using an intermediate template library generated by accurate
-nonlinear registration methods such as \ants \citep{Avants2008} sufficiently filters
-sources of error such as nonlinear registration error and partial volume effects
-that arise through the use of nearest neighbour resampling. From our previous
-work on the \mb algorithm we have shown that these increases in error
-are not simply a smoothing or averaging effect \citep{MallarChakravarty2012}.
+Throughout the cross validation in Experiment 1 (10-fold Monte Carlo cross
+validation in the \adnidataset dataset subsample) we find that two parameter
+choices improve segmentation accuracy: increasing the number of atlases, and the
+number of templates. However, after setting the parameters to 5 atlases and 15
+templates there are diminishing returns with respect to this improvement. 
+
+Previous work on multi-atlas segmentation methods
+\citep{Aljabar2009,Collins2010} has found that cross-correlation and normalized
+mutual information based weighted label fusion improves segmentation accuracy
+over simple majority vote label fusion. Selectively filtering out atlases with
+lower image similarity is believed to reduce sources of error from estimating
+deformations via nonlinear registration, partial volume effects from nearest
+neighbour image resampling, and neuroanatomical mismatch between atlases and
+subjects. That \mb does not see the same boost in performance from weighted
+voting may suggest that the neuroanatomical variability of a template library
+constructed from study subjects more closely matches any particular subject and
+thereby leaving less error to filter. From our previous work on the \mb
+algorithm we have shown that the reduction in error is not simply a smoothing or
+averaging effect \citep{MallarChakravarty2012}.
 
 Although, the goal of this manuscript was to not exhaustively test or validate
 multiple different voting strategies in the context of our segmentation
@@ -1501,16 +1510,16 @@ likely that using more sophisticated voting methods would have a positive
 effect on the overall segmentation performance, as demonstrated by the STAPLE
 algorithm.  
 
-To this end, more work is required in order to determine the source of the
-slight decrease in segmentation performance when the number of templates are
-set to an even number.  Our initial concern was that this dip in performance
-was a by-product of the \mb algorithm itself.  However, this this pattern is
-also found in the results of the multi-atlas segmentations we used in our
+To this end, more work is required to determine the source of the slight
+decrease in segmentation performance when the number of templates are set to an
+even number.  Our initial concern was that this dip in performance was a
+by-product of the \mb algorithm itself.  However, this this pattern is also
+found in the results of the multi-atlas segmentations we used in our
 experiments.  We believe that our majority voting methodology is biased towards
 labels with the lowest numeric values when breaking ties (by way of the
 implementation of the \verb+mode+ function used to determine majority), thus
-causing the slight bias observed when using an even number of templates. This
-is another area where the voting scheme could be used to improve performance.
+causing the slight bias observed when using an even number of templates. This is
+another area where the voting scheme could be used to improve performance.
 However, it is worth noting that this limitation was previously identified by
 \citet{Heckemann2006a} and, subsequently, other groups have not even considered
 the potential pitfalls of an even number of candidate labels (eg.
@@ -1547,38 +1556,35 @@ choice (provided the input atlases are properly segmented.
 \todo[inline]{could we be seeing a ceiling effect... reaching the limit of what
 is achievable with a multi-atlas-based segmentation method}
 
-In comparison to other methodologies in the field, it is important to note that
-\mb performs quite well.  Table 6 gives a survey of some of the most recent
-multi-atlas implementations with the reported kappa values used to validate the
-algorithm on the ADNI dataset (many of which use the same SNT labels for
-populating their template library and as gold standards for evaluation).  While
-it is difficult to compare segmentation results across studies, gold-standards,
-evaluation metrics, and algorithms it is worth noting that the methods
-summarized in Table 6 require more atlases (between 16-55) than our \mb
-implementation with the Winterburn atlases \citep{Winterburn2013}.  Amongst these
-methods only method 4 yields mean Kappas that are higher than the ones that are
-reported here.  
+In comparison to other methodologies in the field \mb performs favourably. Table
+\ref{tab:other-methods} surveys some of the most recent reported kappa values on
+the ADNI dataset using the same SNT labels for populating their template library
+and as gold standards for evaluation.  While it is difficult to compare
+segmentation results across studies, gold-standards, evaluation metrics, and
+algorithms it is worth noting that the methods summarized in Table
+\ref{tab:other-methods} require more atlases (between 16-55) than our \mb
+implementation with the Winterburn atlases \citep{Winterburn2013}.
 
-There are some important differences between our method
-and these specific methods.  Others have reported the difficulty with
-mis-registrations in candidate segmentation (i.e. segmentations generated that are
-then input in the voxel-voting procedure \citep{Collins2010}). The work of 
-\citet{Leung2010} tackles this problem by using an intensity threshold
-that is estimated heuristically at the time of segmentation (this work also
-reports some of the highest kappas for the segmentation of ADNI data).  While
-this works for the ADNI dataset (which is partially homogenized with respect to
+There are some important differences between our method and these specific
+methods.  Others have reported the difficulty with mis-registrations in
+candidate segmentation (i.e. segmentations generated that are then input in the
+voxel-voting procedure \citep{Collins2010}). The work of \citet{Leung2010}
+tackles this problem by using an intensity threshold that is estimated
+heuristically at the time of segmentation (this work also reports some of the
+highest kappas for the segmentation of ADNI data).  While this method is
+effective for the ADNI dataset (which is partially homogenized with respect to
 image acquisition and pre-processing), it is unclear if this type of heuristic
 is applicable to other datasets.  In all cases, these methods require more
 atlases than our implementation with the Winterburn atlases.
 \citet{Lotjonen2010} achieve highly accurate segmentation but correct their
 segmentations using classifications derived using an expectation maximization
-framework. In their initial work, \citet{Chupin2009} develop their
-probabilistic methodology using a cohort of 8 healthy controls and 15 epilepsy
-patients, and then use this method to segment an ADNI sample, with a
-hierarchical experimentation protocol that involved \todo{complete this
-sentence}.  These methods suggest that some post-processing of the final
-segmentations would improve accuracy of the segmentation. While that may be
-true, there is little consensus regarding how to achieve this.  
+framework. In their initial work, \citet{Chupin2009} develop their probabilistic
+methodology using a cohort of 8 healthy controls and 15 epilepsy patients, and
+then use this method to segment an ADNI sample, with a hierarchical
+experimentation protocol that involved \todo{complete this sentence}.  These
+methods suggest that some post-processing of the final segmentations would
+improve accuracy of the segmentation. While that may be true, there is little
+consensus regarding how to achieve this.  
 
 To the best of our knowledge, no other groups have validated their work using
 multiple atlas segmentation protocols, different acquisitions, and disease
@@ -1593,18 +1599,17 @@ other work \citep{Heckemann2006}.
 \todo[inline]{time complexity seems suspicious} 
 
 In comparison to the methods that we compared and were available through the
-ADNI database (FreeSurfer, MAPER) and the method that we initialized ourselves
-(FSL-FIRST) we find extremely variable performance of all methods.  With the
-exception of FSL all methods correlate well with the SNT volumes provided in
-the ADNI database.  However, FreeSurfer and FIRST provide radically different
-definitions of the size of the hippocampus in comparison to the other methods.
-Further, when estimating bias of these methods relative to SNT hippocampal
-volumes we see that large hippocampi are over estimated while small hippocampi
-are under estimated. By comparison, \mb and MAPER are far more conservative in
-volume estimation, suggesting these methods may be better suited for estimating
-true-positives. However, in this analysis we have only compared methods by
-total hippocampal volume, and so more work is needed to understand the full
-extent to which these methods differ.
+ADNI database (\freesurfer, \maper) and \fsl-FIRST, we find extremely variable
+performance of all methods.  With the exception of \fsl all methods correlate
+well with the SNT volumes provided in the ADNI database.  However, \freesurfer
+and \fsl provide radically different definitions of the size of the hippocampus
+in comparison to the other methods.  Further, when estimating bias of these
+methods relative to SNT hippocampal volumes we see that large hippocampi are
+over estimated while small hippocampi are under estimated. By comparison, \mb
+and MAPER are far more conservative in volume estimation, suggesting these
+methods may be better suited for estimating true-positives. However, in this
+analysis we have only compared methods by total hippocampal volume, and so more
+work is needed to understand the full extent to which these methods differ.
 
 Finally, we have also demonstrated that our algorithmic framework is
 appropriate for the segmentation of hippocampal subfields in standard
@@ -1627,12 +1632,12 @@ regions are well below the resolution offered by standard T1-weighted images
 and, in fact, many manual segmentation methodologies do not attempt to parse
 these regions either \citep{Wisse2012, Mueller2009}.
 
-In conclusion, we have presented a flexible multi-atlas framework.  It has
-considerable advantages over other methods as only a small set of atlases is
-required to initialize the algorithm.  We demonstrate that our method works
-robustly over hippocampal definitions, different populations, and different
-acquisition types.  Finally, we also demonstrate that using this method that
-accurate identification of the hippocampal subfields in also possible.
+In conclusion, we have presented a flexible multi-atlas framework that has
+considerable advantages over other methods since only a small number of atlases
+is required to initialize the algorithm.  We demonstrate that our method works
+robustly over hippocampal definitions, different disease populations, and
+different acquisition types. Finally, we also demonstrate that accurate
+identification of the hippocampal subfields is possible.
 
 
 
@@ -1764,4 +1769,9 @@ documented reliability of an intraclass coefficient better than .94
 
 \bibliographystyle{abbrvnat}
 \bibliography{references}
+
+\section*{R Session Information}
+<<results = "asis">>=
+toLatex(sessionInfo(), locale=FALSE)
+@
 \end{document}
