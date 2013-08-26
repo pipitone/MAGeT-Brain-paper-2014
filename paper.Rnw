@@ -128,26 +128,26 @@ jon.pipitone@camh.ca; mallar.chakravarty@camh.ca}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction}
 
-The hippocampus is a neuroanatomical structure situated in the medial temporal
-lobe of the brain, and has long been associated with learning and memory
-\citep{DenHeijer2012,Scoville2000}. In addition to its known functional roles,
-the hippocampus is of interest to neuroscientists because it is implicated in
-several forms of brain disfunction such as Alzheimer's disease
-\citep{Sabuncu2011} and schizophrenia \citep{Narr2004,Karnik-Henry2012}. In
-neuroimaging experiments, magnetic resonance images (MRI) are often used for the
-identification of the hippocampus. As such, accurate segmentation of the
-hippocampus and its subregions in MRI is a necessary first step to better
-understand the unique neuroanatomy of subjects. Typically, the gold standard for
-neuroanatomical segmentation is manual delineation by an expert human rater.
-However with the availability of increasingly large MRI datasets, the time and
-expertise required for manual segmentation becomes prohibitive
+The hippocampus is a brain structure situated in the medial temporal
+lobe, and has long been associated with learning and memory
+\citep{DenHeijer2012,Scoville2000}. The hippocampus is of interest to
+neuroscientists because it is implicated in many forms of brain disfunction,
+including Alzheimer's disease \citep{Sabuncu2011} and schizophrenia
+\citep{Narr2004,Karnik-Henry2012}. In neuroimaging studies, structural magnetic
+resonance images (MRI) are often used for the volumetric assessment of the
+hippocampus.  As such, accurate segmentation of the hippocampus and its
+subregions in MRI is a necessary first step to better understand the
+inter-individual variability of subject neuroanatomy. Typically, the gold
+standard for neuroanatomical segmentation is manual delineation by an expert
+human rater.  However, with the availability of increasingly large MRI datasets,
+the time and expertise required for manual segmentation becomes prohibitive
 \citep{Mazziotta1995,Mazziotta2001,Mazziotta,Pausova2007}. Further, there is
-little agreement between researchers regarding how exactly the hippocampus
-should be identified in MRI images \citep{Geuze2004} and this has led to efforts
-to create an unified hippocampal segmentation protocol \citep{Jack2011}. 
+significant variation between segmentation protocols regarding specific
+anatomical boundaries of the hippocampus \citep{Geuze2004} and this has led to
+efforts to create an unified hippocampal segmentation protocol \citep{Jack2011}. 
 
 Automated segmentation techniques that are reliable, objective, and reproducible
-are a necessary alternative to manual segmentation. In the case of classical
+can be considered complementary to manual segmentation. In the case of classical
 model-based segmentation methods \citep{Haller1997,Csernansky1998}, an MRI atlas
 that was previously manually labelled by an expert rater is matched to target
 images using nonlinear registration methods. The resulting nonlinear
@@ -229,17 +229,17 @@ In their validation, LEAP was used to segment the whole hippocampus in the
 ADNI-1 baseline dataset, achieving a mean Dice score of 0.85 with manual
 segmentations.
 
-To the best of our knowledge there are two other segmentation methods that
+To the best of our knowledge there are only two other segmentation methods that
 attempt to define the hippocampus and its subfields using standard T1-weighted
 data. The first is included with the FreeSurfer package \citep{VanLeemput2009}.
 This work is limited as it omits the tail of the hippocampus and the
 segmentation protocol has yet to be fully validated. Nonetheless, it
 demonstrates that the applicability of hippocampal subfield segmentation using
-data from 10 subjects. In the second method, \citet{Yushkevich2009} acquired
-and labelled hippocampal subfields on high-resolution MRI data from post-mortem
+data from 10 subjects. In the second method, \citet{Yushkevich2009} hippocampal
+subfields were acquired and labelled on high-resolution MRI data from post-mortem
 medial temporal lobe samples. Using nonlinear registration guided by manually
-derived hippocampus masks and specific landmarks, they demonstrate accurate
-parcellation of hippocampal subfields in unlabelled MRI volumes. 
+derived hippocampus masks and specific landmarks, the authors demonstrated
+accurate parcellation of hippocampal subfields in unlabelled MRI volumes. 
 
 In this paper we undertake a thorough validation of the \mb algorithm for
 segmentation of the hippocampus. First, we address the feasibility and accuracy
