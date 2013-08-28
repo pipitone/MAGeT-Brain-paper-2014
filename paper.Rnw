@@ -1,4 +1,4 @@
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % TODO: 
 %  - check tense: we are is have has 
@@ -214,32 +214,33 @@ limiting the number of possible inputs used during segmentation, and
 demonstrating that accurate identification of the hippocampal subfields is
 indeed possible using this methodology.
 
-There are few methods that have attempted to perform multi-atlas segmentation
-with a limited number of input atlases. The LEAP algorithm is an elegant
-modification to the basic multi-atlas strategy \citep{Wolz2010} in which the
-atlas library is grown, beginning with a set of manually labelled atlases, and
-successively incorporating unlabelled target images after themselves being
-labelled using multi-atlas techniques. The sequence in which target images are
-labelled is chosen so that the similarity between the atlas images and the
-target images is minimised at each step, effectively allowing for deformations
-between very dissimilar images to be broken up into sequences of smaller
-deformations. Although \citet{Wolz2010} begin with an atlas library of 30 MR
-images, this method could theoretically work using a much smaller atlas library.
-In their validation, LEAP was used to segment the whole hippocampus in the
-ADNI-1 baseline dataset, achieving a mean Dice score of 0.85 with manual
-segmentations.
+Of special relevance to the present work is the LEAP algorithm \citep{Wolz2010}
+because of its focus on performing multi-atlas segmentation with a limited
+number of input atlases.  The LEAP algorithm is a clever modification to the
+basic multi-atlas strategy in which an atlas library is grown, beginning with a
+set of manually labelled atlases, by successively incorporating unlabelled
+target images once they themselves have been labelled using multi-atlas
+techniques. The sequence in which target images are labelled is chosen so that
+the similarity between the atlas images and the target images is minimised at
+each step, effectively allowing for deformations between very dissimilar images
+to be broken up into sequences of smaller deformations. Although
+\citet{Wolz2010} begin with an atlas library of 30 MR images, this method could
+theoretically work using a much smaller atlas library.  In their validation,
+LEAP was used to segment the whole hippocampus in the ADNI-1 baseline dataset,
+achieving a mean Dice score of 0.85 against \gs segmentations.
 
-To the best of our knowledge there are only two other segmentation methods that
-attempt to define the hippocampus and its subfields using standard T1-weighted
-data. The first is included with the FreeSurfer package \citep{VanLeemput2009}.
-This work is limited as it omits the tail of the hippocampus and the
-segmentation protocol has yet to be fully validated. Nonetheless, it
-demonstrates that the applicability of hippocampal subfield segmentation using
-data from 10 subjects. In the second method, \citet{Yushkevich2009} hippocampal
-subfields were acquired and labelled on high-resolution MRI data from post-mortem
-medial temporal lobe samples. Using nonlinear registration guided by manually
-derived hippocampus masks and specific landmarks, the authors demonstrated
-accurate parcellation of hippocampal subfields in unlabelled MRI volumes. 
+To the best of our knowledge there are only two automated segmentation methods
+that attempt to define the hippocampus and its subfields using standard
+T1-weighted data. The first is included with the FreeSurfer package
+\citep{VanLeemput2009}.  This work is limited as it omits the tail of the
+hippocampus and the segmentation protocol has yet to be fully validated.
+Nonetheless, it demonstrates that the applicability of hippocampal subfield
+segmentation using data from 10 subjects. In the second method,
+\citet{Yushkevich2009} hippocampal subfields were acquired and labelled on
+high-resolution MRI data from post-mortem medial temporal lobe samples. Using
+nonlinear registration guided by manually derived hippocampus masks and specific
+landmarks, the authors demonstrated accurate parcellation of hippocampal
+subfields in unlabelled MRI volumes. 
 
 In this paper we undertake a thorough validation of the \mb algorithm for
 segmentation of the hippocampus. First, we address the feasibility and accuracy
@@ -265,14 +266,14 @@ multi-atlas framework.
 
 \subsection{The \mb Algorithm}
 In this paper, we will use the term {\em label} to mean any segmentation (manual or 
-derived) of an MR image. {\em Label propagation}, or {\em labelling}, is the 
-process by which two images are registered and the resulting transformation 
-is applied to the labels from one image to bring them into alignment with the 
-other image. We will use the term {\em atlas} to mean a manually segmented image,
-and the term {\em template} to mean an automatically segmented image (i.e. 
-via label propagation). The terms {\em atlas library} and {\em template library} 
-describe any set of such images. Additionally, we will use the term {\em target} 
-to refer to an unlabelled image that is undergoing segmentation.
+derived) of an MR image. {\em Label propagation} is the process by which two
+images are registered and the resulting transformation is applied to the labels
+from one image to bring them into alignment with the other image. We will use
+the term {\em atlas} to mean a manually segmented image, and the term {\em
+template} to mean an automatically segmented image (i.e.  via label
+propagation). The terms {\em atlas library} and {\em template library} describe
+any set of such images. Additionally, we will use the term {\em target} to refer
+to an unlabelled image that is undergoing segmentation.
 
 The simplest form of multi-atlas segmentation, (which we will call {\em basic 
 multi-atlas segmentation}), involves three steps. First, each labelled 
@@ -280,7 +281,10 @@ input image (i.e. atlas or template) is registered to an unlabelled target image
 Second, the labels from each image are propagated to the target image space. 
 Third, the labels are combined into a single label by label fusion
 \citep{Heckemann2006, Heckemann2011}. This method is described in detail in
-other publications \citep{Collins2010,Heckemann2011,Aljabar2009}.
+other publications \citep{Collins2010,Heckemann2011,Aljabar2009}. When only a
+single atlas is used, basic multi-atlas segmentation degenerates into
+model-based segmentation: labels are propogated from the atlas to a target, and
+no label fusion is needed.
 
 \mb bootstraps the creation of a large template library given a limited input atlas 
 library, and then uses the template library in basic multi-atlas segmentation. 
@@ -512,13 +516,13 @@ These settings were adapted from the "reasonable starting point" given in the
 
 \paragraph{Label fusion methods}
 Label fusion is a term given to the process of combining the information from
-several candidate labellings for an intensity image into a single labelling.  In
+several candidate labels for an intensity image into a single labelling.  In
 this experiment we explore three fusion methods. 
 \begin{description}
   \item[Voxel-wise Majority Vote]
   Labels are propagated from all template library images to a target.  Each
   output voxel is given the most frequent label at that voxel location amongst
-  all candidate labellings.
+  all candidate labels.
 
   \item[Cross-correlation Weighted Majority Vote]
   An optimal combination of targets from the template library has previously been
@@ -587,7 +591,7 @@ used in this experiment.
 \paragraph{Winterburn Atlases dataset} 
 The Winterburn atlases \citep{Winterburn2013} are digital hippocampal
 segmentations of five in-vivo $300\mu$ isotropic T1-weighted MR images. The
-segmentations include subfield segmentations for the cornus ammonis (CA) 1, CA4,
+segmentations include subfield segmentations for the cornu ammonis (CA) 1, CA4,
 dentate gyrus, subiculum, and CA 2 and 3 combined. Subjects in the Winterburn
 atlases range in age from 29-57 years (mean age of 37), and include two males
 and three females.  
@@ -613,11 +617,11 @@ left-out item. This is done, in turn, for each item in the dataset.
 
 In part 2a of this experiment, we have modified the LOOCV experimental
 design in order to compare \mb segmentation accuracy with the accuracy of image
-resampling error. The five $300\mu$-isotropic voxel Winterburn atlas images and
+resampling error. The five $0.3mm$-isotropic voxel Winterburn atlas images and
 labels are used as the atlas library, and LOOCV is conducted using the five Winterburn
 atlas images subsampled (using trilinear interpolation) to
 0.9mm-isotropic voxel resolution (referred to as the {\em Subsampled} dataset)
-as input subjects. Subsampling the subject images allows us to assess \mb in a
+as input subjects. Subsampling the target images allows us to assess \mb in a
 typical segmentation scenario (high-resolution atlases and lower-resolution
 subjects).  The template library is composed of all five subject images, plus an
 additional set of 3T T1 images (0.9mm-isotropic voxels) of healthy subjects
@@ -670,7 +674,7 @@ Winterburn atlas labels resampled (with nearest-neighbour interpolation) to
 \subsubsection{Experiment 3: Application to the segmentation of first episode
 schizophrenia patients}
  
-To validate that \mb works effectively in the context of other neuropsychiatric
+To validate that \mb works effectively in the context of other neurological
 disorders, in this experiment we use the Winterburn atlases to predict the
 hippocampal segmentations of patients with Schizophrenia. The resulting
 segmentations are assessed for quality by comparison with expert manual
@@ -791,8 +795,8 @@ biases in all segmentation methods using Bland-Altman plots \citep{Bland1986}.
 % Prepares the data in the form needed for plotting.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 <<ADNI-volumes-prep,echo=F,cache=T>>=
-means.complete   <- read.csv(gzfile('data/cache/ADNI1:means.complete.csv.gz'))
-package_totals   <- read.csv(gzfile('data/cache/ADNI1:package_totals.csv.gz'))
+means.complete   <- read.csv('data/cache/ADNI1:qc.csv')
+package_totals   <- read.csv('data/cache/ADNI1:package_totals.csv')
 @
 
 
@@ -975,7 +979,8 @@ ggplot(subset(all_data_mean, (templates.mb*atlases) %% 2 == 1),
   SNT \gs segmentations for 69 ADNI1 subjects vs. atlas and template library
   size, registration algorithm, and label fusion method. Points above zero
   indicate \mb parameter settings yielding a higher mean DSC score than
-  multi-atlas segmentation using the same number of atlases.
+  multi-atlas segmentation using the same number of atlases. Error bars
+  indictate standard error.
   \label{fig:ADNI1-xval-k-mean}}
 \end{figure}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1006,7 +1011,8 @@ ggplot(subset(all_data_mean, reg_method=="ANTS" &
 @
   \caption{Difference in mean Dice's Similarity Coefficient of \mb and
   multi-atlas segmentations with \gs (SNT) segmentations for a range of atlas
-  and template library sizes. \label{fig:ADNI1-xval-k-diff}}
+  and template library sizes. Error bars indicate standard error.
+  \label{fig:ADNI1-xval-k-diff}}
 \end{figure}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -1190,9 +1196,9 @@ ggplot(data=casted, aes(x = Manual, y = MAGeT)) +
   ylab(expression("Mean MAGeT hippocampus volume "  (mm^3))) + 
   scale_size_continuous(guide="none") 
 @
-  \caption{Subject mean hippocampal volumes by \mb vs. manually segmented
-   volumes from the First Episode Patients with Schizophrenia dataset. A linear fit
-   and standard error are shown.}
+  \caption{Mean hippocampus volume as measured by \mb  vs. manually segmented
+  volumes from the First Episode Patients with Schizophrenia dataset. A linear
+  fit line is shown, with shaded region showing standard error. }
   \label{fig:SZ-volumes}
 \end{figure}
 
@@ -1308,11 +1314,16 @@ melted=melt(means.complete, measure.vars=c("FS", "FSL", "MAPER","MAGeT"),
 
 df = means.complete
 
+levels(melted$Method) = c("FS"    = "FreeSurfer", 
+                          "FSL"   = "FSL", 
+                          "MAPER" = "MAPER", 
+                          "MAGeT" = "MAGeT")
+
 ggplot(data=melted, aes(x=SNT, y=volume, colour=Method)) + 
     geom_point(size=1) + 
     geom_smooth(method="lm") + 
-    xlab(expression("SNT \\gs hippocampal volume " (mm^3))) + 
-    ylab(expression("Automated hippocampal volume " (mm^3))) +
+    xlab(expression("SNT \\gs mean hippocampus volume " (mm^3))) + 
+    ylab(expression("Automated mean hippocampal volume " (mm^3))) +
     annotate("text", y = c(2000,1500,1000,500), x=Inf-100, size=2.5,
               label = c(paste("FS r =", round(cor(df$SNT, df$FS),2)),
                         paste("FSL r =", round(cor(df$SNT, df$FSL),2)),

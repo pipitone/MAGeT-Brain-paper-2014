@@ -75,6 +75,11 @@ write.csv(all_data_mean,'data/cache/ADNI-XVAL:all_data_mean.csv')
 # ADNI1-Complete
 # Prepares the data in a the form needed for plotting.
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+library(Hmisc)
+library(reshape2)
+library(ADNIMERGE)
+library(plyr)
+
 #bl    = read.csv("data/ADNI_baseline_volumes/ADNI1_Complete_1Yr_1.5T_11_15_2012.csv")
 mb    = read.csv("data/ADNI_baseline_volumes/ADNI1_1.5T_MAGeT_volumes.csv")
 maper = read.csv("data/ADNI_baseline_volumes/MAPER_volumes.csv")
@@ -113,29 +118,37 @@ combined = merge(combined, fs_pruned   , by.x="Image.Data.ID", by.y="Source", al
 combined = merge(combined, fsl_pruned  , by.x="Image.Data.ID", by.y="Source", all.x=TRUE)
 combined = merge(combined, qc          , by=c("Image.Data.ID", "RID"), all.x=TRUE)
 
-# Step 2: Of those, get counts for the numbers that fail QC
+# Step 2: Compute the mean hippocamus volume for each method
+attach(combined)
+means = data.frame(RID      = RID, 
+                   VISCODE  = VISCODE, 
+                   DX       = factor(DX.bl),
+                   MAGeT    = (MAGeT_L + MAGeT_R)/2, 
+                   MAPER    = (MAPER_L + MAPER_R)/2,
+                   SNT      = (SNT_L + SNT_R)/2, 
+                   FS       = (FS_L + FS_R/2),
+                   FSL      = (FSL_L + FSL_R)/2, 
+                   TEMPQC   = TEMPQC, 
+                   MAGeT_QC = MAGeT_QC, 
+                   FSL_QC   = FSL_QC)
+detach(combined)
+
+# Step 3: Filter images missing a measurement 
+complete = na.omit(means)
+
+# Step 4: Of those, get counts for the numbers that fail QC
+attach(complete)
 package_totals = data.frame(
-  Total     = c(length(subjects$VISCODE), 'N/A'),
-  SNT        = c(length(which(!is.na(combined$SNT_L)))    , "--"),
-  MAGeT      = c(length(which(!is.na(combined$MAGeT_L)))  , length(which(combined$MAGeT_QC==0))), 
-  MAPER      = c(length(which(!is.na(combined$MAPER_L)))  , "--"), 
-  FSL        = c(length(which(!is.na(combined$FSL_L)))    , length(which(combined$FSL_QC==0))), 
-  FS         = c(length(which(!is.na(combined$FS_L)))     , length(which(combined$TEMPQC == "Fail"))),
-  row.names  = c("Images", "Failures")
+  SNT        = c(length(SNT)   , "n/a"),
+  MAGeT      = c(length(MAGeT) , length(which(MAGeT_QC == 0))), 
+  MAPER      = c(length(MAPER) , "n/a"), 
+  FSL        = c(length(FSL)   , length(which(FSL_QC == 0))), 
+  FS         = c(length(FS)    , length(which(TEMPQC == "Fail"))),
+  row.names  = c("Images"                     , "Failures")
 )
+detach(complete)
 
+qc = subset(complete, TEMPQC != "Fail" & MAGeT_QC == 1 & FSL_QC == 1 )
 
-all_qc = subset(combined, TEMPQC != "Fail" & MAGeT_QC == 1 | FSL_QC == 1 )
-
-attach(all_qc)
-means = data.frame(RID = RID, VISCODE = VISCODE, DX = factor(DX.bl),
-                  MAGeT = (MAGeT_L + MAGeT_R)/2, 
-                  MAPER = (MAPER_L + MAPER_R)/2,
-                  SNT   = (SNT_L + SNT_R)/2, 
-                  FS    = (FS_L + FS_R/2),
-                  FSL   = (FSL_L + FSL_R)/2)
-detach(all_qc)
-means.complete  = na.omit(means)
-
-write.csv(means.complete,  'data/cache/ADNI1:means.complete.csv')
+write.csv(qc            ,  'data/cache/ADNI1:qc.csv')
 write.csv(package_totals,  'data/cache/ADNI1:package_totals.csv')
