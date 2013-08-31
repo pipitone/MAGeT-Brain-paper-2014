@@ -67,22 +67,26 @@ function crop {
 
 function reorder {
   for i in $PWD/tal/*/*_labels_cropped.mnc; do 
-    echo reorder_labels.sh $i ${i/.mnc/_reordered.mnc};
+    lut="1 1; 101 1; 2 2; 102 2; 4 3; 104 3; 5 4; 105 4; 6 5; 106 5;"
+    minclookup -clob -discrete -lut_string "$lut" $i ${i/.mnc/_reordered.mnc};
+    #echo reorder_labels.sh $i ${i/.mnc/_reordered.mnc};
   done
 }
 
-function mon {
+function slide {
   for i in $PWD/tal/*/jon_cropped.mnc; do
     echo $PWD/hippomontage $i ${i/cropped.mnc/labels_cropped_reordered.mnc} $(dirname $i)/montage.png
   done
 }
-function figure {
+
+function mon {
   montage -fill white -geometry +10+10 -tile 2x2 -background black \
     -label "Winterburn Segmentation (0.3mm-isotropic voxel)" tal/0.3/montage.png \
     -label "Winterburn Resampled (0.9mm-isotropic voxel)"    tal/0.9_resampled/montage.png \
     -label "MAGeT BRAVO (0.9mm-isotropic voxel)"     tal/0.9_bravo/montage.png \
     -label "MAGeT Brain segmentation of Winterburn Resampled" tal/0.9_mb/montage.png \
-    -pointsize 28 figure.png
+    -pointsize 28 montage.png
+  inkscape --export-pdf=figure.pdf figure.svg
 }
 
 $@

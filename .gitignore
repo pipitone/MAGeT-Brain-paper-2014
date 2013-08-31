@@ -11,4 +11,5 @@ cache
 .Rproj.user
 paper.dvi
 paper.idv
+*.mnc
 *~

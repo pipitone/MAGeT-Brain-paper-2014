@@ -53,15 +53,15 @@ for slice in {0..6}; do
     $dir/${bn}_axi_$slice.png
 
   # label
-   lbn=$(basename $label .mnc)
-  range="-image_range 0 12"
-  mincpik -axial -lookup -spectral $range -slice $cor_slice  $clobber \
+  lbn=$(basename $label .mnc)
+  range="-image_range 0 6"
+  mincpik+ -filter point -axial -lookup -spectral $range -slice $cor_slice  $clobber \
     $label $dir/${lbn}_cor_$slice.png
-  mincpik -sagittal -lookup -spectral $range -slice $sagl_slice $clobber \
+  mincpik+ -filter point -sagittal -lookup -spectral $range -slice $sagl_slice $clobber \
     $label $dir/${lbn}_sagl_$slice.png
-  mincpik -sagittal -lookup -spectral $range -slice $sagr_slice $clobber \
+  mincpik+ -filter point -sagittal -lookup -spectral $range -slice $sagr_slice $clobber \
     $label $dir/${lbn}_sagr_$slice.png
-  mincpik -coronal -lookup -spectral $range -slice $axi_slice  $clobber \
+  mincpik+ -filter point -coronal -lookup -spectral $range -slice $axi_slice  $clobber \
     $label $dir/${lbn}_axi_$slice.png
 
   # overlay
@@ -76,7 +76,7 @@ for slice in {0..6}; do
     $dir/${bn}_axi_$slice.png $dir/${lbn}_axi_$slice.png $dir/${bn}_axi_overlay_$slice.png
 
   # slice
-  montage -fill white -geometry x200+5+5 -tile 1x4 -background black \
+  montage -fill white -geometry +5+5 -tile 1x4 -background black \
     -label "z = ${cor_coords__[$slice]}mm" $dir/${bn}_cor_overlay_$slice.png \
     -label "x = ${sag_coords_l[$slice]}mm"   $dir/${bn}_sagl_overlay_$slice.png \
     -label "x = ${sag_coords_r[$slice]}mm"   $dir/${bn}_sagr_overlay_$slice.png \
