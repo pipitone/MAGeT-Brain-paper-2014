@@ -64,16 +64,17 @@ for slice in {0..6}; do
   mincpik+ -filter point -coronal -lookup -spectral $range -slice $axi_slice  $clobber \
     $label $dir/${lbn}_axi_$slice.png
 
+  # label mask 
+  convert $dir/${lbn}_cor_$slice.png -transparent black  $dir/${lbn}_cor_mask_$slice.png 
+  convert $dir/${lbn}_sagl_$slice.png -transparent black $dir/${lbn}_sagl_mask_$slice.png 
+  convert $dir/${lbn}_sagr_$slice.png -transparent black $dir/${lbn}_sagr_mask_$slice.png 
+  convert $dir/${lbn}_axi_$slice.png -transparent black  $dir/${lbn}_axi_mask_$slice.png 
+
   # overlay
-  compose="-compose Plus"
-  composite $compose -tile -gravity south  \
-    $dir/${bn}_cor_$slice.png $dir/${lbn}_cor_$slice.png $dir/${bn}_cor_overlay_$slice.png
-  composite $compose -tile -gravity south  \
-    $dir/${bn}_sagl_$slice.png $dir/${lbn}_sagl_$slice.png $dir/${bn}_sagl_overlay_$slice.png
-  composite $compose -tile -gravity south  \
-    $dir/${bn}_sagr_$slice.png $dir/${lbn}_sagr_$slice.png $dir/${bn}_sagr_overlay_$slice.png
-  composite $compose -tile -gravity south  \
-    $dir/${bn}_axi_$slice.png $dir/${lbn}_axi_$slice.png $dir/${bn}_axi_overlay_$slice.png
+  composite $dir/${lbn}_cor_mask_$slice.png  $dir/${bn}_cor_$slice.png  $dir/${bn}_cor_overlay_$slice.png
+  composite $dir/${lbn}_sagl_mask_$slice.png $dir/${bn}_sagl_$slice.png $dir/${bn}_sagl_overlay_$slice.png
+  composite $dir/${lbn}_sagr_mask_$slice.png $dir/${bn}_sagr_$slice.png $dir/${bn}_sagr_overlay_$slice.png
+  composite $dir/${lbn}_axi_mask_$slice.png  $dir/${bn}_axi_$slice.png  $dir/${bn}_axi_overlay_$slice.png
 
   # slice
   montage -fill white -geometry +5+5 -tile 1x4 -background black \

@@ -1179,7 +1179,7 @@ schizophrenia patients, using the Winterburn atlases and a template library of
 segmentations are used as a gold standard. 
 
 \begin{figure}
-<<FEP-volumes,cache=FALSE,dependson="setup">>=
+<<FEP-volumes,cache=TRUE,dependson="setup">>=
 SZ_volumes=read.csv("data/SZ_volumes_by_method.csv", sep="\t")
 mean_sz_vols = ddply(SZ_volumes, c('Subject', 'Method'), function (df) {
   data.frame(Volume = mean(df$Volume))})
