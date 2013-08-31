@@ -1,0 +1,88 @@
+#!/bin/bash
+# create a hippocampal montage similar to that of Collins et al. 2010
+#
+# Assume the input image is in talairach space, and appropriately cropped
+#
+
+set -e  # stop on error
+image=$1
+label=$2
+output=$3
+
+cor_coords__=(-28 -25 -22 -19 -16 -13 -10) # z-axis
+cor_coords__=(-22 -19 -16 -13 -10  -7  -4) # z-axis
+sag_coords_l=(-36 -33 -30 -27 -24 -21 -18) # x-axis
+sag_coords_r=( 36  33  30  27  24  21  18) # x-axis
+axi_coords__=( -9 -14 -19 -24 -29 -34 -39) # y-axis
+
+function e {
+  echo $@
+  $@
+} 
+
+clobber="-clobber"
+bn=$(basename $image .mnc)
+
+# clamp 
+max=$(mincstats -max -quiet $image)
+min=$(mincstats -min -quiet $image)
+#minccalc -clob -quiet -expression "100*((A[0]-$min)/(${max}-${min}))" $image $(dirname $image)/${bn}_clamped.mnc
+dir=$(dirname $image)
+#image=$dir/${bn}_clamped.mnc
+
+for slice in {0..6}; do 
+  echo Slice $slice
+  # image
+  read -a cor_coord  <<< $(worldtovoxel  $image 0 0 ${cor_coords__[$slice]})
+  read -a sagl_coord <<< $(worldtovoxel $image ${sag_coords_l[$slice]} 0 0) 
+  read -a sagr_coord <<< $(worldtovoxel $image ${sag_coords_r[$slice]} 0 0) 
+  read -a axi_coord  <<< $(worldtovoxel  $image 0 ${axi_coords__[$slice]} 0)
+
+  cor_slice=${cor_coord[0]/.*}
+  sagl_slice=${sagl_coord[2]/.*}
+  sagr_slice=${sagr_coord[2]/.*}
+  axi_slice=${axi_coord[1]/.*}
+
+  mincpik -axial -slice $cor_slice $image $clobber \
+    $dir/${bn}_cor_$slice.png 
+  mincpik -sagittal -slice $sagl_slice $image $clobber \
+    $dir/${bn}_sagl_$slice.png 
+  mincpik -sagittal -slice $sagr_slice $image $clobber \
+    $dir/${bn}_sagr_$slice.png
+  mincpik -coronal -slice $axi_slice  $image $clobber \
+    $dir/${bn}_axi_$slice.png
+
+  # label
+   lbn=$(basename $label .mnc)
+  range="-image_range 0 12"
+  mincpik -axial -lookup -spectral $range -slice $cor_slice  $clobber \
+    $label $dir/${lbn}_cor_$slice.png
+  mincpik -sagittal -lookup -spectral $range -slice $sagl_slice $clobber \
+    $label $dir/${lbn}_sagl_$slice.png
+  mincpik -sagittal -lookup -spectral $range -slice $sagr_slice $clobber \
+    $label $dir/${lbn}_sagr_$slice.png
+  mincpik -coronal -lookup -spectral $range -slice $axi_slice  $clobber \
+    $label $dir/${lbn}_axi_$slice.png
+
+  # overlay
+  compose="-compose Plus"
+  composite $compose -tile -gravity south  \
+    $dir/${bn}_cor_$slice.png $dir/${lbn}_cor_$slice.png $dir/${bn}_cor_overlay_$slice.png
+  composite $compose -tile -gravity south  \
+    $dir/${bn}_sagl_$slice.png $dir/${lbn}_sagl_$slice.png $dir/${bn}_sagl_overlay_$slice.png
+  composite $compose -tile -gravity south  \
+    $dir/${bn}_sagr_$slice.png $dir/${lbn}_sagr_$slice.png $dir/${bn}_sagr_overlay_$slice.png
+  composite $compose -tile -gravity south  \
+    $dir/${bn}_axi_$slice.png $dir/${lbn}_axi_$slice.png $dir/${bn}_axi_overlay_$slice.png
+
+  # slice
+  montage -fill white -geometry x200+5+5 -tile 1x4 -background black \
+    -label "z = ${cor_coords__[$slice]}mm" $dir/${bn}_cor_overlay_$slice.png \
+    -label "x = ${sag_coords_l[$slice]}mm"   $dir/${bn}_sagl_overlay_$slice.png \
+    -label "x = ${sag_coords_r[$slice]}mm"   $dir/${bn}_sagr_overlay_$slice.png \
+    -label "y = ${axi_coords__[$slice]}mm"   $dir/${bn}_axi_overlay_$slice.png \
+    $dir/${bn}_slice_$slice.png
+  slices="$slices $dir/${bn}_slice_$slice.png"
+done
+
+montage -tile 7x1 -background black -geometry +0+0 $slices $output

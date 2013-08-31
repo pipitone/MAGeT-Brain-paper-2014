@@ -44,8 +44,9 @@ lm_eqn = function(m) {
 \usepackage{algorithm, color, algpseudocode, amsmath, url, geometry, ctable}
 \usepackage{titlesec, siunitx, graphicx}
 \usepackage[round,authoryear]{natbib}
-\usepackage[section]{placeins}  % keep floats in their place.
-\usepackage{authblk}            % Listing Author affiliations
+\usepackage[section]{placeins}   % keep floats in their place.
+\usepackage{authblk}             % Listing Author affiliations
+\usepackage{rotating}            % rotating figures
 \usepackage[hypcap]{caption}
 
 
@@ -1150,20 +1151,17 @@ ggplot(melted, aes(y=percenterr,x=region,colour=measure)) +
   \label{fig:WAval-vol-boxplot}
 \end{figure}
 
-
-\begin{figure}
-  \begin{centering}
-    \includegraphics[width=6in]{figure/subfield-montage.pdf}
-  \end{centering}
-  \caption{Sagittal slices from two subjects showing a comparison of the
-  original Winterburn atlas subfield segmentations (at 0.3mm-isotropic voxel
-  resolution), the subsampled Winterburn segmentations (at 0.9mm-isotropic
-  voxel resolution), and the \mb labels on the subsampled atlas image.}
-  \label{fig:subfield-montage}
-\end{figure}
-
-\todo[inline]{Figure \ref{fig:subfield-montage}. Show MAGeT segmentations on
-BRAVO images.  Also, show coronal/transverse slices and MNI coordinates}
+\begin{sidewaysfigure}
+    \begin{centering}
+      \includegraphics[width=\linewidth]{figure/winterburn-atlas-montage/figure.pdf}
+    \end{centering}
+    \caption{Detailed subfield segmentation results of a single subject comparing the
+    original Winterburn atlas subfield segmentation (at 0.3mm-isotropic voxel
+    resolution), the Winterburn segmentation resampled (at 0.9mm-isotropic
+    voxel resolution), the \mb segmentation of the subsampled atlas image, and
+    the \mb segmentation of a separate T1 BRAVO acquisition of the subject.}
+    \label{fig:subfield-montage}
+\end{sidewaysfigure}
 
 \FloatBarrier
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1393,7 +1391,7 @@ with respect to the \gs rating, and vice versa. }
   \begin{centering}
     \includegraphics[width=6in]{figure/ADNI1_SNT_MB_montage/montage.pdf}
   \end{centering}
-  \caption{SNT \\gs and MAGeT segmentations for 30 ADNI1 subjects (10
+  \caption{SNT \gs and MAGeT segmentations for 30 ADNI1 subjects (10
   subjects randomly selected from each disease category in the subject pool used
   in Experiment 1). Sagittal slices are shown for subject unlabelled T1-weighted
   anatomical image, SNT \gs label (green), and \mb label (blue). Noted are
@@ -1404,9 +1402,6 @@ with respect to the \gs rating, and vice versa. }
   {\em (d)} improper inclusion of the vestigial hippocampal sulcus by \mb.}
   \label{fig:ADNI-subfields}
 \end{figure}
-
-\todo[inline]{Figure \ref{fig:ADNI-subfields}. Show coronal/transverse slices
-and MNI coordinates}
 
 \FloatBarrier
 
@@ -1563,9 +1558,6 @@ choice (provided the input atlases are properly segmented.
 % Wang 2011: 10 rounds of MCCV with 20 atlases and 20 subjects, chosen from 
 %            a pool of 139 images
 
-
-\todo[inline]{could we be seeing a ceiling effect... reaching the limit of what
-is achievable with a multi-atlas-based segmentation method}
 
 In comparison to other methodologies in the field \mb performs favourably. Table
 \ref{tab:other-methods} surveys some of the most recent reported kappa values on
