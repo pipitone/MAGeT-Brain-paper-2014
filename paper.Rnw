@@ -72,16 +72,17 @@ lm_eqn = function(m) {
 
 
 % title and authors
-\title{Bootstrapping Multi-atlas Hippocampal Segmentation with \mb}
+\title{Bootstrapping Multi-atlas Hippocampal Subfield Segmentation by using
+Multiple Automatically Generated Templates}
 \author[1]{Jon Pipitone}
 \author[1]{Matt T. Park}
 \author[1]{Julie Winterburn}
-\author[1,7]{Tristram A. Lett}
+\author[1,8]{Tristram A. Lett}
 \author[2,3]{Jason P. Lerch}
-\author[4]{Jens C. Pruessner}
+\author[4,5]{Jens C. Pruessner}
 \author[4]{Martin Lepage}
-\author[1,5,7]{Aristotle N. Voineskos}
-\author[1,5,6]{M. Mallar Chakravarty}
+\author[1,6,8]{Aristotle N. Voineskos}
+\author[1,6,7]{M. Mallar Chakravarty}
 \author[ ]{Alzheimer's Disease Neuroimaging Initiative}
 \affil[1]{Kimel Family Translational Imaging-Genetics Lab, Centre for Addiction and
 Mental Health, Toronto, ON, Canada}
@@ -89,11 +90,12 @@ Mental Health, Toronto, ON, Canada}
 ON,Canada}
 \affil[3]{Department of Medical Biophysics, University of Toronto, Toronto, ON,
 Canada}
-\affil[4]{Brain Imaging Group, Douglas Hospital Research Centre, Verdun, QC, Canada}
-\affil[5]{Department of Psychiatry, University of Toronto, Toronto, ON, Canada}
-\affil[6]{Institute of Biomedical Engineering, University of Toronto, Toronto,
+\affil[4]{Douglas Mental Health University Institute, Verdun, QC, Canada}
+\affil[5]{Department of Psychiatry, McGill University, Montreal, QC, Canada}
+\affil[6]{Department of Psychiatry, University of Toronto, Toronto, ON, Canada}
+\affil[7]{Institute of Biomedical Engineering, University of Toronto, Toronto,
 ON, Canada}
-\affil[7]{Institute of Medical Science, University of Toronto, Toronto, ON, Canada}
+\affil[8]{Institute of Medical Science, University of Toronto, Toronto, ON, Canada}
 
 \renewcommand\Authands{ and }
 
@@ -685,7 +687,7 @@ segmentations.
 All patients were recruited and treated through the Prevention and Early
 Intervention Program for Psychoses (PEPP-Montreal), a specialized early
 intervention service at the Douglas Mental Health University Institute in
-Montreal, Canada. People aged 15 to 30 years from the local catchment area
+Montreal, Canada. People aged 14 to 35 years from the local catchment area
 suffering from either affective or non-affective psychosis who had not taken
 antipsychotic medication for more than one month with an IQ above 70 were
 consecutively admitted as either in- or out-patients. Of those treated at PEPP,
