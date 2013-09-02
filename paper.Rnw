@@ -1,7 +1,7 @@
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % TODO: 
-%  - check tense: we are is have has 
+%  - check tense: we are is have has  use/used find/found
 % Sweave/Knitr init
 <<setup, include=FALSE, cache=FALSE>>=
 library(knitr)
@@ -81,7 +81,7 @@ Multiple Automatically Generated Templates}
 \author[4]{Martin Lepage}
 \author[1,6,8]{Aristotle N. Voineskos}
 \author[1,6,7]{M. Mallar Chakravarty}
-\author[ ]{and the Alzheimer's Disease Neuroimaging Initiative\footnote{Data
+\author[ ]{the Alzheimer's Disease Neuroimaging Initiative\footnote{Data
 used in preparation of this article were obtained from the Alzheimer's Disease
 Neuroimaging Initiative (ADNI) database (adni.loni.ucla.edu). As such, the
 investigators within the ADNI contributed to the design and implementation of
@@ -167,7 +167,7 @@ jon.pipitone@camh.ca; mallar.chakravarty@camh.ca}
 The hippocampus is a brain structure situated in the medial temporal
 lobe, and has long been associated with learning and memory
 \citep{DenHeijer2012,Scoville2000}. The hippocampus is of interest to
-neuroscientists because it is implicated in many forms of brain disfunction,
+neuroscientists because it is implicated in many forms of brain dysfunction,
 including Alzheimer's disease \citep{Sabuncu2011} and schizophrenia
 \citep{Narr2004,Karnik-Henry2012}. In neuroimaging studies, structural magnetic
 resonance images (MRI) are often used for the volumetric assessment of the
@@ -282,19 +282,18 @@ nonlinear registration guided by manually derived hippocampus masks and specific
 landmarks, the authors demonstrated accurate parcellation of hippocampal
 subfields in unlabelled MRI volumes. 
 
-In this paper we undertake a thorough validation of the \mb algorithm for
-segmentation of the hippocampus. First, we address the feasibility and accuracy
-of whole hippocampus segmentation with a limited number of input atlases by
-performing a multi-fold experiment using a subset of the Alzheimer's Disease
-Neuroimaging Initiative (ADNI) 1 dataset. Based on the parameters we find in our
-experiment, we then validate our algorithm using all of the data available in
-the ADNI Complete 1Yr sample and compare our segmentations to the other
-segmentations that are available through the ADNI informatics portal. To ensure
-that we have not over-fit our parameters to the aging or neurodegenerative
-brain, we also apply our segmentations to a dataset of individuals suffering
-from first episode psychosis. Finally, we perform a leave-one-out validation
-experiment to determine if the subfields can be accurately identified using our
-multi-atlas framework. 
+In this paper we undertook a thorough validation of the \mb algorithm for
+segmentation of the hippocampus. First, we addressed the feasibility and
+accuracy of whole hippocampus segmentation with a limited number of input
+atlases by performing a multi-fold experiment using a subset of the Alzheimer's
+Disease Neuroimaging Initiative (ADNI) dataset over a range of parameters.  We
+then performed a leave-one-out validation to determine if hippocampal subfields
+can be accurately identified using our multi-atlas framework.  To ensure that we
+have not over-fit our parameters to the aging or neurodegenerative brain, we
+also applied our segmentations to a dataset of individuals suffering from first
+episode psychosis.  Finally, validated our algorithm using all of the data
+available in the \adnidataset sample and compare our segmentations to the other
+segmentations available through the ADNI informatics portal. 
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -305,18 +304,18 @@ multi-atlas framework.
 %%%%%                     MAGeT Brain Algorithm                            %%%%%
 
 \subsection{The \mb Algorithm}
-In this paper, we will use the term {\em label} to mean any segmentation (manual or 
+In this paper, we use the term {\em label} to mean any segmentation (manual or
 derived) of an MR image. {\em Label propagation} is the process by which two
 images are registered and the resulting transformation is applied to the labels
-from one image to bring them into alignment with the other image. We will use
-the term {\em atlas} to mean a manually segmented image, and the term {\em
-template} to mean an automatically segmented image (i.e.  via label
-propagation). The terms {\em atlas library} and {\em template library} describe
-any set of such images. Additionally, we will use the term {\em target} to refer
-to an unlabelled image that is undergoing segmentation.
+from one image to bring them into alignment with the other image. We use the
+term {\em atlas} to mean a manually segmented image, and the term {\em template}
+to mean an automatically segmented image (i.e.  via label propagation). The
+terms {\em atlas library} and {\em template library} describe any set of such
+images. Additionally, we use the term {\em target} to refer to an unlabelled
+image that is undergoing segmentation.
 
-The simplest form of multi-atlas segmentation, (which we will call {\em basic 
-multi-atlas segmentation}), involves three steps. First, each labelled 
+The simplest form of multi-atlas segmentation, which we call {\em basic 
+multi-atlas segmentation}, involves three steps. First, each labelled 
 input image (i.e. atlas or template) is registered to an unlabelled target image.
 Second, the labels from each image are propagated to the target image space. 
 Third, the labels are combined into a single label by label fusion
@@ -324,7 +323,7 @@ Third, the labels are combined into a single label by label fusion
 is described in detail in other publications
 \citep{Collins2010,Heckemann2011,Aljabar2009}. When only a single atlas is used,
 basic multi-atlas segmentation degenerates into model-based segmentation: labels
-are propogated from the atlas to a target, and no label fusion is needed.
+are propagated from the atlas to a target, and no label fusion is needed.
 
 \mb ({\textbf M}ultiple {\textbf A}utomatically {\textbf Ge}nerated {\textbf
 T}emplates) bootstraps the creation of a large template library given a limited
@@ -368,8 +367,8 @@ Experiment 2 assesses hippocampal subfield segmentation quality in a
 leave-one-out cross-validation design. The last two experiments assess the
 validity of the \mb algorithm when applied to different diseases: first episode
 schizophrenia (Experiment 3), and Alzheimer's disease (Experiment 4).
-Additionally, in Experiment 4, we compare \mb segmentations with those of
-well-known automated methods and assess segmentation bias. 
+Additionally, in Experiment 4, we compared \mb segmentations with those of
+well-known automated methods and assessed segmentation bias. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%                                                                     %%%%%
@@ -422,7 +421,7 @@ left and right whole hippocampi are made available with a subset of ADNI images
 \citep{Hsu2002}. These labels have been generated using the SNT tool from
 Medtronic Surgical Navigation Technologies, Louisville, CO (see Supplementary
 Materials for detailed discussion of the segmentation process used). Throughout
-this paper, we will use these segmentations as the \gs for comparison. 
+this paper, we use these segmentations as the \gs for comparison. 
 
 Clinical, demographic and pre-processed T1-weighted MRI were downloaded by the
 authors from the ADNI database (adni.loni.ucla.edu) between March 2012 and
@@ -1031,8 +1030,8 @@ ggplot(subset(all_data_mean, (templates.mb*atlases) %% 2 == 1),
         axis.text = element_text(size = 8))
 @
   \caption{Mean Dice's Similarity Coefficient of \mb segmentations relative to
-  SNT \gs segmentations for 69 ADNI1 subjects vs. atlas and template library
-  size, registration algorithm, and label fusion method. Error bars indictate
+  SNT \gs segmentations for 69 ADNI subjects vs. atlas and template library
+  size, registration algorithm, and label fusion method. Error bars indicate
   standard error.
   \label{fig:ADNI1-xval-k-mean}}
 \end{figure}
@@ -1311,7 +1310,7 @@ volume by $2600 mm^3$ and $2800 mm^3$ on average, respectively, and \maper and
 Figure \ref{fig:ADNI-segmentations} shows a qualitative comparison of \mb and 
 SNT \gs hippocampal segmentations for 10 randomly selected subjects in 
 each disease category, and illustrates some of the common errors found during 
-visual inspection. Mostly frequently, we find \mb improperly includes the vestigial
+visual inspection. Mostly frequently, we found \mb improperly includes the vestigial
 hippocampal sulcus and, although not anatomically incorrect, \mb under-estimates 
 the hippocampal body in comparison to the SNT \gs segmentation.  
 
@@ -1446,7 +1445,7 @@ with respect to the \gs rating, and vice versa. }
   \begin{centering}
     \includegraphics[width=6in]{figure/ADNI1_SNT_MB_montage/montage.pdf}
   \end{centering}
-  \caption{SNT \gs and \mb segmentations for 30 ADNI1 subjects (10
+  \caption{SNT \gs and \mb segmentations for 30 ADNI subjects (10
   subjects randomly selected from each disease category in the subject pool used
   in Experiment 1). Sagittal slices are shown for each unlabelled T1-weighted
   anatomical image. SNT \gs labels appear in green, and \mb labels appear in
@@ -1586,7 +1585,7 @@ causing the slight bias observed when using an even number of templates. This is
 another area where the voting scheme could be used to improve performance.
 However, it is worth noting that this limitation was previously identified by
 \citet{Heckemann2006a} and, subsequently, other groups have not even considered
-the potential pitfalls of an even number of candidate labels (eg.
+the potential pitfalls of an even number of candidate labels (e.g.
 \citet{Leung2010}).
 
 Another concern is the moderate-to-small improvement observed in \mb in
@@ -1598,14 +1597,14 @@ that we present in Experiment 1 is amongst one of the most stringent performed
 in the multi-atlas/segmentation literature. To the best of our knowledge, other
 groups using ADNI data for validation do at most a single round of
 leave-one-out-validation (Table \ref{tab:other-methods}), aside from
-\citep{Wang2011} who perform a similarily rigorous validation as us. The
+\citep{Wang2011} who perform a similarly rigorous validation as us. The
 thoroughness of our validation suggests that our results are reflective of a
 true average over the choice of parameter settings and are independent of atlas
 or template choice (provided the input atlases are consistently segmented).  
 
 On that note, it is worth observing that we found the SNT segmentations to be
 poor in general. As previously noted in Figure \ref{fig:ADNI-segmentations}, an
-expert manual rater (JW) identified many inconsistencies: occurances of over-
+expert manual rater (JW) identified many inconsistencies: occurrences of over-
 and under-estimation, as well as misalignments of the entire segmentation
 volume.  Therefore, the use of the SNT segmentations as gold standards in
 Experiments 1 and 4 presents the possibility that the DSC scores and
@@ -1837,8 +1836,8 @@ documented reliability of an intraclass coefficient better than .94
 \bibliographystyle{abbrvnat}
 \bibliography{references}
 
-\section*{R Session Information}
-<<results = "asis">>=
-toLatex(sessionInfo(), locale=FALSE)
-@
+% \section*{R Session Information}
+% <<results = "asis">>=
+% toLatex(sessionInfo(), locale=FALSE)
+% @
 \end{document}
