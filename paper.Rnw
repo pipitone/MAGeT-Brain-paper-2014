@@ -110,14 +110,14 @@ ON, Canada}
 \maketitle
 
 \begin{abstract}
-%Neuroimaging research often relies on automated anatomical segmentations of MR
-%images of the brain. Current multi-atlas based approaches provide accurate
-%segmentations of brain images by propagating manually derived segmentations of
-%specific neuroanatomical structures to unlabelled data. These approaches often
-%rely on a large number of such manually segmented atlases that take significant
-%time and expertise to produce. We present an algorithm for the automatic
-%segmentation of the hippocampus that minimizes the number of atlases needed
-%while still achieving similar accuracy to multi-atlas approaches.
+Neuroimaging research often relies on automated anatomical segmentations of MR
+images of the brain. Current multi-atlas based approaches provide accurate
+segmentations of brain images by propagating manually derived segmentations of
+specific neuroanatomical structures to unlabelled data. These approaches often
+rely on a large number of such manually segmented atlases that take significant
+time and expertise to produce. We present an algorithm for the automatic
+segmentation of the hippocampus that minimizes the number of atlases needed
+while still achieving similar accuracy to multi-atlas approaches.
 \end{abstract}
 
 \parbox{4in}{
@@ -316,7 +316,11 @@ Figure \ref{fig:MAGeT} illustrates the \mb algorithm graphically. Source code
 for \mb can be found at \url{http://github.com/pipitone/MAGeTbrain}.
 
 \begin{figure}
-  \caption{The \mb algorithm \label{fig:MAGeT}}
+  \begin{centering}
+    \includegraphics[width=\textwidth]{figure/MA-MAGeTBrain-Schematic}
+  \end{centering}
+  \caption{A schematic illustration of basic multi-atlas segmentation and \mb
+  segmentation \label{fig:MAGeT}}
 \end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -659,8 +663,8 @@ this experiment.
 %                                     
 <<WAval-healthy-demographics, echo=F, results="asis",cache=FALSE>>=
 master = read.csv('data/DT_study.csv')
-tab <- summary(~Age + Sex + Education + Handedness, 
-               data = master, method="reverse", na.rm = TRUE, test=FALSE)
+tab <- summary( Diagnosis ~ Age + Sex + Education + Handedness, data = master,
+    method="reverse", na.rm = TRUE, test=FALSE)
 caption = 
   "\\textbf{Subfield validation healthy control demographics.}
   CN     - Cognitively Normal. 
