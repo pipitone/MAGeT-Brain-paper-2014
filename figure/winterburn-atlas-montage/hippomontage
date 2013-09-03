@@ -9,80 +9,124 @@ image=$1
 label=$2
 output=$3
 
-cor_coords__=(-28 -25 -22 -19 -16 -13 -10) # z-axis
-cor_coords__=(-22 -19 -16 -13 -10  -7  -4) # z-axis
-sag_coords_l=(-36 -33 -30 -27 -24 -21 -18) # x-axis
-sag_coords_r=( 36  33  30  27  24  21  18) # x-axis
-axi_coords__=( -9 -14 -19 -24 -29 -34 -39) # y-axis
+# slices for the montage
+#cor_slices__=(-28 -25 -22 -19 -16 -13 -10) # z-axis
+cor_slices__=(-22 -19 -16 -13 -10  -7  -4) # z-axis
+sag_slices_l=(-33 -30 -27 -24 -21 -18 -15) # x-axis
+sag_slices_r=( 36  33  30  27  24  21  18) # x-axis
+axi_slices__=(-14 -19 -24 -29 -34 -39 -44) # y-axis
 
-function e {
-  echo $@
-  $@
-} 
+# crop volumes
+# whole volume (-50 -75 -60) 
+#              ( 50  25  40)
+# half volume  (-50 -25 -60) 
+#              (  0  25 -10)
+# 50x50
+#
+crop_vol="-50 -75 -60   0 -25 -10"
+crop_vol="-50 -50 -35   0   0  15"
+cor_crop="  0 -25 -40  50  25   0"
+sag_crop="-50 -25 -35   0  25  15"
+axi_crop="  0 -50 -35  50   0  15"
+
 
 clobber="-clobber"
 bn=$(basename $image .mnc)
 
 # clamp 
-max=$(mincstats -max -quiet $image)
-min=$(mincstats -min -quiet $image)
+#max=$(mincstats -max -quiet $image)
+#min=$(mincstats -min -quiet $image)
 #minccalc -clob -quiet -expression "100*((A[0]-$min)/(${max}-${min}))" $image $(dirname $image)/${bn}_clamped.mnc
 dir=$(dirname $image)
 #image=$dir/${bn}_clamped.mnc
 
+# crop image and labels
+reorder_labels.sh $label ${label/.mnc/_reordered.mnc}
+label=${label/.mnc/_reordered.mnc}
+cor_image=${image/.mnc/_cor_cropped.mnc}
+sag_image=${image/.mnc/_sag_cropped.mnc}
+axi_image=${image/.mnc/_axi_cropped.mnc}
+cor_label=${label/.mnc/_cor_cropped.mnc}
+sag_label=${label/.mnc/_sag_cropped.mnc}
+axi_label=${label/.mnc/_axi_cropped.mnc}
+#minccrop $image $cor_image $cor_crop
+#minccrop $image $sag_image $sag_crop
+#minccrop $image $axi_image $cor_crop
+#minccrop $label $cor_label $cor_crop
+#minccrop $label $sag_label $sag_crop
+#minccrop $label $axi_label $cor_crop
+
+minccrop $image $cor_image $crop_vol
+minccrop $image $sag_image $crop_vol
+minccrop $image $axi_image $crop_vol
+minccrop $label $cor_label $crop_vol
+minccrop $label $sag_label $crop_vol
+minccrop $label $axi_label $crop_vol
+
+echo Volume info:
+mincinfo $cor_image
+
 for slice in {0..6}; do 
   echo Slice $slice
   # image
-  read -a cor_coord  <<< $(worldtovoxel  $image 0 0 ${cor_coords__[$slice]})
-  read -a sagl_coord <<< $(worldtovoxel $image ${sag_coords_l[$slice]} 0 0) 
-  read -a sagr_coord <<< $(worldtovoxel $image ${sag_coords_r[$slice]} 0 0) 
-  read -a axi_coord  <<< $(worldtovoxel  $image 0 ${axi_coords__[$slice]} 0)
+  read -a cor_slice_f  <<< $(worldtovoxel $cor_image 0 0 ${cor_slices__[$slice]})
+  read -a sagl_slice_f <<< $(worldtovoxel $sag_image ${sag_slices_l[$slice]} 0 0) 
+#  read -a sagr_slice_f <<< $(worldtovoxel $sag_image ${sag_slices_r[$slice]} 0 0) 
+  read -a axi_slice_f  <<< $(worldtovoxel $axi_image 0 ${axi_slices__[$slice]} 0)
 
-  cor_slice=${cor_coord[0]/.*}
-  sagl_slice=${sagl_coord[2]/.*}
-  sagr_slice=${sagr_coord[2]/.*}
-  axi_slice=${axi_coord[1]/.*}
+  cor_slice=${cor_slice_f[0]/.*}
+  sagl_slice=${sagl_slice_f[2]/.*}
+#  sagr_slice=${sagr_slice_f[2]/.*}
+  axi_slice=${axi_slice_f[1]/.*}
 
-  mincpik -axial -slice $cor_slice $image $clobber \
+  echo ... image slice. 
+  echo "[cor slice $cor_slice]"
+  mincpik -axial -slice $cor_slice $cor_image $clobber \
     $dir/${bn}_cor_$slice.png 
-  mincpik -sagittal -slice $sagl_slice $image $clobber \
+  echo "[sag slice $sagl_slice]"
+  mincpik -sagittal -slice $sagl_slice $sag_image $clobber \
     $dir/${bn}_sagl_$slice.png 
-  mincpik -sagittal -slice $sagr_slice $image $clobber \
-    $dir/${bn}_sagr_$slice.png
-  mincpik -coronal -slice $axi_slice  $image $clobber \
+#  mincpik -sagittal -slice $sagr_slice $sag_image $clobber \
+#    $dir/${bn}_sagr_$slice.png
+  echo "[axi slice $axi_slice]"
+  mincpik -coronal -slice $axi_slice  $axi_image $clobber \
     $dir/${bn}_axi_$slice.png
 
   # label
+  echo ... label slice.
   lbn=$(basename $label .mnc)
-  range="-image_range 0 6"
+  range="-image_range 0 12"
   mincpik+ -filter point -axial -lookup -spectral $range -slice $cor_slice  $clobber \
-    $label $dir/${lbn}_cor_$slice.png
+    $cor_label $dir/${lbn}_cor_$slice.png
   mincpik+ -filter point -sagittal -lookup -spectral $range -slice $sagl_slice $clobber \
-    $label $dir/${lbn}_sagl_$slice.png
-  mincpik+ -filter point -sagittal -lookup -spectral $range -slice $sagr_slice $clobber \
-    $label $dir/${lbn}_sagr_$slice.png
+    $sag_label $dir/${lbn}_sagl_$slice.png
+#  mincpik+ -filter point -sagittal -lookup -spectral $range -slice $sagr_slice $clobber \
+#    $sag_label $dir/${lbn}_sagr_$slice.png
   mincpik+ -filter point -coronal -lookup -spectral $range -slice $axi_slice  $clobber \
-    $label $dir/${lbn}_axi_$slice.png
+    $axi_label $dir/${lbn}_axi_$slice.png
 
   # label mask 
+  echo ... label mask.
   convert $dir/${lbn}_cor_$slice.png -transparent black  $dir/${lbn}_cor_mask_$slice.png 
   convert $dir/${lbn}_sagl_$slice.png -transparent black $dir/${lbn}_sagl_mask_$slice.png 
-  convert $dir/${lbn}_sagr_$slice.png -transparent black $dir/${lbn}_sagr_mask_$slice.png 
+#  convert $dir/${lbn}_sagr_$slice.png -transparent black $dir/${lbn}_sagr_mask_$slice.png 
   convert $dir/${lbn}_axi_$slice.png -transparent black  $dir/${lbn}_axi_mask_$slice.png 
 
   # overlay
+  echo ... overlay.
   composite $dir/${lbn}_cor_mask_$slice.png  $dir/${bn}_cor_$slice.png  $dir/${bn}_cor_overlay_$slice.png
   composite $dir/${lbn}_sagl_mask_$slice.png $dir/${bn}_sagl_$slice.png $dir/${bn}_sagl_overlay_$slice.png
-  composite $dir/${lbn}_sagr_mask_$slice.png $dir/${bn}_sagr_$slice.png $dir/${bn}_sagr_overlay_$slice.png
+#  composite $dir/${lbn}_sagr_mask_$slice.png $dir/${bn}_sagr_$slice.png $dir/${bn}_sagr_overlay_$slice.png
   composite $dir/${lbn}_axi_mask_$slice.png  $dir/${bn}_axi_$slice.png  $dir/${bn}_axi_overlay_$slice.png
 
   # slice
-  montage -fill white -geometry +5+5 -tile 1x4 -background black \
-    -label "z = ${cor_coords__[$slice]}mm" $dir/${bn}_cor_overlay_$slice.png \
-    -label "x = ${sag_coords_l[$slice]}mm"   $dir/${bn}_sagl_overlay_$slice.png \
-    -label "x = ${sag_coords_r[$slice]}mm"   $dir/${bn}_sagr_overlay_$slice.png \
-    -label "y = ${axi_coords__[$slice]}mm"   $dir/${bn}_axi_overlay_$slice.png \
+  echo ... montage.
+  montage -fill white -geometry +5+5 -tile 1x3 -background black \
+    -label "z = ${cor_slices__[$slice]}mm" $dir/${bn}_cor_overlay_$slice.png \
+    -label "x = ${sag_slices_l[$slice]}mm"   $dir/${bn}_sagl_overlay_$slice.png \
+    -label "y = ${axi_slices__[$slice]}mm"   $dir/${bn}_axi_overlay_$slice.png \
     $dir/${bn}_slice_$slice.png
+#    -label "x = ${sag_slices_r[$slice]}mm"   $dir/${bn}_sagr_overlay_$slice.png \
   slices="$slices $dir/${bn}_slice_$slice.png"
 done
 

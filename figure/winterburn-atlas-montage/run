@@ -74,8 +74,8 @@ function reorder {
 }
 
 function slide {
-  for i in $PWD/tal/*/jon_cropped.mnc; do
-    echo $PWD/hippomontage $i ${i/cropped.mnc/labels_cropped_reordered.mnc} $(dirname $i)/montage.png
+  for i in $PWD/tal/*/jon.mnc; do
+    echo $PWD/hippomontage $i ${i/.mnc/_labels.mnc} $(dirname $i)/montage.png
   done
 }
 

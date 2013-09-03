@@ -11,4 +11,4 @@ ends=($(worldtovoxel $src ${extents[@]:3:3}))
 length=( $((${ends[0]/.*} - ${starts[0]/.*})) $((${ends[1]/.*} - ${starts[1]/.*})) $((${ends[2]/.*} - ${starts[2]/.*})) )
 
 echo mincreshape -start ${starts[0]/.*},${starts[1]/.*},${starts[2]/.*} -count ${length[0]},${length[1]},${length[2]} $src $target
-mincreshape -start ${starts[0]/.*},${starts[1]/.*},${starts[2]/.*} -count ${length[0]},${length[1]},${length[2]} $src $target
+mincreshape -clobber -start ${starts[0]/.*},${starts[1]/.*},${starts[2]/.*} -count ${length[0]},${length[1]},${length[2]} $src $target
