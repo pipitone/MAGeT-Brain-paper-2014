@@ -9,6 +9,7 @@ help:
 
 # cache  :: rebuild the cache of munged data
 cache: 
+	mkdir -p data/cache
 	$(RSCRIPT) --vanilla < cache_analysis.R 
 
 # paper  :: produce the paper
