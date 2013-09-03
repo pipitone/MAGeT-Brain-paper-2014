@@ -81,11 +81,11 @@ function slide {
 
 function mon {
   montage -fill white -geometry +10+10 -tile 2x2 -background black \
-    -label "Winterburn Segmentation (0.3mm-isotropic voxel)" tal/0.3/montage.png \
-    -label "Winterburn Resampled (0.9mm-isotropic voxel)"    tal/0.9_resampled/montage.png \
-    -label "MAGeT BRAVO (0.9mm-isotropic voxel)"     tal/0.9_bravo/montage.png \
-    -label "MAGeT Brain segmentation of Winterburn Resampled" tal/0.9_mb/montage.png \
-    -pointsize 28 montage.png
+    -label "Winterburn atlas manual segmentation\n(0.3mm-isotropic voxels)" tal/0.3/montage.png \
+    -label "Winterburn atlas manual segmentation resampled\n(0.9mm-isotropic voxels)"    tal/0.9_resampled/montage.png \
+    -label "MAGeT-Brain segmentation of Winterburn atlas resampled image\n(0.9mm-isotropic voxels)" tal/0.9_mb/montage.png \
+    -label "MAGeT-Brain segmentation of T1 BRAVO image\n(0.9mm-isotropic voxels)"     tal/0.9_bravo/montage.png \
+    -pointsize 20 montage.png
   inkscape --export-pdf=figure.pdf figure.svg
 }
 

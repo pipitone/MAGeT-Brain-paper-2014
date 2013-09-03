@@ -15,6 +15,7 @@ cor_slices__=(-22 -19 -16 -13 -10  -7  -4) # z-axis
 sag_slices_l=(-33 -30 -27 -24 -21 -18 -15) # x-axis
 sag_slices_r=( 36  33  30  27  24  21  18) # x-axis
 axi_slices__=(-14 -19 -24 -29 -34 -39 -44) # y-axis
+axi_slices__=(-12 -14 -20 -26 -32 -38 -44) # y-axis
 
 # crop volumes
 # whole volume (-50 -75 -60) 
@@ -96,15 +97,18 @@ for slice in {0..6}; do
   echo ... label slice.
   lbn=$(basename $label .mnc)
   range="-image_range 0 12"
-  mincpik+ -filter point -axial -lookup -spectral $range -slice $cor_slice  $clobber \
+  lookup="-spectral"
+  lookup="-discrete -lookup_table label_colors.map"
+  mincpik+ -filter point -axial -lookup "$lookup" $range -slice $cor_slice  $clobber \
     $cor_label $dir/${lbn}_cor_$slice.png
-  mincpik+ -filter point -sagittal -lookup -spectral $range -slice $sagl_slice $clobber \
+  mincpik+ -filter point -sagittal -lookup "$lookup" $range -slice $sagl_slice $clobber \
     $sag_label $dir/${lbn}_sagl_$slice.png
-#  mincpik+ -filter point -sagittal -lookup -spectral $range -slice $sagr_slice $clobber \
+#  mincpik+ -filter point -sagittal $lookup $range -slice $sagr_slice $clobber \
 #    $sag_label $dir/${lbn}_sagr_$slice.png
-  mincpik+ -filter point -coronal -lookup -spectral $range -slice $axi_slice  $clobber \
+  mincpik+ -filter point -coronal -lookup "$lookup" $range -slice $axi_slice  $clobber \
     $axi_label $dir/${lbn}_axi_$slice.png
 
+  echo blah
   # label mask 
   echo ... label mask.
   convert $dir/${lbn}_cor_$slice.png -transparent black  $dir/${lbn}_cor_mask_$slice.png 
