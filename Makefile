@@ -38,3 +38,9 @@ dist: paper.tex
 # clean  :: remove generated files
 clean:
 	rm -f *.aux *.log *.bbl *.blg paper.pdf *.tex
+
+.PHONY:letters
+letters: 
+	pdflatex letters/neuroimage.tex
+	pdflatex letters/neuroimage.tex
+	pdflatex letters/neuroimage.tex
