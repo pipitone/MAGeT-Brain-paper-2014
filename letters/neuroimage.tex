@@ -1,5 +1,16 @@
-\documentclass{letter}
+\documentclass[12pt]{letter}
 \usepackage{hyperref}
+
+% page counting, header/footer
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{graphicx}
+
+\pagestyle{fancy}
+\fancyhead[RO,RE]{\includegraphics[width=3cm]{letters/camh_logo.png}}
+%\renewcommand{\headheight}{24pt}
+%\renewcommand{\footrulewidth}{0.4pt}
+
 \signature{Jon Pipitone \\
 Kimel Family Translational Imaging-Genetics Laboratory \\
 Research Imaging Centre \\
@@ -10,6 +21,7 @@ Toronto, Ontario}
  
 \begin{letter}{Editorial Board, Neuroimage}
 \opening{Dear Sir or Madam:}
+\thispagestyle{fancy}
 
 Please find enclosed our manuscript entitled, {\em Bootstrapping Multi-atlas
 Segmentation Using Multiple Automatically Generated Templates for the
@@ -18,22 +30,28 @@ colleagues.
 
 In this manuscript we describe a novel automated MRI hippocampal segmentation
 algorithm optimised to perform well with only a small number of manually
-segmented training images. We believe this is an important contribution since
-the expertise and effort needed to perform manual segmentations can be
-prohibitive for many clinicians and researchers, and yet when one-of-a-kind or
-modifications to existing segmentations need to be made, existing automated
-methods require 30-80 training inputs.
+segmented training images. We believe this is an important contribution because
+the expertise and effort needed to perform manual segmentation can be
+prohibitive for many clinicians and researchers, and yet existing automated
+methods generally require between 30 to 80 training segmentations. This
+situation makes it infeasible to use these methods for segmentations based on
+histological-based digital segmentations (because of their rarity),
+high-resolution digital atlases (because of the time needed to segment these
+images), or when exploring the effect of variations on a segmentation protocol.
 
-Our automated segmentation algorithm, mischievously named MAGeT-Brain, takes
-advantage of the neuroanatomical variability that exists in a population that
-is being studied in order to automatically identify the hippocampus and its
-subfields. Our results demonstrate consistent accuracy in the identification of
-the whole hippocampus when compared to "gold-standard" manual segmentations.
-Finally, we have made the our algorithm available publically online for use by
-other groups, and are pursuing the the contribution of our segmentations to the
-Alzheimer's Disease Neuroimaging Initiative image database.
+It is for these reasons that we developed the automated segmentation algorithm,
+mischievously named MAGeT-Brain, which takes advantage of the neuroanatomical
+variability that exists in the target population being studied to bootstrap a
+large template library from a small set of manually segmented images. In this
+manuscript we rigorously validate this approach on multiple disease
+populations, and compare our segmentations with existing popular methods (e.g.
+FSL and FreeSurfer).  Our results demonstrate consistent accuracy in the
+identification of the whole hippocampus when compared to "gold-standard" manual
+segmentations.  Finally, we have made our algorithm available publically online
+for use by other groups, and are pursuing the contribution of our segmentations
+to the Alzheimer's Disease Neuroimaging Initiative image database.
 
-We believe that the techniques we have developed and our findings are a
+We believe that the technique we have developed and our findings are a
 significant contribution to the neuroimaging community, specifically for those
 researchers interested in large scale studies of the hippocampus in the context
 of normal brain function and different forms of brain dysfunction.
@@ -44,7 +62,6 @@ NeuroImage.
  
 \closing{Sincerely,}
  
-%\ps{P.S. You can find the full text of GFDL license at}
 \encl{Manuscript}
  
 \end{letter}

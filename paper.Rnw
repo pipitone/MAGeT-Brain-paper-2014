@@ -77,14 +77,14 @@ lm_eqn = function(m) {
 Generated Templates for the Segmentation of the Whole Hippocampus and
 Subfields}
 \author[1]{Jon Pipitone}
-\author[1]{Matt T. Park}
+\author[1]{Min Tae Park}
 \author[1]{Julie Winterburn}
 \author[1,9]{Tristram A. Lett}
 \author[2,3]{Jason P. Lerch}
-\author[4,5]{Jens C. Pruessner}
-\author[4]{Martin Lepage}
+\author[4]{Jens C. Pruessner}
+\author[4,5]{Martin Lepage}
 \author[1,6,9]{Aristotle N. Voineskos}
-\author[1,6,8]{M. Mallar Chakravarty}
+\author[1,6,7,8]{M. Mallar Chakravarty}
 \author[ ]{the Alzheimer's Disease Neuroimaging Initiative\footnote{Data
 used in preparation of this article were obtained from the Alzheimer's Disease
 Neuroimaging Initiative (ADNI) database (adni.loni.ucla.edu). As such, the
@@ -820,7 +820,7 @@ latex(tab, file="", size="scriptsize",landscape=FALSE, ctable=FALSE,
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%                                                                     %%%%%
-%%%%%         EXPERIMENT 4: Application of \mb{} to the segmentation        %%%%%
+%%%%%         EXPERIMENT 4: Application of \mb{} to the segmentation      %%%%%
 %%%%%                       of ADNI subjects                              %%%%%
 %%%%%                                                                     %%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -834,17 +834,17 @@ project and the resulting segmentations were compared to those determined by
 
 \paragraph{ADNI1 dataset revisited} 
 The {\em \adnidataset{}} standardized dataset contains $1919$ images in total.
-SNT and \freesurfer{} hippocampal volumes for a subset of images were provided by
-ADNI, along with quality control data for each \freesurfer{} segmentation
-(guidelines described in \citep{Hartig2010}).  Clinical and demographic data for
-the entire \adnidataset{} dataset are shown in Table
+SNT, \maper, \freesurfer{} hippocampal volumes for a subset of images were
+provided by ADNI, along with quality control data for each \freesurfer{}
+segmentation (guidelines described in \citep{Hartig2010}).  Clinical and
+demographic data for the entire \adnidataset{} dataset are shown in Table
 \ref{tab:ADNI1-Dataset-Demographics}.
 
 \paragraph{Experiment details} 
 \mb{} was configured with an atlas library composed of the five Winterburn T1
 atlases (described in Experiment 2), and size of template library,
 registration method, and label fusion method were determined by the optimal
-settings found in Experiment 1.  The \freesurfer{} segmentation method was used via
+settings found in Experiment 1.  The \fsl{} segmentation method was used via
 the \verb+run_first_all+ script according to the FIRST user guide
 \footnote{http://fsl.fmrib.ox.ac.uk/fsl/fslwiki/FIRST/UserGuide}.  All images
 in the \adnidataset{} dataset were segmented by both methods. 
@@ -1247,12 +1247,12 @@ ggplot(melted, aes(y=percenterr,x=region,colour=measure)) +
 \FloatBarrier
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%                                                                     %%%%%
-%%%%%    RESULTS: Experiment 3, Application of \mb{} to the segmentation    %%%%%
+%%%%%    RESULTS: Experiment 3, Application of \mb{} to the segmentation  %%%%%
 %%%%%                       of schizophrenia patients                     %%%%%
 %%%%%                                                                     %%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Experiment 3 Results: Application to the segmentation of first episode
-\\ \mb{}ox{schizophrenia patients}}
+\subsection{Experiment 3 Results: Application to the segmentation of first
+episode schizophrenia patients}
  
 In this experiment \mb{} is applied to a dataset of images of first episode
 schizophrenia patients, using the Winterburn atlases and a template library of
@@ -1295,7 +1295,7 @@ Figure \ref{fig:SZ-volumes}).
 %%%%%                                                                     %%%%%
 %%%%%                           RESULTS                                   %%%%%
 %%%%%                                                                     %%%%%
-%%%%%         EXPERIMENT 4: Application of \mb{} to the segmentation        %%%%%
+%%%%%         EXPERIMENT 4: Application of \mb{} to the segmentation      %%%%%
 %%%%%                       of ADNI subjects                              %%%%%
 %%%%%                                                                     %%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1841,6 +1841,41 @@ identification of the hippocampal subfields is possible.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                               Conclusion 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Acknowledgements}
+We wish acknowledge support from the CAMH Foundation, thanks to Michael and
+Sonja Koerner, the Kimel Family, and the Paul E. Garfinkel New Investigator
+Catalyst Award. MMC is funded by the W. Garfield Weston Foundation and ANV is
+funded by the Canadian Institutes of Health Research, Ontario Mental Health
+Foundation, NARSAD, and the National Institute of Mental Health (R01MH099167).
+
+Computations were performed on the gpc supercomputer at the SciNet HPC
+Consortium. SciNet is funded by: the Canada Foundation for Innovation under the
+auspices of Compute Canada; the Government of Ontario; Ontario Research Fund -
+Research Excellence; and the University of Toronto
+
+ADNI Acknowledgements: Data collection and sharing for this project was funded
+by the Alzheimer's Disease Neuroimaging Initiative (ADNI) (National Institutes
+of Health Grant U01 AG024904). ADNI is funded by the National Institute on
+Aging, the National Institute of Biomedical Imaging and Bioengineering, and
+through generous contributions from the following: Abbott; Alzheimer's
+Association; Alzheimer's Drug Discovery Foundation; Amorfix Life Sciences Ltd.;
+AstraZeneca; Bayer HealthCare; BioClinica, Inc.; Biogen Idec Inc.;
+Bristol-Myers Squibb Company; Eisai Inc.; Elan Pharmaceuticals Inc.; Eli Lilly
+and Company; F. Hoffmann-La Roche Ltd and its affiliated company Genentech,
+Inc.; GE Healthcare; Innogenetics, N.V.; IXICO Ltd.; Janssen Alzheimer
+Immunotherapy Research  Development, LLC.; Johnson \& Johnson Pharmaceutical
+Research  Development LLC.; Medpace, Inc.; Merck \& Co., Inc.; Meso Scale
+Diagnostics, LLC.; Novartis Pharmaceuticals Corporation; Pfizer Inc.; Servier;
+Synarc Inc.; and Takeda Pharmaceutical Company. The Canadian Institutes of
+Health Research is providing funds to support ADNI clinical sites in Canada.
+Private sector contributions are facilitated by the Foundation for the National
+Institutes of Health (www.fnih.org). The grantee organization is the Northern
+California Institute for Research and Education, and the study is Rev March 26,
+2012 coordinated by the Alzheimer's disease Cooperative Study at the University
+of California, San Diego. ADNI data are disseminated by the Laboratory for
+NeuroImaging at the University of California, Los Angeles. This research was
+also supported by NIH grants P30 AG010129 and K01 AG030514.
 
 \section{Supplementary Materials}
 
