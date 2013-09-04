@@ -1,0 +1,9 @@
+#!/bin/bash
+tals=/projects/jp/MAGeT/experiments/a2a_ants/input/tal
+
+margin=5
+montage -geometry +$margin+$margin -tile 1x -background black $(head -n10 CN.poster | sed -e 's/$/.png/') CN.poster.png
+montage -geometry +$margin+$margin -tile 1x -background black $(head -n10 MCI.poster | sed -e 's/$/.png/') MCI.poster.png
+montage -geometry +$margin+$margin -tile 1x -background black $(head -n10 AD.poster | sed -e 's/$/.png/') AD.poster.png
+montage -tile x1 -geometry +2+2+ -background black CN.poster.png MCI.poster.png AD.poster.png montage_pic.poster.png
+inkscape --export-pdf=montage.poster.pdf montage.poster.svg
