@@ -1877,6 +1877,9 @@ of California, San Diego. ADNI data are disseminated by the Laboratory for
 NeuroImaging at the University of California, Los Angeles. This research was
 also supported by NIH grants P30 AG010129 and K01 AG030514.
 
+We would also like to thank G. Clinton, E. Hazel, and B. Worrell for inspiring
+this work.
+
 \section{Supplementary Materials}
 
 \subsection{ADNI SNT Hippocampal Labels}

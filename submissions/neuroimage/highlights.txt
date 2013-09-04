@@ -1,0 +1,5 @@
+ - We propose an automated MR image hippocampus (and subfield) segmentation method 
+ - Our method is optimised for use with a small number (< 10) of training images
+ - Consistent, accurate identification of the whole hippocampus and subfields
+ - Validated on healthy, Alzheimer's disease, and first episode schizophrenia subjects
+ - Source code and high-resolution training subfield atlases available online
