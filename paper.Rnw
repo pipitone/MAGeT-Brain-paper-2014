@@ -52,6 +52,9 @@ lm_eqn = function(m) {
 \usepackage[colorinlistoftodos, textwidth=4cm, shadow]{todonotes}
 \usepackage[displaymath, tightpage]{preview}
 \setlength{\marginparwidth}{1.2in}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhead[RO,RE]{draft - f9776d7 - September, 2013}
 
 % styling
 \newcommand{\subsubsubsection}[1]{\paragraph{#1}}
