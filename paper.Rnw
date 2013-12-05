@@ -80,7 +80,7 @@ lm_eqn = function(m) {
 Generated Templates for the Segmentation of the Whole Hippocampus and
 Subfields}
 \author[1]{Jon Pipitone}
-\author[1]{Min Tae Park}
+\author[1]{Matt Min Tae Park}
 \author[1]{Julie Winterburn}
 \author[1,9]{Tristram A. Lett}
 \author[2,3]{Jason P. Lerch}
@@ -460,14 +460,17 @@ yielding a voxel dimensions of $1.25mm \times 1.25mm \times 1.2mm$.
 % ADNI1 X-Validation Dataset Demographics Table
 %
 <<ADNI-Xval-demographics, echo=F, results="asis",cache=FALSE>>=
+jens_RIDs = read.csv('data/jens_RID.csv')
+
 adni_69_RIDs = c(295,413,619,685,729,782,938,954,1018,1155,907,981,222,324,448,
                  546,553,572,602,610,814,1341,675,681,731,1130,41,68,70,101,
                  249,293,316,414,698,1206,1222,1339,751,1030,3,5,10,16,22,53,
                  168,183,241,1205,328,1095,991,213,159,337,343,642,753,1109,
                  1217,29,56,1188,1293,149,382,431,1202)
+
 tab <- summary(DX.bl ~ AGE + PTGENDER + PTEDUCAT + CDRSB + ADAS13 +
                MMSE, data = adnimerge, subset = VISCODE == 'bl' & RID %in%
-               adni_69_RIDs, method = "reverse", test=FALSE, overall=TRUE)
+               jens_RIDs$RID, method = "reverse", test=FALSE, overall=TRUE)
 caption = 
   "\\textbf{ADNI-1 cross-validation subset demographics.} 
   CN     - Cognitively Normal. 
@@ -930,10 +933,10 @@ latex(tab, file="", size="scriptsize",landscape=FALSE, ctable=FALSE,
 % ADNI1-XVAL: prep
 % Prepares the data in a the form needed for plotting.
 <<ADNI1-xval-prep,dependson='ADNI1-xval-load',include=FALSE,cache=TRUE>>=
-all_data  <- read.csv(gzfile('data/cache/ADNI-XVAL:all_data.csv.gz'))
-all_data_mean  <- read.csv(gzfile('data/cache/ADNI-XVAL:all_data_mean.csv.gz'))
+jens_xval_data  <- read.csv(gzfile('data/cache/ADNI-JENS-XVAL:all_data.csv.gz'))
+jens_xval_mean  <- read.csv(gzfile('data/cache/ADNI-JENS-XVAL:all_data_mean.csv.gz'))
 
-mb.best.kappa = mean(subset(all_data_mean, reg_method   == "ANTS" & 
+mb.best.kappa = mean(subset(jens_xval_mean, reg_method   == "ANTS" & 
                                   method.mb    == "Majority Vote" &
                                   templates.mb == 19 & 
                                   atlases      == 9)$k.mb)
@@ -1037,7 +1040,7 @@ vote fusion method used (see Discussion).
 \begin{figure}
 <<fig:ADNI1-xval-k-mean, cache=TRUE, dependson='ADNI1-xval-prep', fig.width=7, fig.height=7>>=
 stderr <- function(x) sqrt(var(x)/length(x))
-ggplot(subset(all_data_mean, (templates.mb*atlases) %% 2 == 1),
+ggplot(subset(jens_xval_mean, (templates.mb*atlases) %% 2 == 1),
        aes(x=templates.mb,y=k.mb, colour=as.factor(atlases))) + #as.factor((atlases*templates.mb) %% 2 ))) + 
   facet_grid(reg_method~method.mb) + 
   stat_summary(fun.y=mean,geom='line',
@@ -1048,10 +1051,11 @@ ggplot(subset(all_data_mean, (templates.mb*atlases) %% 2 == 1),
                geom='errorbar',
                aes(y=k.mb, weight=1, group=as.factor(atlases)), width=0.5) + 
   #stat_smooth(method='lm', formula=y~log(x)) + 
+  scale_y_continuous(breaks=seq(0,1,0.05)) + 
   scale_colour_hue(name="Number of Atlases") +
   xlab( "Number of Templates" ) + 
   ylab( "Mean DSC" ) + 
-  opts(legend.direction = "horizontal", legend.position = "bottom", 
+  theme(legend.direction = "horizontal", legend.position = "bottom", 
         axis.text = element_text(size = 8))
 @
   \caption{Mean Dice's Similarity Coefficient of \mb{} segmentations relative to
@@ -1066,7 +1070,7 @@ ggplot(subset(all_data_mean, (templates.mb*atlases) %% 2 == 1),
 % ADNI1-XVAL: "increase" in mean kappa over multi-atlas
 \begin{figure}
 <<fig:ADN11-xval-k-diff,cache=TRUE,dependson='ADNI1-xval-prep'>>=
-ggplot(subset(all_data_mean, reg_method=="ANTS" & 
+ggplot(subset(jens_xval_mean, reg_method=="ANTS" & 
                 method.mb=="Majority Vote" & (templates.mb*atlases) %% 2 == 1), 
        aes(x=templates.mb, y=k_diff, colour=as.factor(atlases))) + 
   #facet_grid(reg_method~method.y) + 
@@ -1084,7 +1088,7 @@ ggplot(subset(all_data_mean, reg_method=="ANTS" &
   scale_linetype_discrete(guide = "none") + 
   xlab( "Number of Templates" ) + 
   ylab( "Difference in mean DSC" ) +
-  opts(legend.direction = "horizontal", legend.position = "bottom")
+  theme(legend.direction = "horizontal", legend.position = "bottom")
 @
   \caption{Difference in mean Dice's Similarity Coefficient between \mb{} and
   multi-atlas segmentations relative to \gs{} (SNT) segmentations vs. atlas and
@@ -1098,7 +1102,7 @@ ggplot(subset(all_data_mean, reg_method=="ANTS" &
 % ADNI1-XVAL: show variability of MAGeT over parameters
 \begin{figure}
 <<ADN1-Xval-variability, cache=TRUE, dependson='ADNI1-Xval-prep'>>=
-ants = subset(all_data, 
+ants = subset(jens_xval_data, 
                      reg_method=="ANTS" & 
                      method.mb=="Majority Vote" &
                     templates.mb %in% seq(1,20,2))
@@ -1145,7 +1149,7 @@ ggplot(subset(stats.tests, direction > 0 & stat == "Variance"),
   scale_alpha_continuous(guide='none') + 
   scale_linetype_discrete(guide='none') + 
   scale_size_continuous(guide='none') + 
-  opts(legend.direction = "horizontal", legend.position = "bottom")
+  theme(legend.direction = "horizontal", legend.position = "bottom")
 @
   \caption{{\bf Difference in variability of \mb{} vs. multi-atlas segmentation 
   accuracy.}
@@ -1855,7 +1859,11 @@ Foundation, NARSAD, and the National Institute of Mental Health (R01MH099167).
 Computations were performed on the gpc supercomputer at the SciNet HPC
 Consortium. SciNet is funded by: the Canada Foundation for Innovation under the
 auspices of Compute Canada; the Government of Ontario; Ontario Research Fund -
-Research Excellence; and the University of Toronto
+Research Excellence; and the University of Toronto.
+
+In addition, computations were performed on the CAMH Specialized Computing 
+Cluster. The SCC is funded by: The Canada Foundation for Innovation, Research 
+Hospital Fund.
 
 ADNI Acknowledgements: Data collection and sharing for this project was funded
 by the Alzheimer's Disease Neuroimaging Initiative (ADNI) (National Institutes
@@ -1901,6 +1909,296 @@ transformation is used to match the individual brains to a template brain
 labeled and counted to obtain volumes. This method of hippocampal voluming has a
 documented reliability of an intraclass coefficient better than .94
 \citep{Hsu2002}.
+
+\subsection{Experiment 1a: Whole Hippocampus Cross-Validation with SNT 
+\gs Segmentations }
+
+
+Monte Carlo Cross-Validation (MCCV) \citep{Shao1993} was performed using a pool
+of images and SNT \gs{} segmentations from the ADNI dataset \citep{Hsu2002}. This
+form of cross-validation allows us to rigorously validate a large number of
+parameter settings of \mb{} (atlas and template library sizes, registration
+algorithm, and label fusion method) and select the best parameters to use in
+subsequent experiments.
+
+\subsubsection{Methods}
+\paragraph{\adnidataset{} dataset} 
+69 1.5T images were arbitrarily selected from the baseline scans in the {\em
+\adnidataset{}} standardized dataset. 23 subjects were chosen from each disease
+category: cognitively normal (CN), mild cognitive impairment (MCI) and
+Alzheimer's disease (AD). Demographics for this subset are shown in Table
+\ref{tab:ADNI1-xvalidation-demographics}.  Semi-automated segmentations of the
+left and right whole hippocampi are made available with a subset of ADNI images
+\citep{Hsu2002}. These labels have been generated using the SNT tool from
+Medtronic Surgical Navigation Technologies, Louisville, CO (see Supplementary
+Materials for detailed discussion of the segmentation process used). Throughout
+this paper, we use these segmentations as the \gs{} for comparison. 
+
+Clinical, demographic and pre-processed T1-weighted MRI were downloaded by the
+authors from the ADNI database (adni.loni.ucla.edu) between March 2012 and
+August 2012. The image dataset used was the "\adnidataset{}" standardized dataset
+available from ADNI \footnote{
+\url{http://adni.loni.ucla.edu/methods/mri-analysis/adni-standardized-data/}}
+\citep{Wyman2012}. This image collection contains uniformly pre-processed images
+which have been designated to be the "best" after quality control.  All images
+were acquired using 1.5T scanners (General Electric Healthcare, Philips Medical
+Systems or Siemens Medical Solutions) at multiple sites using the protocol
+described in \citep{Jack2008}.  Representative 1.5T imaging parameters were TR =
+2400ms, TI = 1000ms, TE = 3.5ms, flip angle = $8^{\circ}$, field of view = 240 x
+240mm, a $192 \times 192 \times 166$ matrix ($x$, $y$, and $z$ directions)
+yielding a voxel dimensions of $1.25mm \times 1.25mm \times 1.2mm$.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% ADNI1 X-Validation Dataset Demographics Table
+%
+<<ADNI-SNT-Xval-demographics, echo=F, results="asis",cache=FALSE>>=
+adni_69_RIDs = c(295,413,619,685,729,782,938,954,1018,1155,907,981,222,324,448,
+                 546,553,572,602,610,814,1341,675,681,731,1130,41,68,70,101,
+                 249,293,316,414,698,1206,1222,1339,751,1030,3,5,10,16,22,53,
+                 168,183,241,1205,328,1095,991,213,159,337,343,642,753,1109,
+                 1217,29,56,1188,1293,149,382,431,1202)
+
+tab <- summary(DX.bl ~ AGE + PTGENDER + PTEDUCAT + CDRSB + ADAS13 +
+               MMSE, data = adnimerge, subset = VISCODE == 'bl' & RID %in%
+               adni_69_RIDs, method = "reverse", test=FALSE, overall=TRUE)
+caption = 
+  "\\textbf{ADNI1 SNT cross-validation subset demographics.} 
+  CN     - Cognitively Normal. 
+  LMCI   - Late-onset Mild Cognitive Impairment. 
+  AD     - Alzheimer's Disease.  
+  Hisp   - Hispanic. 
+  CDR-SB - Clinical Dementia Rating-Sum of Boxes.  
+  ADAS   - Alzheimer's Disease Assessment Scale.  
+  MMSE   - Mini-Mental State Examination."
+latex(tab, file="", size="scriptsize",landscape=FALSE, ctable=FALSE,
+      caption=caption, caption.loc = c("top"),
+      label="tab:ADNI1-SNT-xvalidation-demographics")
+@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\paragraph{Experiment details} 
+
+Monte Carlo Cross-Validation (MCCV), also known as repeated random sub-sampling
+cross-validation, consists of repeated rounds of validation conducted on a fixed
+dataset \citep{Shao1993}. In each round, the dataset is randomly partitioned into
+a training set and a validation set. The method to be validated is then given
+the training data, and its output is compared with the validation set.
+
+In this experiment, our dataset consists of 69 1.5T images and corresponding \gs{}
+segmentations. In each validation round, the dataset is partitioned into a
+training set consisting of images and \gs{} segmentations used as an atlas
+library, and a validation set consisting of the remaining images segmented by
+both \mb{} and multi-atlas. The computed segmentations were compared to the \gs{}
+segmentations (see below). 
+
+A total of ten validation rounds were performed on each subject in the dataset,
+over each combination of parameter settings. The parameter settings
+explored are: atlas library size (1-9), template library size (1-20),
+registration method (\ants{} or \animal{}, described below), and label fusion method (majority vote,
+cross-correlation weighted majority vote, and normalized mutual information
+weighted majority vote, described below).  A total of $10 \times 69 \times 9
+\times 20 \times 2 \times 3 = \num{7452000}$ validation rounds were conducted,
+resulting in a total of $\num{1490400}$ segmentations analysed. 
+
+Before registration, all images underwent preprocessing with the N3 algorithm
+\citep{Sled1998} to minimize intensity nonuniformity. In this experiment we
+compared two non-linear image registration methods, three label fusion methods. 
+
+The automatically produces labels are compared to the \gs{} SNT labels provided by
+ADNI. The segmentation accuracy reported for a parameter setting is the average
+over ten validation rounds. 
+
+
+% ######################
+\subsubsection{Results}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% ADNI1-XVAL: prep
+% Prepares the data in a the form needed for plotting.
+<<ADNI1-SNT-xval-prep,dependson='ADNI1-xval-load',include=FALSE,cache=TRUE>>=
+snt_xval_data  <- read.csv(gzfile('data/cache/ADNI-SNT-XVAL:all_data.csv.gz'))
+snt_xval_mean  <- read.csv(gzfile('data/cache/ADNI-SNT-XVAL:all_data_mean.csv.gz'))
+
+snt_xval_mb.best = mean(subset(snt_xval_data, reg_method   == "ANTS" & 
+                                  method.mb    == "Majority Vote" &
+                                  templates.mb == 19 & 
+                                  atlases      == 9)$k.mb)
+@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+In this experiment we conducted 10 rounds of \mb{} and multi-atlas segmentation of
+of 69 subjects using atlas and template library sizes varying from 1-9 and 1-20
+images respectively, two registration algorithms (\ants{} or \animal{}), and three
+label fusion techniques (unweighted, cross-correlation, and normalised mutual
+information weighted majority vote).  Hippocampal \mb{}-based segmentations using
+both \animal{} and \ants{} registration algorithms demonstrate good overlap with SNT
+\gs{} segmentations (maximum mean DSC of \Sexpr{round(snt_xval_mb.best, digits=2)}
+when using 9 atlases, 19 templates, ANTS registration, and majority vote label
+fusion); Figure \ref{fig:ADNI1-xval-k-mean}).  Qualitatively, both \animal{} and
+\ants{}-based segmentations demonstrate trend overlap accuracy that increases with
+the size of atlas library and template library. Improvement in accuracy plateaus
+with template libraries larger than ten images. 
+
+The use of \mb{} with \ants{} registration shows a pronounced increase
+in segmentation accuracy over \mb{} with \animal{} registration, across all
+other variable settings we tested. Additionally, by itself, using a weighted
+voting strategy did not significantly improve segmentation accuracy, contrary to
+the findings of \citet{Aljabar2009} in basic multi-atlas segmentation. Given
+these findings, in the remainder of this section only results using the \ants{}
+registration algorithm and majority vote fusion will be shown.
+
+With an increasing number of templates, \mb{} shows improvement over
+multi-atlas-based segmentation in overlap accuracy when using the same number of
+atlases and voting method (Figure \ref{fig:ADNI1-SNT-xval-k-diff}). The two methods
+converge in accuracy when using seven atlases.  Peak improvement in \mb{} accuracy
+(~0.02 DSC) is found when one atlas is used with a template library of 19
+images.
+
+In addition to an improvement in accuracy over multi-atlas-based segmentation,
+\mb{} also shows a decrease in the variability of segmentation accuracy 
+(Figure \ref{ADNI1-SNT-xval-variability}).  The size of template library 
+necessary to reach a decrease ($p < 0.05$) in variance and standard deviation
+grows with the size of atlas library used.  A template library of 19 images is
+sufficient to show significant decrease in variance and standard deviation for
+3-7 atlases. 
+
+We have omitted results obtained when using an even number of atlases or
+templates since with this configuration we found significantly decreased
+performance. We believe this is as a result of an inherent bias in the majority
+vote fusion method used (see Discussion).  
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% ADNI1-XVAL: mean Kappa plot by atlases, templates, reg and voting method. 
+\begin{figure}
+<<fig:ADNI1-SNT-xval-k-mean, cache=TRUE, dependson='ADNI1-xval-prep', fig.width=5, fig.height=5>>=
+stderr <- function(x) sqrt(var(x)/length(x))
+ggplot(subset(snt_xval_mean, (templates.mb*atlases) %% 2 == 1),
+       aes(x=templates.mb,y=k.mb, colour=as.factor(atlases))) + #as.factor((atlases*templates.mb) %% 2 ))) + 
+  facet_grid(reg_method~method.mb) + 
+  stat_summary(fun.y=mean,geom='line',
+               aes(y=k.mb, weight=1, group=as.factor(atlases))) + 
+  stat_summary(fun.y=mean,
+               fun.ymin=function (x) mean(x) - stderr(x),
+               fun.ymax=function (x) mean(x) + stderr(x), 
+               geom='errorbar',
+               aes(y=k.mb, weight=1, group=as.factor(atlases)), width=0.5) + 
+  #stat_smooth(method='lm', formula=y~log(x)) + 
+  scale_y_continuous(breaks=seq(0,1,0.05)) + 
+  scale_colour_hue(name="Number of Atlases") +
+  xlab( "Number of Templates" ) + 
+  ylab( "Mean DSC" ) + 
+  theme(legend.direction = "horizontal", legend.position = "bottom", 
+        axis.text = element_text(size = 8))
+@
+  \caption{Mean Dice's Similarity Coefficient of \mb{} segmentations relative to
+  SNT \gs{} segmentations for 69 ADNI subjects vs. atlas and template library
+  size, registration algorithm, and label fusion method. Error bars indicate
+  standard error.
+  \label{fig:ADNI1-SNT-xval-k-mean}}
+\end{figure}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% ADNI1-XVAL: "increase" in mean kappa over multi-atlas
+\begin{figure}
+<<fig:ADN11-SNT-xval-k-diff,cache=TRUE,dependson='ADNI1-xval-prep', fig.width=5, fig.height=5>>=
+ggplot(subset(snt_xval_mean, reg_method=="ANTS" & 
+                method.mb=="Majority Vote" & (templates.mb*atlases) %% 2 == 1), 
+       aes(x=templates.mb, y=k_diff, colour=as.factor(atlases))) + 
+  #facet_grid(reg_method~method.y) + 
+  stat_summary(fun.data=mean_cl_boot,geom='errorbar',
+               aes(y=k_diff,colour=as.factor(atlases), width=0.2)) +
+  stat_summary(fun.y=mean, geom="point", 
+               aes(y=k_diff,colour=as.factor(atlases))) + 
+  stat_summary(fun.y=mean, geom="line", 
+               aes(y=k_diff,colour=as.factor(atlases))) + 
+  #stat_smooth(method=lm, formula=y~log(x)) + 
+  geom_hline(aes(alpha=0.5, yintercept=0), linetype='dashed') + 
+  scale_x_continuous(breaks=seq(1,20,2)) + scale_y_continuous(breaks=seq(-1,1,by=0.01)) + 
+  scale_colour_hue(name="Number of Atlases") +
+  scale_alpha_continuous(guide = "none") + 
+  scale_linetype_discrete(guide = "none") + 
+  xlab( "Number of Templates" ) + 
+  ylab( "Difference in mean DSC" ) +
+  theme(legend.direction = "horizontal", legend.position = "bottom")
+@
+  \caption{Difference in mean Dice's Similarity Coefficient between \mb{} and
+  multi-atlas segmentations relative to \gs{} (SNT) segmentations vs. atlas and
+  template library size when using the \ants{} registration method, and
+  majority-vote label fusion. Error bars indicate standard error.
+  \label{fig:ADNI1-SNT-xval-k-diff}}
+\end{figure}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% ADNI1-SNT-XVAL: show variability of MAGeT over parameters
+\begin{figure}
+<<ADN1-SNT-Xval-variability, cache=TRUE, dependson='ADNI1-Xval-prep', fig.width=5, fig.width=5>>=
+ants = subset(snt_xval_data, 
+                     reg_method=="ANTS" & 
+                     method.mb=="Majority Vote" &
+                    templates.mb %in% seq(1,20,2))
+
+ants.stats = ddply(ants, c("subject", "label", "atlases","templates.mb"), 
+                   function (df) {
+                     data.frame(
+                       MA.sd  =  sd(df$k.ma),
+                       MB.sd  =  sd(df$k.mb),
+                       MA.var = var(df$k.ma),
+                       MB.var = var(df$k.mb)
+                       )
+                   })
+
+stats.tests = ddply(ants.stats, c("atlases","templates.mb"), function (df) {
+  t.var = t.test(df$MA.var, df$MB.var)
+  t.sd  = t.test(df$MA.sd , df$MB.sd)
+  diff_mean_var = mean(df$MA.var - df$MB.var)
+  diff_mean_sd  = mean(df$MA.sd -  df$MB.sd)
+  
+  # test statistic is positive if MA mean is larger than MB
+  # i.e. that MA has a greater mean of variances/SDs
+  # i.e. that MB has a smaller mean, and so is doing "better"
+  data.frame(
+    stat      = c("Variance", "Standard Deviation"),
+    statistic = c(t.var$statistic, t.sd$statistic),
+    p.value   = c(t.var$p.value, t.sd$p.value),
+    direction = c(diff_mean_var, diff_mean_sd)
+  )
+})
+
+ggplot(subset(stats.tests, direction > 0 & stat == "Variance"), 
+  aes(x=templates.mb, y=p.value, colour=as.factor(atlases))) + 
+  #facet_grid( . ~ stat) + 
+  geom_line(size=1) +
+  geom_point(size=3) + 
+  geom_hline(aes(yintercept=0.05, alpha=0.5), linetype='dashed') + 
+  geom_hline(aes(yintercept=0.01, alpha=0.5), linetype='dashed') + 
+  scale_x_continuous(breaks=seq(1,20,by=2)) + 
+  scale_y_log10(limits=c(0.001,1), breaks=c(0.01,0.05,0.1,1.0)) + 
+  xlab( "Number of Templates" ) + 
+  ylab( "Difference of variance during validation (p-value)") +
+  scale_colour_hue(name="Atlases") +
+  scale_alpha_continuous(guide='none') + 
+  scale_linetype_discrete(guide='none') + 
+  scale_size_continuous(guide='none') + 
+  theme(legend.direction = "horizontal", legend.position = "bottom")
+@
+  \caption{{\bf Difference in variability of \mb{} vs. multi-atlas segmentation 
+  accuracy using SNT \gs.}
+  Variance of segmentation accuracy between \mb{} and multi-atlas segmentation is
+  computed for each subject across all ten rounds of validation. Shown on the
+  y-axis (scaled logarithmically) is the  p-value resulting from a t-test
+  comparing the distribution of variances at each parameter setting
+  (atlas/template library size). Only points where \mb{} mean variability is lower
+  than multi-atlas are shown. Dashed lines indicate a p-value of 0.05 and 0.01.}
+  \label{ADNI1-SNT-xval-variability}
+\end{figure}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
 
 \bibliographystyle{abbrvnat}
 \bibliography{references}

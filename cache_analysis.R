@@ -7,69 +7,81 @@ library(plyr)
 # ADNI1-XVAL: prep
 # Prepares the data in a the form needed for plotting.
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-# all data from the validation trials
-a_data       = read.csv(gzfile('data/a2a_ants/results_2013_01_03.csv.gz'))
-t_data       = read.csv(gzfile('data/a2a_tracc/results_xfmjoin_2013_04_04.csv.gz'))
-diagnoses    = read.csv('data/a2a_diagnoses.csv')
+prep <- function(ants_data_file, tracc_data_file) {
+  # all data from the validation trials
+  a_data       = read.csv(gzfile(ants_data_file))
+  t_data       = read.csv(gzfile(tracc_data_file))
+  diagnoses    = read.csv('data/a2a_diagnoses.csv')
+  
+  # simplify the data
+  t_data       = subset(t_data, atlases %% 2 == 1)
+  a_data       = subset(a_data, atlases %% 2 == 1)
+  t_data$se    = NULL
+  t_data$sn    = NULL
+  t_data$j     = NULL
+  a_data$se    = NULL
+  a_data$sn    = NULL
+  a_data$j     = NULL       
+  
+  # add registration method column 
+  t_data       = cbind(t_data, reg_method = "ANIMAL")
+  a_data       = cbind(a_data, reg_method = "ANTS")
+  a_data$volume=0
+  
+  # separate MA majvote from MB so we can compute differences
+  # we only compare multiatlas using majority vote
+  t_ma = subset(t_data, approach %in% c("ma", "multiatlas") & method=="majvote")
+  a_ma = subset(a_data, approach %in% c("ma", "multiatlas") & method=="majvote")
+  t_mb = subset(t_data, approach=="mb")
+  a_mb = subset(a_data, approach=="mb")
+  t_ma$approach = "ma"
+  a_ma$approach = "ma"
+  ma = rbind(t_ma,a_ma)
+  mb = rbind(t_mb,a_mb)
+  
+  # set up a few equivalences for multi-atlas, to make nomenclature simpler
+  ma$templates =  ma$atlases  # because no template library
+  mb[mb$method != 'majvote',]$templates = mb[mb$method != 'majvote',]$top_n 
+  
+  # aggregate over batches
+  ma_mean = aggregate(k ~ subject + reg_method + approach + method + atlases +
+                        templates + top_n + label, data = ma, mean)
+  mb_mean = aggregate(k ~ subject + reg_method + approach + method + atlases +
+                        templates + top_n + label, data = mb, mean)                    
+  
+  all_data = merge(ma, mb, by=c("timestamp", "atlases", "batch", "label",
+                                "reg_method", "subject"), 
+                   suffixes=c(".ma", ".mb"))
+  
+  all_data_mean = merge(ma_mean, mb_mean, by=c("reg_method", "label", "atlases",
+                                               "subject"), 
+                        suffixes=c(".ma", ".mb"))
+  
+  all_data$k_diff = all_data$k.mb - all_data$k.ma
+  all_data_mean$k_diff = all_data_mean$k.mb - all_data_mean$k.ma
+  
+  vote_levels <- list("Majority Vote" = "majvote", "NMI Vote" = "nmi",
+                      "Cross-correlation Vote" = "xcorr")
+  
+  levels(all_data$method.mb) <- vote_levels
+  levels(all_data_mean$method.mb) <- vote_levels
+  
+  all_data       = merge(all_data, diagnoses, all.x = T)
+  all_data_mean  = merge(all_data_mean, diagnoses, all.x = T)
+  return(list(raw=all_data, mean=all_data_mean))
+}
 
-# simplify the data
-t_data       = subset(t_data, atlases %in% c(1,3,5,7,9))
-a_data       = subset(a_data, atlases %in% c(1,3,5,7,9))
-t_data$se    = NULL
-t_data$sn    = NULL
-t_data$j     = NULL
-a_data$se    = NULL
-a_data$sn    = NULL
-a_data$j     = NULL       
+# Jens label XVAL
+d = prep('data/a2a_ants/results_2013_11_27_jens.csv.gz', 'data/a2a_tracc/results_xfmjoin_2013_04_04.csv.gz')
+write.csv(d$raw ,gzfile('data/cache/ADNI-JENS-XVAL:all_data.csv.gz'))
+write.csv(d$mean,gzfile('data/cache/ADNI-JENS-XVAL:all_data_mean.csv.gz'))
 
-# add registration method column 
-t_data       = cbind(t_data, reg_method = "ANIMAL")
-a_data       = cbind(a_data, reg_method = "ANTS")
+# SNT label XVAL
+d = prep('data/a2a_ants/results_2013_01_03.csv.gz', 'data/a2a_tracc/results_xfmjoin_2013_04_04.csv.gz')
+write.csv(d$raw ,gzfile('data/cache/ADNI-SNT-XVAL:all_data.csv.gz'))
+write.csv(d$mean,gzfile('data/cache/ADNI-SNT-XVAL:all_data_mean.csv.gz'))
 
-# separate MA majvote from MB so we can compute differences
-# we only compare multiatlas using majority vote
-t_ma = subset(t_data, approach=="ma" & method=="majvote")
-t_ma$approach="multiatlas"
-a_ma = subset(a_data, approach=="multiatlas" & method=="majvote")
-t_mb = subset(t_data, approach=="mb")
-a_mb = subset(a_data, approach=="mb")
-
-ma = rbind(t_ma,a_ma)
-mb = rbind(t_mb,a_mb)
-
-# set up a few equivalences for multi-atlas, to make nomenclature simpler
-ma$templates =  ma$atlases  # because no template library
-mb[mb$method != 'majvote',]$templates = mb[mb$method != 'majvote',]$top_n 
-
-# aggregate over batches
-ma_mean = aggregate(k ~ subject + reg_method + approach + method + atlases +
-                    templates + top_n + label, data = ma, mean)
-mb_mean = aggregate(k ~ subject + reg_method + approach + method + atlases +
-                    templates + top_n + label, data = mb, mean)                    
-
-all_data = merge(ma, mb, by=c("timestamp", "atlases", "batch", "label",
-                              "reg_method", "subject"), 
-                 suffixes=c(".ma", ".mb"))
-
-all_data_mean = merge(ma_mean, mb_mean, by=c("reg_method", "label", "atlases",
-                                             "subject"), 
-                 suffixes=c(".ma", ".mb"))
-
-all_data$k_diff = all_data$k.mb - all_data$k.ma
-all_data_mean$k_diff = all_data_mean$k.mb - all_data_mean$k.ma
-
-vote_levels <- list("Majority Vote" = "majvote", "NMI Vote" = "nmi",
-                    "Cross-correlation Vote" = "xcorr")
-
-levels(all_data$method.mb) <- vote_levels
-levels(all_data_mean$method.mb) <- vote_levels
-
-all_data       = merge(all_data, diagnoses)
-all_data_mean  = merge(all_data_mean, diagnoses)
-remove(t_ma, a_ma, t_mb, a_mb, ma, mb)
-write.csv(all_data     ,'data/cache/ADNI-XVAL:all_data.csv')
-write.csv(all_data_mean,'data/cache/ADNI-XVAL:all_data_mean.csv')
-
+quit()
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 # ADNI1-Complete
