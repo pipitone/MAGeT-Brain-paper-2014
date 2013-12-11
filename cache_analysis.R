@@ -26,7 +26,6 @@ prep <- function(ants_data_file, tracc_data_file) {
   # add registration method column 
   t_data       = cbind(t_data, reg_method = "ANIMAL")
   a_data       = cbind(a_data, reg_method = "ANTS")
-  a_data$volume=0
   
   # separate MA majvote from MB so we can compute differences
   # we only compare multiatlas using majority vote
@@ -72,16 +71,14 @@ prep <- function(ants_data_file, tracc_data_file) {
 }
 
 # Jens label XVAL
-d = prep('data/a2a_ants/results_2013_11_27_jens.csv.gz', 'data/a2a_tracc/results_xfmjoin_2013_04_04.csv.gz')
+d = prep('data/a2a_ants/results-adni-xval-jens-ants-2013-12-10.csv.gz', 'data/a2a_tracc/results-adni-xval-jens-tracc-2013-12-09.csv.gz')
 write.csv(d$raw ,gzfile('data/cache/ADNI-JENS-XVAL:all_data.csv.gz'))
 write.csv(d$mean,gzfile('data/cache/ADNI-JENS-XVAL:all_data_mean.csv.gz'))
 
 # SNT label XVAL
-d = prep('data/a2a_ants/results_2013_01_03.csv.gz', 'data/a2a_tracc/results_xfmjoin_2013_04_04.csv.gz')
+d = prep('data/a2a_ants/results-adni-xval-snt-ants-2013-01-03.csv.gz', 'data/a2a_tracc/results-adni-xval-tracc-2013-04-04-xfmjoin.csv.gz')
 write.csv(d$raw ,gzfile('data/cache/ADNI-SNT-XVAL:all_data.csv.gz'))
 write.csv(d$mean,gzfile('data/cache/ADNI-SNT-XVAL:all_data_mean.csv.gz'))
-
-quit()
 
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 # ADNI1-Complete
@@ -163,4 +160,5 @@ detach(complete)
 qc = subset(complete, TEMPQC != "Fail" & MAGeT_QC == 1 & FSL_QC == 1 )
 
 write.csv(qc            ,  'data/cache/ADNI1:qc.csv')
+write.csv(means         ,  'data/cache/ADNI1:all_volumes.csv')
 write.csv(package_totals,  'data/cache/ADNI1:package_totals.csv')

@@ -37,6 +37,33 @@ lm_eqn = function(m) {
 @
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% ADNI1-XVAL: prep
+% Prepares the data in a the form needed for plotting.
+<<ADNI1-xval-prep,dependson='ADNI1-xval-load',include=FALSE,cache=TRUE>>=
+jens_atlases = read.csv('data/jens_atlases.csv')
+jens_xval_data  <- read.csv(gzfile('data/cache/ADNI-JENS-XVAL:all_data.csv.gz'))
+jens_xval_mean  <- read.csv(gzfile('data/cache/ADNI-JENS-XVAL:all_data_mean.csv.gz'))
+jens_xval_mean$reg_method = factor(jens_xval_mean$reg_method, c("ANTS", "ANIMAL"))
+jens_xval_mean$method.mb = factor(jens_xval_mean$method.mb, c("Majority Vote", "Cross-correlation Vote", "NMI Vote"))
+mb.best.kappa = mean(subset(jens_xval_mean, reg_method   == "ANTS" & 
+                                  method.mb    == "Majority Vote" &
+                                  templates.mb == 19 & 
+                                  atlases      == 9)$k.mb)
+@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% ADNI1-COMPLETE
+% Prepares the data in the form needed for plotting.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+<<ADNI-volumes-prep,echo=F,cache=T>>=
+means.complete   <- read.csv('data/cache/ADNI1:qc.csv')
+package_totals   <- read.csv('data/cache/ADNI1:package_totals.csv')
+@
+
 \documentclass{article}
 \usepackage[margin=1in]{geometry}
 \usepackage{algorithm, color, algpseudocode, amsmath, url, geometry, ctable}
@@ -460,8 +487,6 @@ yielding a voxel dimensions of $1.25mm \times 1.25mm \times 1.2mm$.
 % ADNI1 X-Validation Dataset Demographics Table
 %
 <<ADNI-Xval-demographics, echo=F, results="asis",cache=FALSE>>=
-jens_RIDs = read.csv('data/jens_RID.csv')
-
 adni_69_RIDs = c(295,413,619,685,729,782,938,954,1018,1155,907,981,222,324,448,
                  546,553,572,602,610,814,1341,675,681,731,1130,41,68,70,101,
                  249,293,316,414,698,1206,1222,1339,751,1030,3,5,10,16,22,53,
@@ -470,7 +495,7 @@ adni_69_RIDs = c(295,413,619,685,729,782,938,954,1018,1155,907,981,222,324,448,
 
 tab <- summary(DX.bl ~ AGE + PTGENDER + PTEDUCAT + CDRSB + ADAS13 +
                MMSE, data = adnimerge, subset = VISCODE == 'bl' & RID %in%
-               jens_RIDs$RID, method = "reverse", test=FALSE, overall=TRUE)
+               jens_atlasess$RID, method = "reverse", test=FALSE, overall=TRUE)
 caption = 
   "\\textbf{ADNI-1 cross-validation subset demographics.} 
   CN     - Cognitively Normal. 
@@ -872,15 +897,6 @@ existing, established automated segmentation methods -- \fsl{}, \freesurfer{}, a
 volume-related fixed and proportional biases in all segmentation methods using
 Bland-Altman plots \citep{Bland1986}.  
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% ADNI1-COMPLETE
-% Prepares the data in the form needed for plotting.
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-<<ADNI-volumes-prep,echo=F,cache=T>>=
-means.complete   <- read.csv('data/cache/ADNI1:qc.csv')
-package_totals   <- read.csv('data/cache/ADNI1:package_totals.csv')
-@
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                                                                             
@@ -929,21 +945,6 @@ latex(tab, file="", size="scriptsize",landscape=FALSE, ctable=FALSE,
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Experiment 1 Results: Whole Hippocampus Cross-Validation}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% ADNI1-XVAL: prep
-% Prepares the data in a the form needed for plotting.
-<<ADNI1-xval-prep,dependson='ADNI1-xval-load',include=FALSE,cache=TRUE>>=
-jens_xval_data  <- read.csv(gzfile('data/cache/ADNI-JENS-XVAL:all_data.csv.gz'))
-jens_xval_mean  <- read.csv(gzfile('data/cache/ADNI-JENS-XVAL:all_data_mean.csv.gz'))
-
-mb.best.kappa = mean(subset(jens_xval_mean, reg_method   == "ANTS" & 
-                                  method.mb    == "Majority Vote" &
-                                  templates.mb == 19 & 
-                                  atlases      == 9)$k.mb)
-@
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
 In this experiment we conducted 10 rounds of \mb{} and multi-atlas segmentation of
 of 69 subjects using atlas and template library sizes varying from 1-9 and 1-20
 images respectively, two registration algorithms (\ants{} or \animal{}), and three
@@ -985,81 +986,34 @@ templates since with this configuration we found significantly decreased
 performance. We believe this is as a result of an inherent bias in the majority
 vote fusion method used (see Discussion).  
 
-
-% \begin{figure}
-% <<ADN1-library-composition, cache=TRUE, dependson='ADNI1-Xval-prep'>>=
-% # These composition datasheets describe the subjects and subject DX in the 
-% # template and atlas libraries for each voting run
-% atlas_comp = read.csv('data/a2a_ants/atlas_library_composition.csv')
-% templ_comp = read.csv('data/a2a_ants/template_library_composition.csv')
-% a2a.best = subset(all_data, atlases == 9 &
-%                     templates.mb == 19 &
-%                     reg_method=='ANTS' &
-%                     method.mb =='Majority Vote')
-% 
-% cumulative_dist = 
-%   ggplot(a2a.best, aes(x=k.mb)) + stat_ecdf() + scale_y_continuous(breaks=seq(0,1,0.1))
-% 
-% a2a.best = subset(a2a.best, k.mb > 0.75) # drop the guys that suck
-% 
-% a2a.best = merge(a2a.best, atlas_comp, by=c("timestamp","atlases"))
-% a2a.best = merge(a2a.best, templ_comp, by.x=c("timestamp","templates.mb"), by.y=c("timestamp","templates"))
-% a2a.best$templates_AD_percent = (a2a.best$templates_AD / 19) * 100
-% a2a.best$templates_MCI_percent = (a2a.best$templates_MCI / 19) * 100
-% a2a.best.melted = melt(a2a.best, measure.vars=c("templates_AD_percent", "templates_MCI_percent"))
-% 
-% k_by_composition = 
-%   ggplot(a2a.best.melted, aes(x=value, y=k.mb, colour=DX)) + facet_grid(variable ~ DX) + 
-%   geom_boxplot(aes(group=as.factor(value), colour=DX)) +  geom_smooth(method="lm") 
-% 
-% snt.unilateral.vols = read.csv('data/a2a_snt_volumes.csv')
-% a2a.best = merge(a2a.best, snt.unilateral.vols)
-% 
-% # bland-altman plots
-% bland_mb_overall = with(a2a.best, bland_altman_plot(volume.snt, volume.mb, DX) + 
-%   geom_smooth(method="lm") + 
-%   scale_y_continuous(breaks=seq(-500, 500, 50)))
-% 
-% bland_ma_overall = with(a2a.best, bland_altman_plot(volume.snt, volume.ma, DX) + 
-%   geom_smooth(method="lm") + 
-%   scale_y_continuous(breaks=seq(-500, 500, 50)))
-% 
-% # just the trials with a high percentage of MCI in the template library
-% a2a.best.highMCI = subset(a2a.best, templates_MCI_percent > 50)
-% 
-% bland_mb_highMCI = with(a2a.best.highMCI, bland_altman_plot(volume.snt, volume.ma, DX) + 
-%   geom_smooth(method="lm") + 
-%   scale_y_continuous(breaks=seq(-500, 500, 50)))
-% 
-%   
-% @
-% \end{figure}
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ADNI1-XVAL: mean Kappa plot by atlases, templates, reg and voting method. 
 \begin{figure}
 <<fig:ADNI1-xval-k-mean, cache=TRUE, dependson='ADNI1-xval-prep', fig.width=7, fig.height=7>>=
 stderr <- function(x) sqrt(var(x)/length(x))
-ggplot(subset(jens_xval_mean, (templates.mb*atlases) %% 2 == 1),
-       aes(x=templates.mb,y=k.mb, colour=as.factor(atlases))) + #as.factor((atlases*templates.mb) %% 2 ))) + 
-  facet_grid(reg_method~method.mb) + 
+ggplot(subset(jens_xval_mean, (templates.mb*atlases) %% 2 == 1 & templates.mb < 21),
+       aes(x=templates.mb,y=k.mb, colour=as.factor(atlases), linetype=reg_method)) + #as.factor((atlases*templates.mb) %% 2 ))) + 
+  facet_grid(.~method.mb) + 
   stat_summary(fun.y=mean,geom='line',
-               aes(y=k.mb, weight=1, group=as.factor(atlases))) + 
+               aes(y=k.mb, weight=1, group=interaction(reg_method, as.factor(atlases)))) + 
+  stat_summary(fun.y=mean,geom='point',
+               aes(y=k.mb, weight=1, group=interaction(reg_method, as.factor(atlases)))) + 
   stat_summary(fun.y=mean,
                fun.ymin=function (x) mean(x) - stderr(x),
                fun.ymax=function (x) mean(x) + stderr(x), 
                geom='errorbar',
-               aes(y=k.mb, weight=1, group=as.factor(atlases)), width=0.5) + 
+               aes(y=k.mb, weight=1, group=interaction(reg_method, as.factor(atlases))), linetype='solid', width=0.5) + 
   #stat_smooth(method='lm', formula=y~log(x)) + 
-  scale_y_continuous(breaks=seq(0,1,0.05)) + 
+  scale_y_continuous(breaks=seq(0,1,0.01)) + 
   scale_colour_hue(name="Number of Atlases") +
+  scale_linetype(name="Registration Method") +
   xlab( "Number of Templates" ) + 
   ylab( "Mean DSC" ) + 
   theme(legend.direction = "horizontal", legend.position = "bottom", 
         axis.text = element_text(size = 8))
 @
   \caption{Mean Dice's Similarity Coefficient of \mb{} segmentations relative to
-  SNT \gs{} segmentations for 69 ADNI subjects vs. atlas and template library
+  Pruessner \gs{} segmentations for 69 ADNI subjects vs. atlas and template library
   size, registration algorithm, and label fusion method. Error bars indicate
   standard error.
   \label{fig:ADNI1-xval-k-mean}}
@@ -1142,7 +1096,7 @@ ggplot(subset(stats.tests, direction > 0 & stat == "Variance"),
   geom_hline(aes(yintercept=0.05, alpha=0.5), linetype='dashed') + 
   geom_hline(aes(yintercept=0.01, alpha=0.5), linetype='dashed') + 
   scale_x_continuous(breaks=seq(1,20,by=2)) + 
-  scale_y_log10(limits=c(0.001,1), breaks=c(0.01,0.05,0.1,1.0)) + 
+  scale_y_log10(limits=c(0.0002,1), breaks=c(0.01,0.05,0.1,1.0)) + 
   xlab( "Number of Templates" ) + 
   ylab( "Difference of variance during validation (p-value)") +
   scale_colour_hue(name="Atlases") +
@@ -1159,9 +1113,10 @@ ggplot(subset(stats.tests, direction > 0 & stat == "Variance"),
   comparing the distribution of variances at each parameter setting
   (atlas/template library size). Only points where \mb{} mean variability is lower
   than multi-atlas are shown. Dashed lines indicate a p-value of 0.05 and 0.01.}
-  \label{ADNI1-xval-variability}
+  \label{fig:ADNI1-xval-variability}
 \end{figure}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 \FloatBarrier
 
