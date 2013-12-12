@@ -174,7 +174,7 @@ cross-validation on 69 subjects relative to semi-automated \gs{} segmentations,
 and shows significantly lower variability in DSC than multi-atlas segmentation.
 In a LOOCV, \mb{} reproduces the volumes of the cornu ammonis (CA) 1; CA4/dentate
 gyrus (DG); and strata radiatum (SR), strata lacunosum (SL), and strata
-moleculare (SM) hippocampal subregions with a percent error in volume that is
+moleculare (SM) hippocampal subfields with a percent error in volume that is
 at or lower than that produced by image resampling. \mb{} produces hippocampal
 volumes in a first episode psychosis patient population that are highly
 correlated with expert manual segmentation volumes (Pearson $r = 0.877, t =
@@ -211,7 +211,7 @@ dysfunction, including Alzheimer's disease \citep{Sabuncu2011} and
 schizophrenia \citep{Narr2004,Karnik-Henry2012}. In neuroimaging studies,
 structural magnetic resonance images (MRI) are often used for the volumetric
 assessment of the hippocampus.  As such, accurate segmentation of the
-hippocampus and its subregions in MRI is a necessary first step to better
+hippocampus and its subfields in MRI is a necessary first step to better
 understand the inter-individual variability of subject neuroanatomy. 
 
 The gold standard for neuroanatomical segmentation is manual delineation by an
@@ -430,26 +430,26 @@ algorithm, and label fusion method) and select the best parameters to use in
 subsequent experiments.
 
 \paragraph{\adnidataset{} dataset} 
-Data used in the preparation of this article were obtained from the Alzheimerâs
+Data used in the preparation of this article were obtained from the Alzheimer's
 Disease Neuroimaging Initiative (ADNI) database (adni.loni.ucla.edu). The ADNI
 was launched in 2003 by the National Institute on Aging (NIA), the National
 Institute of Biomedical Imaging and Bioengineering (NIBIB), the Food and Drug
 Administration (FDA), private pharmaceutical companies and non-profit
-organizations, as a \$60 million, 5-year public- private partnership. The primary
+organizations, as a \$60 million, 5-year public-private partnership. The primary
 goal of ADNI has been to test whether serial magnetic resonance imaging (MRI),
 positron emission tomography (PET), other biological markers, and clinical and
 neuropsychological assessment can be combined to measure the progression of mild
-cognitive impairment (MCI) and early Alzheimerâs disease (AD).  Determination of
+cognitive impairment (MCI) and early Alzheimer's disease (AD).  Determination of
 sensitive and specific markers of very early AD progression is intended to aid
 researchers and clinicians to develop new treatments and monitor their
 effectiveness, as well as lessen the time and cost of clinical trials.  
 
 The Principal Investigator of this initiative is Michael W. Weiner, MD, VA
-Medical Center and University of California â San Francisco. ADNI is the result
+Medical Center and University of California San Francisco. ADNI is the result
 of efforts of many co- investigators from a broad range of academic institutions
 and private corporations, and subjects have been recruited from over 50 sites
 across the U.S. and Canada. The initial goal of ADNI was to recruit 800 subjects
-but ADNI has been followed by ADNI-GO and ADNI-2.  To date these three protocols
+but ADNI has been followed by ADNI-GO and ADNI-2. To date these three protocols
 have recruited over 1500 adults, ages 55 to 90, to participate in the research,
 consisting of cognitively normal (CN) older individuals, people with early or
 late MCI, and people with early AD. The follow up duration of each group is
@@ -679,35 +679,64 @@ smaller level of variability between methods.
 %%%%%                                                                     %%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Experiment 2: Hippocampal Subfield Cross-Validation}
-In this experiment, the accuracy of the \mb{} algorithm on hippocampal subregion
-segmentation is tested using a leave-one-out cross-validation (LOOCV) design on
-two image sets. The optimal parameter settings for \mb{} found in Experiment 1 are
-used in this experiment.
+The previous experiment assesses \mb{} peformance on whole hippocampus
+segmentation. In this experiment, we assess \mb{} hippocampal subfield
+segmentation of standard 3T T1-weighted images using a leave-one-out
+cross-validation (LOOCV) design. 
 
-\paragraph{Winterburn Atlases dataset} 
+\paragraph{Winterburn Atlases} 
 The Winterburn atlases \citep{Winterburn2013} are digital hippocampal
-segmentations of five in-vivo $300\mu$ isotropic T1-weighted MR images. The
+segmentations of five in-vivo $0.3mm$-isotropic T1-weighted MR images. The
 segmentations include subfield segmentations for the cornu ammonis (CA) 1; CA2
 and CA3; CA4 and dentate gyrus; subiculum; and strata radiatum (SR), strata
 lacunosum (SL), and strata moleculare (SM). Subjects in the Winterburn atlases
 range in age from 29-57 years (mean age of 37), and include two males and three
 females.  
 
-In addition to the high-resolution scans distributed as part of the Winterburn
-atlases, we also obtained separate 3T T1 BRAVO acquisitions (0.9mm-isotropic
-voxels) of four of the five Winterburn atlas subjects.  Images were acquired on
-a 3T GE Discovery MR 750 system (General Electric, Milwaukee, WI) using an
-8-channel head coil with the enhanced fast gradient recalled echo 3-dimensional
-acquisition protocol, EFGRE-BRAVO, with the following parameters: $TE/TR/TI =
-3.0ms/6.7ms/650ms$, flip angle $=8^\circ$, $FOV=15.8cm$, slice
-thickness$=0.9mm$, 176 in-plane steps for an approximate isotropic resolution
-of 0.9mm dimension voxels.
-
 \paragraph{Experiment details} 
-Leave-one-out cross-validation (LOOCV) is an approach in which the method to be
-validated is given all but one item in a dataset as training data (in our case,
-atlas library images and labels), and the output accuracy is measured on the
-left-out item. This is done, in turn, for each item in the dataset. 
+Leave-one-out cross-validation (LOOCV) is a validation approach in which an
+algorithm is given all but one item in a dataset as training data (in our case,
+atlas images and labels) and then is applied to the left-out item. This is done,
+in turn, for each item in the dataset and the output across all items is
+evaluated. 
+
+In this experiment, the high-resolution $0.3mm^3$ voxel Winterburn atlases are
+used as the \mb{} atlas library, but in each round of LOOCV a $0.9mm^3$ voxel
+target image corresponding to the left-out atlas is used so as to evaluate \mb{}
+on standard 3T T1-weighted resolution images.
+
+Specifically, two sets of $0.9mm^3$ voxel target images are used in this
+experiment: separately acquired T1 acquisitions of four of the five Winterburn
+atlas subjects (referred to as the {\em BRAVO} set because of the scan
+parameters used, described below), and computationally subsampled versions of
+the Winterburn atlas images (the {\em Subsampled} set).  
+
+The 3T T1 BRAVO acquisitions of four of the five Winterburn atlas subjects were
+separately obtained within a short time of the original atlas image
+acquisitions.  Images were acquired on a 3T GE Discovery MR 750 system (General
+Electric, Milwaukee, WI) using an 8-channel head coil with the enhanced fast
+gradient recalled echo 3-dimensional acquisition protocol, EFGRE-BRAVO, with the
+following parameters: $TE/TR/TI = 3.0ms/6.7ms/650ms$, flip angle $=8^\circ$,
+$FOV=15.8cm$, slice thickness$=0.9mm$, 176 in-plane steps for an approximate
+isotropic resolution of 0.9mm dimension voxels.
+
+Image subsampling of the Winterburn atlases was performed using trilinear
+interpolation techniques. 
+
+The template library is composed of all $0.9mm^3$ voxel target images
+(either {\em BRAVO} or {\em Subsampled}), plus an additional set of 16 of
+healthy subjects 3T T1 images acquired separately (Table
+\ref{tab:WAval-healthy-demographics}). These images were acquired on a 3T GE
+Discovery MR 750 system (General Electric, Milwaukee, WI) using an 8-channel
+head coil with the enhanced fast gradient recalled echo 3-dimensional
+acquisition protocol, EFGRE-BRAVO, with the following parameters: $TE/TR/TI =
+3.0ms/6.7ms/650ms$, flip angle=$8^\circ$ , $FOV = 15.3cm$, slice
+thickness$=0.9mm$, 170 in-plane steps for an approximate isotropic resolution of
+0.9mm dimension voxels.
+
+The optimal size of template library, registration method, and label fusion
+method found in Experiment 1 are used. Figure \ref{fig:LOOCV-schematic}
+illustrates schematically the experimental set up.
 
 \begin{figure}
   \begin{centering}
@@ -718,32 +747,6 @@ left-out item. This is done, in turn, for each item in the dataset.
   \label{fig:LOOCV-schematic}
 \end{figure}
 
-In part 2a of this experiment, we have modified the LOOCV experimental
-design in order to compare \mb{} segmentation accuracy with the accuracy of image
-resampling error. The five $0.3mm$-isotropic voxel Winterburn atlas images and
-labels are used as the atlas library, and LOOCV is conducted using the five Winterburn
-atlas images subsampled (using trilinear interpolation) to
-0.9mm-isotropic voxel resolution (referred to as the {\em Subsampled} dataset)
-as input subjects. Subsampling the target images allows us to assess \mb{} in a
-typical segmentation scenario (high-resolution atlases and lower-resolution
-subjects).  The template library is composed of all five subject images, plus
-an additional set of 16 of healthy subjects 3T T1 images acquired separately
-(Table \ref{tab:WAval-healthy-demographics}).  Images were acquired on a 3T GE
-Discovery MR 750 system (General Electric, Milwaukee, WI) using an 8-channel
-head coil with the enhanced fast gradient recalled echo 3-dimensional
-acquisition protocol, EFGRE-BRAVO, with the following parameters: $TE/TR/TI =
-3.0ms/6.7ms/650ms$, flip angle=$8^\circ$ , $FOV = 15.3cm$, slice
-thickness$=0.9mm$, 170 in-plane steps for an approximate isotropic resolution
-of 0.9mm dimension voxels.
-
-The optimal size of template library, registration method, and label fusion
-method found in Experiment 1 are used.  As with traditional LOOCV, each subject
-image is segmented by \mb{} with that subject's image excluded from the atlas
-library.  In part 2b of this experiment, we carry out a similar validation in
-which the subject images are separately acquired T1 BRAVO images of four of the
-five Winterburn atlas subjects (referred to as the {\em T1 BRAVO} dataset).
-Figure \ref{fig:LOOCV-schematic} illustrates the experimental set up of both
-parts of this experiment. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Subfield Validation Template library demographics (healthy controls)
@@ -763,16 +766,22 @@ latex(tab, file="", size="scriptsize",landscape=FALSE, ctable=FALSE,
 
 
 \paragraph{Evaluation method}  
-To assess the \mb{} LOOCV segmentations we compute the relative percent error in 
-hippocampal volume with respect to the full resolution Winterburn atlas 
-segmentations. In addition, by computing the relative error in volume of the
-Winterburn atlas labels resampled (with nearest-neighbour interpolation) to
-0.9mm-isotropic voxels, we obtain a baseline error against which to assess \mb{}
-segmentations.
+In this experiment we must evaluate \mb{} on a task which is ill-defined since
+there are no segmentation protocols of the hippocampal subfields for T1 images
+at $0.9mm^3$ voxels (in fact, whether subfields can even be differentiated at
+this resolution is debated \citep{who?}). Therefore, we evaluate the {\it
+precision} with \mb{} produces hippocampal subfields that correspond to the
+segmentation protocol used by the given atlas library images. 
+
+Specifically, we compute the relative percent error in volume of the \mb{}-produced
+hippocampal subfields with respect to the full-resolution Winterburn atlas
+segmentations. In addtion, by directly resampling the Winterburn atlas
+segmentations to $0.9mm^3$ voxel images (using nearest-neighbour interpolation)
+we can obtain a baseline relative percent error to compare \mb{} against. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%                                                                     %%%%%
-%%%%%         Experiment 3: Application of \mb{} to the segmentation        %%%%%
+%%%%%         Experiment 3: Application of \mb{} to the segmentation      %%%%%
 %%%%%                       of schizophrenia patients                     %%%%%
 %%%%%                                                                     %%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1131,12 +1140,12 @@ this, a leave-one-out validation was conducted in which lower-resolution images
 ($0.9mm^3$ voxels) of each Winterburn atlas subject were segmented using the
 remaining high-resolution Winterburn atlas subjects' images. 
 
-In general, across hippocampal subregions the percent error in volume of \mb{}
+In general, across hippocampal subfields the percent error in volume of \mb{}
 segmentations (relative to the full-resolution Winterburn atlas segmentation)
 compares favourably to the error resulting from image resampling (Figure
 \ref{fig:WAval-vol-boxplot}). In particular, the CA1, CA4/DG, and SR/SL/SM
-subregions all show a percent error in volume that is at or lower than
-resampling error. The Subiculum and CA2/CA3 subregions show distinctly larger
+subfields all show a percent error in volume that is at or lower than
+resampling error. The Subiculum and CA2/CA3 subfields show distinctly larger
 percent error in volume than is found through resampling.  
 
 Figure \ref{fig:subfield-montage} shows a qualitative comparison of \mb{} subfield
@@ -1775,7 +1784,7 @@ identification of the hippocampal subfields is possible.
 %   in aggregate performing better than local nearest neighbour fitting. presumably 
 %   we'd see the same improvement with basic multiatlas as well.
 % 
-% - take away: MB produces subregion volumes that are comparable or better than
+% - take away: MB produces subfields volumes that are comparable or better than
 %   resampling error, except for the CA2/3 where error is near 25 percent (but 
 %   even then resampling error is ~15%)
 % 
