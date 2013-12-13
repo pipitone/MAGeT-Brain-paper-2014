@@ -71,12 +71,12 @@ prep <- function(ants_data_file, tracc_data_file) {
 }
 
 # Jens label XVAL
-d = prep('data/a2a_ants/results-adni-xval-jens-ants-2013-12-10.csv.gz', 'data/a2a_tracc/results-adni-xval-jens-tracc-2013-12-09.csv.gz')
+d = prep('data/results-adni-xval-jens-ants-2013-12-10.csv.gz', 'data/results-adni-xval-jens-tracc-2013-12-09.csv.gz')
 write.csv(d$raw ,gzfile('data/cache/ADNI-JENS-XVAL:all_data.csv.gz'))
 write.csv(d$mean,gzfile('data/cache/ADNI-JENS-XVAL:all_data_mean.csv.gz'))
 
 # SNT label XVAL
-d = prep('data/a2a_ants/results-adni-xval-snt-ants-2013-01-03.csv.gz', 'data/a2a_tracc/results-adni-xval-tracc-2013-04-04-xfmjoin.csv.gz')
+d = prep('data/results-adni-xval-snt-ants-2013-01-03.csv.gz', 'data/results-adni-xval-tracc-2013-04-04-xfmjoin.csv.gz')
 write.csv(d$raw ,gzfile('data/cache/ADNI-SNT-XVAL:all_data.csv.gz'))
 write.csv(d$mean,gzfile('data/cache/ADNI-SNT-XVAL:all_data_mean.csv.gz'))
 
