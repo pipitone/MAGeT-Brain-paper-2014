@@ -7,6 +7,8 @@
 %  - overlap/similarity --> agreement? choose one. 
 %  - check that chart labels are sensible 
 %  - in particular, check that Experiment 5 match Experiment 1
+%  - fix figure 2 schematic language for the experiments (not 2a 2b). 
+% 
 <<setup, include=FALSE, cache=FALSE>>=
 library(knitr)
 opts_chunk$set(echo = FALSE, 
@@ -26,18 +28,6 @@ library(plyr)
 options(digits=3)
 theme_set(theme_bw(base_size = 12))
 
-lm_eqn = function(m) {
-  l <- list(a = format(coef(m)[1], digits = 2),
-      b = format(abs(coef(m)[2]), digits = 2),
-      r2 = format(summary(m)$r.squared, digits = 3));
-  if (coef(m)[2] >= 0)  {
-    eq <- substitute(italic(y) == a + b %.% italic(x)*","~~italic(r)^2~"="~r2,l)
-  } else {
-    eq <- substitute(italic(y) == a - b %.% italic(x)*","~~italic(r)^2~"="~r2,l)    
-  }
-
-  as.character(as.expression(eq))
-}
 @
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -86,7 +76,7 @@ package_totals   <- read.csv('data/cache/ADNI1:package_totals.csv')
 \setlength{\marginparwidth}{1.2in}
 \usepackage{fancyhdr}
 \pagestyle{fancy}
-\fancyhead[RO,RE]{draft - f9776d7 - September, 2013}
+\fancyhead[RO,RE]{draft - December, 2013}
 
 % styling
 \newcommand{\subsubsubsection}[1]{\paragraph{#1}}
@@ -1079,7 +1069,7 @@ ggplot(subset(jens_xval_mean, reg_method=="ANTS" &
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ADNI1-XVAL: show variability of MAGeT over parameters
 \begin{figure}
-<<ADN1-Xval-variability, cache=TRUE, dependson='ADNI1-Xval-prep'>>=
+<<ADN1-Xval-variability,cache=TRUE,dependson='ADNI1-Xval-prep',fig.width=5,fig.height=5>>=
 ants = subset(jens_xval_data, 
                      reg_method=="ANTS" & 
                      method.mb=="Majority Vote" &
@@ -1115,28 +1105,28 @@ stats.tests = ddply(ants.stats, c("atlases","templates.mb"), function (df) {
 ggplot(subset(stats.tests, direction > 0 & stat == "Variance"), 
   aes(x=templates.mb, y=p.value, colour=as.factor(atlases))) + 
   #facet_grid( . ~ stat) + 
-  geom_line(size=1) +
-  geom_point(size=3) + 
+  geom_line(size=0.5) +
+  geom_point(size=2) + 
   geom_hline(aes(yintercept=0.05, alpha=0.5), linetype='dashed') + 
   geom_hline(aes(yintercept=0.01, alpha=0.5), linetype='dashed') + 
   scale_x_continuous(breaks=seq(1,20,by=2)) + 
-  scale_y_log10(limits=c(0.0002,1), breaks=c(0.01,0.05,0.1,1.0)) + 
   xlab( "Number of Templates" ) + 
-  ylab( "Difference of variance during validation (log(p))") +
+  ylab( "Variability (p)") +
   scale_colour_hue(name="Atlases") +
   scale_alpha_continuous(guide='none') + 
   scale_linetype_discrete(guide='none') + 
   scale_size_continuous(guide='none') + 
   theme(legend.direction = "horizontal", legend.position = "bottom")
 @
-  \caption{{\bf Difference in variability of \mb{} vs. \multiatlas segmentation 
-  accuracy with respect to manual segmentation.}
-  Variance of segmentation accuracy between \mb{} and \multiatlas segmentation is
-  computed for each subject across all ten rounds of validation. Shown on the
-  y-axis (scaled logarithmically) is the  p-value resulting from a t-test
-  comparing the distribution of variances at each parameter setting
-  (atlas/template library size). Only points where \mb{} mean variability is lower
-  than \multiatlas are shown. Dashed lines indicate a p-value of 0.05 and 0.01.}
+  \caption{{\bf Difference in variability of \mb{} vs. \multiatlas segmentation
+  with respect to manual segmentation.}
+  Variance of segmentation accuracy between \mb{} and \multiatlas segmentation
+  is computed for each subject across all ten rounds of validation. 
+  Shown on the y-axis is the  p-value resulting from a t-test comparing the
+  distribution of variances at each parameter setting (atlas/template library
+  size). 
+  Only points where \mb{} mean variability is lower than \multiatlas are shown.
+  Dashed lines indicate a p-value of 0.05 and 0.01.}
   \label{fig:ADNI1-xval-variability}
 \end{figure}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1246,6 +1236,19 @@ segmentations are used as a gold standard.
 
 \begin{figure}
 <<FEP-volumes,cache=FALSE,dependson="setup",fig.width=5,fig.height=5>>=
+lm_eqn = function(m) {
+  l <- list(a = format(coef(m)[1], digits = 2),
+      b = format(abs(coef(m)[2]), digits = 2),
+      r2 = format(summary(m)$r.squared, digits = 3));
+  if (coef(m)[2] >= 0)  {
+    eq <- substitute(italic(y) == a + b %.% italic(x)*","~~italic(r)^2~"="~r2,l)
+  } else {
+    eq <- substitute(italic(y) == a - b %.% italic(x)*","~~italic(r)^2~"="~r2,l)    
+  }
+
+  as.character(as.expression(eq))
+}
+
 SZ_volumes=read.csv("data/SZ_volumes_by_method.csv", sep="\t")
 mean_sz_vols = ddply(SZ_volumes, c('Subject', 'Method'), function (df) {
   data.frame(Volume = mean(df$Volume))})
@@ -1701,7 +1704,7 @@ methods differ.
 \caption{\textbf{Summary of labelled subfields of the Hippocampus from recent
 MRI segmentation protocols.} \label{tab:subfield-segmentation-protocols}} 
 \begin{center}
-\begin{tabular}{ l l }
+\begin{tabular}{ l p{4in} }
 \hline\hline
 Protocol & Labelled Subfields  \tabularnewline
 \hline
@@ -2073,14 +2076,14 @@ stats.tests = ddply(ants.stats, c("atlases","templates.mb"), function (df) {
 ggplot(subset(stats.tests, direction > 0 & stat == "Variance"), 
   aes(x=templates.mb, y=p.value, colour=as.factor(atlases))) + 
   #facet_grid( . ~ stat) + 
-  geom_line(size=1) +
-  geom_point(size=3) + 
+  geom_line(size=0.5) +
+  geom_point(size=2) + 
   geom_hline(aes(yintercept=0.05, alpha=0.5), linetype='dashed') + 
   geom_hline(aes(yintercept=0.01, alpha=0.5), linetype='dashed') + 
   scale_x_continuous(breaks=seq(1,20,by=2)) + 
-  scale_y_log10(limits=c(0.001,1), breaks=c(0.01,0.05,0.1,1.0)) + 
+  #  scale_y_log10(limits=c(0.001,1), breaks=c(0.01,0.05,0.1,1.0)) + 
   xlab( "Number of Templates" ) + 
-  ylab( "Difference of variance during validation (p-value)") +
+  ylab( "Variability (p)") +
   scale_colour_hue(name="Atlases") +
   scale_alpha_continuous(guide='none') + 
   scale_linetype_discrete(guide='none') + 
@@ -2091,10 +2094,10 @@ ggplot(subset(stats.tests, direction > 0 & stat == "Variance"),
   with respect to SNT segmentations.}
   Variance of segmentation accuracy between \mb{} and \multiatlas segmentation is
   computed for each subject across all ten rounds of validation. Shown on the
-  y-axis (scaled logarithmically) is the  p-value resulting from a t-test
-  comparing the distribution of variances at each parameter setting
-  (atlas/template library size). Only points where \mb{} mean variability is lower
-  than \multiatlas are shown. Dashed lines indicate a p-value of 0.05 and 0.01.}
+  y-axis is the p-value from a t-test comparing the distribution of variances at
+  each parameter setting (atlas/template library size). 
+  Only points where \mb{} mean variability is lower than \multiatlas are shown.
+  Dashed lines indicate a p-value of 0.05 and 0.01.}
   \label{ADNI1-SNT-xval-variability}
 \end{figure}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
