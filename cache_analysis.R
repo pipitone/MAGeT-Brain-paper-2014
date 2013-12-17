@@ -71,7 +71,7 @@ prep <- function(ants_data_file, tracc_data_file) {
 }
 
 # Jens label XVAL
-d = prep('data/results-adni-xval-jens-ants-2013-12-10.csv.gz', 'data/results-adni-xval-jens-tracc-2013-12-09.csv.gz')
+d = prep('data/results-adni-xval-jens-ants-2013-12-13.csv.gz', 'data/results-adni-xval-jens-tracc-2013-12-09.csv.gz')
 write.csv(d$raw ,gzfile('data/cache/ADNI-JENS-XVAL:all_data.csv.gz'))
 write.csv(d$mean,gzfile('data/cache/ADNI-JENS-XVAL:all_data_mean.csv.gz'))
 
