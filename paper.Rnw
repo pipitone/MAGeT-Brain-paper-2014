@@ -1140,26 +1140,7 @@ ggplot(subset(stats.tests, direction > 0 & stat == "Variance"),
 %%%%%                                                                     %%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Experiment 2 Results: Winterburn Atlases Cross-Validation}
-This experiment explores \mb{} segmentation of hippocampal subfields. To achieve
-this, a leave-one-out validation was conducted in which lower-resolution images
-($0.9mm^3$ voxels) of each Winterburn atlas subject were segmented using the
-remaining high-resolution Winterburn atlas subjects' images. 
-
-In general, across hippocampal subfields the percent error in volume of \mb{}
-segmentations (relative to the full-resolution Winterburn atlas segmentation)
-compares favourably to the error resulting from image resampling (Figure
-\ref{fig:WAval-vol-boxplot}). In particular, the CA1, CA4/DG, and SR/SL/SM
-subfields all show a percent error in volume that is at or lower than
-resampling error. The Subiculum and CA2/CA3 subfields show distinctly larger
-percent error in volume than is found through resampling.  
-
-Figure \ref{fig:subfield-montage} shows a qualitative comparison of \mb{} subfield
-segmentations for a single subject.  
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Winterburn-XVAL: compare resampling
-\begin{figure}[h!]
-<<WAval-vol-boxplot,cache=T,fig.width=6,fig.height=4>>=
+<<WAval-prep, cache=T>>=
 data = subset(read.csv('data/WAval.csv'))
 casted = dcast(melt(data, id.vars=c("file","version")), file + variable ~ version)
 casted = rename(casted, c("variable"="region"))
@@ -1178,23 +1159,57 @@ levels(error$region) <-list("CA1"="X1", "CA1"="X101",
                             "SR/SL/SM"="X6","SR/SL/SM"="X106")
 melted = melt(error,id.vars=c("file", "region"))
 melted = rename(melted, c("variable"="measure", "value"="percenterr"))
-levels(melted$measure) <- list("Subsampled"="resampled",
-                               "MAGeT on Subsampled" = "mb_0.9mm",
-                               "MAGeT on T1 BRAVO"="mb_bravo")
+levels(melted$measure) <- list("Subsampled atlas labels"="resampled",
+                               "MAGeT on subsampled atlas images" = "mb_0.9mm",
+                               "MAGeT on T1 BRAVO images"="mb_bravo")
 
-ggplot(melted, aes(y=percenterr,x=region,colour=measure)) +
-  geom_hline(aes(yintercept=0), colour="grey", size=1) + 
-  geom_boxplot() +
-  labs(y="Percent error in volume", x="Subfield") +
-  scale_colour_discrete("") + 
-  theme(legend.direction = "horizontal", legend.position = "bottom")
+error.t.tests = ddply(error, c("region"), function (df) { 
+  data.frame( 
+    bravo = round(t.test(df$resampled, df$mb_bravo, paired=T)$p.value,3), 
+    atlas = round(t.test(df$resampled, df$mb_0.9mm, paired=T)$p.value,3)
+  )}) 
 @
-  \caption{{\bf Average percent error in hemispheric subfield volume.} 
+This experiment explores \mb{} segmentation of hippocampal subfields. To achieve
+this, a leave-one-out validation was conducted in which lower-resolution images
+($0.9mm^3$ voxels) of each Winterburn atlas subject were segmented using the
+remaining high-resolution Winterburn atlas subjects' images. 
+
+In general, across hippocampal subfields the percent error in volume of \mb{}
+segmentations (relative to the full-resolution Winterburn atlas segmentation)
+compares favourably to the error resulting from image resampling (Figure
+\ref{fig:WAval-vol-boxplot}). In particular, there is no significant difference 
+between percent error of \mb{} volumes compared to image resampling error for the 
+CA1, Subiculum, and CA2/CA3 subregions. The \mb{} volumes of CA4/DG and SR/SL/SM 
+subregions show both significantly different (lower) percent error (p < 0.001). 
+
+%the CA1, CA4/DG, and SR/SL/SM
+%subfields all show a percent error in volume that is at or lower than
+%resampling error. The Subiculum and CA2/CA3 subfields show distinctly larger
+%percent error in volume than is found through resampling.  
+
+Figure \ref{fig:subfield-montage} shows a qualitative comparison of \mb{} subfield
+segmentations for a single subject.  
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Winterburn-XVAL: compare resampling
+\begin{figure}[h!]
+<<WAval-vol-boxplot,cache=T,fig.width=6,fig.height=4>>=
+ggplot(melted, aes(y=percenterr,x=measure,colour=measure)) +
+  facet_grid(.~region) + 
+  geom_hline(aes(yintercept=0), colour="grey", size=1) + 
+  geom_boxplot() + 
+  geom_point(group=1, position="dodge") + 
+  labs(y="Unilateral subregion volume percent error", x="Subfield") +
+  theme(axis.ticks = element_blank(), axis.text.x = element_blank()) + 
+  scale_colour_discrete("") + 
+  theme(legend.direction = "vertical", legend.position = "bottom")
+@
+  \caption{{\bf Percent error in unilateral subfield volume.} 
   Percent error is measured against the volumes of the unmodified Winterburn
   atlas subfield segmentations.
-  {\bf Subsampled} are volumes of the manual segmentations of the Winterburn
+  {\bf Subsampled atlas labels} volumes of the manual segmentations of the Winterburn
   atlases after resampling to $0.9mm^3$ voxels.  
-  {\bf MAGeT on Subsampled} volumes are \mb{} segmentations of the Winterburn atlas
+  {\bf MAGeT on subsampled atlas images} volumes are \mb{} segmentations of the Winterburn atlas
   images after resampling to $0.9mm^3$ voxels.
   {\bf MAGeT on T1 BRAVO} volumes are \mb{} segmentations of T1 BRAVO images
   ($0.9mm^3$ voxels) acquired separately of four of the five Winterburn atlas
@@ -1218,6 +1233,16 @@ ggplot(melted, aes(y=percenterr,x=region,colour=measure)) +
     lateral to medial; the third row shows coronal slices from anterior to
     posterior.  \label{fig:subfield-montage}}
 \end{sidewaysfigure}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% ADNI1 1yr Complete Dataset Package Totals & Failures
+%                        
+<<ADNI-xvals-pvalue, echo=F, results="asis",cache=FALSE>>=
+latex(error.t.tests, file="", size="scriptsize",landscape=FALSE, ctable=TRUE,
+    caption="\\textbf{t-test p-values whem comparing to resampled percent error.}", 
+    caption.loc = c("top"), rowname=NULL, 
+    label="tab:resampled-percent-error")
+@
 
 \FloatBarrier
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
