@@ -80,7 +80,7 @@ package_totals   <- read.csv('data/cache/ADNI1:package_totals.csv')
 \usepackage{authblk}             % Listing Author affiliations
 \usepackage{rotating}            % rotating figures
 \usepackage[hypcap]{caption}
-
+\usepackage{lineno}
 
 %draft mode
 \usepackage[colorinlistoftodos, textwidth=4cm, shadow]{todonotes}
@@ -155,6 +155,7 @@ Toronto, Toronto, ON, Canada}
 
 \begin{document}
 \maketitle
+\linenumbers
 
 \begin{abstract}
 
@@ -341,18 +342,18 @@ specific landmarks, the authors demonstrated accurate parcellation of
 hippocampal subfields in unlabelled MRI volumes. 
 
 In this paper we have describe a thorough validation of the \mb{} algorithm for
-segmentation of the hippocampus and its subfields. First, we addressed the feasibility and
+segmentation of the hippocampus and its subfields. First, we address the feasibility and
 accuracy of whole hippocampus segmentation with a limited number of input
 atlases \citep{MallarChakravarty2012} by performing a multi-fold experiment
 using a subset of the Alzheimer's Disease Neuroimaging Initiative (ADNI)
-dataset over a range of parameters.  We then performed a leave-one-out
-validation to determine if hippocampal subfields can be accurately identified
-using our \multiatlas framework.  To ensure that we have not over-fit our
-parameters to the aging or neurodegenerative brain, we also applied our
-segmentations to a dataset of individuals suffering from first episode
-psychosis.  Finally, validated our algorithm using all of the data available in
-the \adnidataset{} sample and compare our segmentations to the other
-segmentations available through the ADNI informatics portal. 
+dataset over a range of parameters. We then perform a leave-one-out
+validation to determine if hippocampal subfields can be accurately identified,
+using the best parameters discovered in the first experiment.  To ensure that we
+have not overfit our parameters to the aging or neurodegenerative brain, we also
+apply \mb{} to a dataset of individuals suffering from first episode psychosis.
+Finally, we validat our algorithm using all of the data available in the
+\adnidataset{} sample and compare our segmentations to other popular
+segmentation algorithms. 
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1228,7 +1229,7 @@ ggplot(wa.xval.error.melted, aes(y=percenterr,x=measure,colour=measure)) +
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Winterburn-XVAL: volume plots
 \begin{figure}[h!]
-<<WAval-vol-plots,cache=T,fig.width=6,fig.height=6>>=
+<<WAval-vol-plots,cache=T,fig.width=7,fig.height=6>>=
 wa.xval.volumes = melt(wa.xval.casted, id.vars=c('file', 'region', 'gold_0.3mm'))
 wa.xval.volumes = rename(wa.xval.volumes, c("variable"="measure", "value"="volume"))
 levels(wa.xval.volumes$measure) <- list("Subsampled atlas labels"="gold_0.9mm",
@@ -1241,15 +1242,27 @@ wa.xval.vols.lm = ddply(wa.xval.volumes, c("region", "measure"), function(df) {
    data.frame(
      eqn  = lm_eqn(model), 
      corr = pearson)})
+wa.xval.vols.lm$yoffset = c( 1225 - 0:2 * 40,
+                             465  - 0:2 * 15, 
+                             750  - 0:2 * 30,
+                             325  - 0:2 * 18, 
+                             1100 - 0:2 * 40 )
+
+wa.xval.vols.lm$xoffset = c( rep(700, 3),
+                             rep(250, 3),
+                             rep(490, 3),
+                             rep(140, 3), 
+                             rep(570, 3) )
 
 ggplot(wa.xval.volumes, aes(x=gold_0.3mm, y=volume, colour=measure)) + 
   facet_wrap(~region, ncol=3, scales='free') + 
   geom_point() + 
-  geom_smooth(method='lm')  + 
   coord_equal() + 
-  ylab(expression("Automated Unilateral Volume" (mm^3))) +
+  geom_smooth(method='lm')  + 
   xlab(expression("Manual Unilateral Volume" (mm^3))) +
-  geom_text(aes(x=Inf-200, y=Inf-200, label=eqn), parse=TRUE, data=wa.xval.vols.lm, position="dodge") +
+  ylab(expression("Automated Unilateral Volume" (mm^3))) +
+  geom_text(aes(x=xoffset, y=yoffset, label=eqn), parse=TRUE,
+    data=wa.xval.vols.lm, size=2,hjust=0) +
   theme(legend.direction = "horizontal", legend.position = "bottom")
 
 @
@@ -2024,7 +2037,7 @@ vote fusion method used (see Discussion).
 stderr <- function(x) sqrt(var(x)/length(x))
 ggplot(subset(snt_xval_mean, (templates.mb*atlases) %% 2 == 1),
        aes(x=templates.mb,y=k.mb, colour=as.factor(atlases))) + #as.factor((atlases*templates.mb) %% 2 ))) + 
-  facet_grid(reg_method~method.mb) + 
+  facet_grid(.~method.mb) + 
   stat_summary(fun.y=mean,geom='line',
                aes(y=k.mb, weight=1, group=as.factor(atlases))) + 
   stat_summary(fun.y=mean,
