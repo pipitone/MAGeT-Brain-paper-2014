@@ -27,6 +27,18 @@ library(ADNIMERGE)
 library(plyr)
 options(digits=3)
 theme_set(theme_bw(base_size = 12))
+lm_eqn = function(m) {
+  l <- list(a = format(coef(m)[1], digits = 2),
+      b = format(abs(coef(m)[2]), digits = 2),
+      r2 = format(summary(m)$r.squared, digits = 3));
+  if (coef(m)[2] >= 0)  {
+    eq <- substitute(italic(y) == a + b %.% italic(x)*","~~italic(r)^2~"="~r2,l)
+  } else {
+    eq <- substitute(italic(y) == a - b %.% italic(x)*","~~italic(r)^2~"="~r2,l)    
+  }
+
+  as.character(as.expression(eq))
+}
 
 @
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -529,7 +541,7 @@ are: atlas library size (1-9), template library size (1-20), registration method
 cross-correlation weighted majority vote, and normalized mutual information
 weighted majority vote, described below).  In each validation round, both a
 \mb{} and \multiatlas segmentation is produced.  A total of $10 \times 60 \times
-9 \times 20 \times 2 \times 3 = \Sexpr{10*60*9*20*2*3}$ validation rounds
+9 \times 20 \times 2 \times 3 =$ \Sexpr{10*60*9*20*2*3} validation rounds
 were conducted and resulting segmentations analysed. 
 
 Before registration, all images underwent preprocessing with the N3 algorithm
@@ -1141,33 +1153,14 @@ ggplot(subset(stats.tests, direction > 0 & stat == "Variance"),
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Experiment 2 Results: Winterburn Atlases Cross-Validation}
 <<WAval-prep, cache=T>>=
-data = subset(read.csv('data/WAval.csv'))
-casted = dcast(melt(data, id.vars=c("file","version")), file + variable ~ version)
-casted = rename(casted, c("variable"="region"))
-
-error = ddply(casted, c("file", "region"), function(df) {
-  with(df, 
-  data.frame(
-    resampled = (gold_0.9mm - gold_0.3mm) / gold_0.3mm * 100, 
-    mb_bravo  = (mb_bravo   - gold_0.3mm) / gold_0.3mm * 100, 
-    mb_0.9mm  = (mb_0.9mm   - gold_0.3mm) / gold_0.3mm * 100))})
-
-levels(error$region) <-list("CA1"="X1", "CA1"="X101", 
+wa.xval.data = subset(read.csv('data/WAval.csv'))
+wa.xval.casted = dcast(melt(wa.xval.data, id.vars=c("file","version")), file + variable ~ version)
+wa.xval.casted = rename(wa.xval.casted, c("variable"="region"))
+levels(wa.xval.casted$region) <-list("CA1"="X1", "CA1"="X101", 
                             "Subiculum"="X2","Subiculum"="X102", 
                             "CA4/DG"="X4","CA4/DG"="X104", 
                             "CA2/CA3"="X5","CA2/CA3"="X105", 
                             "SR/SL/SM"="X6","SR/SL/SM"="X106")
-melted = melt(error,id.vars=c("file", "region"))
-melted = rename(melted, c("variable"="measure", "value"="percenterr"))
-levels(melted$measure) <- list("Subsampled atlas labels"="resampled",
-                               "MAGeT on subsampled atlas images" = "mb_0.9mm",
-                               "MAGeT on T1 BRAVO images"="mb_bravo")
-
-error.t.tests = ddply(error, c("region"), function (df) { 
-  data.frame( 
-    bravo = round(t.test(df$resampled, df$mb_bravo, paired=T)$p.value,3), 
-    atlas = round(t.test(df$resampled, df$mb_0.9mm, paired=T)$p.value,3)
-  )}) 
 @
 This experiment explores \mb{} segmentation of hippocampal subfields. To achieve
 this, a leave-one-out validation was conducted in which lower-resolution images
@@ -1194,7 +1187,21 @@ segmentations for a single subject.
 % Winterburn-XVAL: compare resampling
 \begin{figure}[h!]
 <<WAval-vol-boxplot,cache=T,fig.width=6,fig.height=4>>=
-ggplot(melted, aes(y=percenterr,x=measure,colour=measure)) +
+wa.xval.error = ddply(wa.xval.casted, c("file", "region"), function(df) {
+  with(df, 
+  data.frame(
+    resampled = (gold_0.9mm - gold_0.3mm) / gold_0.3mm * 100, 
+    mb_bravo  = (mb_bravo   - gold_0.3mm) / gold_0.3mm * 100, 
+    mb_0.9mm  = (mb_0.9mm   - gold_0.3mm) / gold_0.3mm * 100))})
+
+wa.xval.error.melted = melt(wa.xval.error,id.vars=c("file", "region"))
+wa.xval.error.melted = rename(wa.xval.error.melted, c("variable"="measure", "value"="percenterr"))
+levels(wa.xval.error.melted$measure) <- list("Subsampled atlas labels"="resampled",
+                               "MAGeT on subsampled atlas images" = "mb_0.9mm",
+                               "MAGeT on T1 BRAVO images"="mb_bravo")
+
+
+ggplot(wa.xval.error.melted, aes(y=percenterr,x=measure,colour=measure)) +
   facet_grid(.~region) + 
   geom_hline(aes(yintercept=0), colour="grey", size=1) + 
   geom_boxplot() + 
@@ -1217,6 +1224,39 @@ ggplot(melted, aes(y=percenterr,x=measure,colour=measure)) +
   \label{fig:WAval-vol-boxplot}
 \end{figure}
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Winterburn-XVAL: volume plots
+\begin{figure}[h!]
+<<WAval-vol-plots,cache=T,fig.width=6,fig.height=6>>=
+wa.xval.volumes = melt(wa.xval.casted, id.vars=c('file', 'region', 'gold_0.3mm'))
+wa.xval.volumes = rename(wa.xval.volumes, c("variable"="measure", "value"="volume"))
+levels(wa.xval.volumes$measure) <- list("Subsampled atlas labels"="gold_0.9mm",
+                               "MAGeT on subsampled atlas images" = "mb_0.9mm",
+                               "MAGeT on T1 BRAVO images"="mb_bravo")
+
+wa.xval.vols.lm = ddply(wa.xval.volumes, c("region", "measure"), function(df) {
+   model = lm(volume ~ gold_0.3mm, df)
+   pearson = cor(df$volume, df$gold_0.3mm, use='pairwise.complete.obs')
+   data.frame(
+     eqn  = lm_eqn(model), 
+     corr = pearson)})
+
+ggplot(wa.xval.volumes, aes(x=gold_0.3mm, y=volume, colour=measure)) + 
+  facet_wrap(~region, ncol=3, scales='free') + 
+  geom_point() + 
+  geom_smooth(method='lm')  + 
+  coord_equal() + 
+  ylab(expression("Automated Unilateral Volume" (mm^3))) +
+  xlab(expression("Manual Unilateral Volume" (mm^3))) +
+  geom_text(aes(x=Inf-200, y=Inf-200, label=eqn), parse=TRUE, data=wa.xval.vols.lm, position="dodge") +
+  theme(legend.direction = "horizontal", legend.position = "bottom")
+
+@
+  \label{fig:WAval-volumes}
+\end{figure}
+
+
 \begin{sidewaysfigure}
     \begin{centering}
       \includegraphics[width=\linewidth]{figure/winterburn-atlas-montage/figure.pdf}
@@ -1234,15 +1274,7 @@ ggplot(melted, aes(y=percenterr,x=measure,colour=measure)) +
     posterior.  \label{fig:subfield-montage}}
 \end{sidewaysfigure}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% ADNI1 1yr Complete Dataset Package Totals & Failures
-%                        
-<<ADNI-xvals-pvalue, echo=F, results="asis",cache=FALSE>>=
-latex(error.t.tests, file="", size="scriptsize",landscape=FALSE, ctable=TRUE,
-    caption="\\textbf{t-test p-values whem comparing to resampled percent error.}", 
-    caption.loc = c("top"), rowname=NULL, 
-    label="tab:resampled-percent-error")
-@
+
 
 \FloatBarrier
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1261,19 +1293,6 @@ segmentations are used as a gold standard.
 
 \begin{figure}
 <<FEP-volumes,cache=FALSE,dependson="setup",fig.width=5,fig.height=5>>=
-lm_eqn = function(m) {
-  l <- list(a = format(coef(m)[1], digits = 2),
-      b = format(abs(coef(m)[2]), digits = 2),
-      r2 = format(summary(m)$r.squared, digits = 3));
-  if (coef(m)[2] >= 0)  {
-    eq <- substitute(italic(y) == a + b %.% italic(x)*","~~italic(r)^2~"="~r2,l)
-  } else {
-    eq <- substitute(italic(y) == a - b %.% italic(x)*","~~italic(r)^2~"="~r2,l)    
-  }
-
-  as.character(as.expression(eq))
-}
-
 SZ_volumes=read.csv("data/SZ_volumes_by_method.csv", sep="\t")
 mean_sz_vols = ddply(SZ_volumes, c('Subject', 'Method'), function (df) {
   data.frame(Volume = mean(df$Volume))})
