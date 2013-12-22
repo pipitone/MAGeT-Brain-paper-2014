@@ -102,7 +102,7 @@ package_totals   <- read.csv('data/cache/ADNI1:package_totals.csv')
 \newcommand{\animal}{ANIMAL}
 \newcommand{\adnidataset}{ADNI1:Complete 1Yr 1.5T}
 \newcommand{\FEPdataset}{SZ-FEP}
-\newcommand{\fsl}{FSL}
+\newcommand{\fsl}{FSL FIRST}
 \newcommand{\freesurfer}{FreeSurfer}
 \newcommand{\maper}{MAPER}
 \newcommand{\gs}{Gold Standard}
@@ -185,9 +185,9 @@ Two final experiments assess \mb{} when applied to first episode psychosis and
 Alzheimer's disease populations, and \mb{} segmentations are compared with
 existing automated methods (\fsl{}, \freesurfer{}, \maper{}) and biases are
 explored.\\
-\textbf{Results:} Using nine atlases and 19 template images, \mb{} achieves a
-mean Dice's Similarity Coefficient (DSC) of 0.88 (to \psegs{}) over 10-folds of
-Monte Carlo % TODO: update cross-validation on 60 subjects, and shows
+\textbf{Results:} Using 9 atlases and 19 template images, \mb{} achieves a
+mean Dice's Similarity Coefficient (DSC) of \Sexpr{round(mb.best.kappa, digits=3)} 
+(to \psegs{}) over 10-folds of Monte Carlo % TODO: update cross-validation on 60 subjects, and shows
 significantly lower variability in DSC than \multiatlas{} segmentation.
 In a LOOCV, \mb{} reproduces the volumes of the cornu ammonis (CA) 1;
 CA4/dentate % TODO: update
@@ -412,8 +412,16 @@ for \mb{} can be found at \url{http://github.com/pipitone/MAGeTbrain}.
   \begin{centering}
     \includegraphics[width=\textwidth]{figure/MA-MAGeTBrain-Schematic}
   \end{centering}
-  \caption{A schematic illustration of basic \multiatlas{} segmentation and \mb{}
-  segmentation \label{fig:MAGeT}}
+  \caption{A schematic illustration of basic \multiatlas{} segmentation and
+\mb{} segmentation. In multi-atlas segmentation, manual labels from atlas images
+are warped (propagated) into subject space by applying the transformations
+estimated from non-linear image registration. The resulting candidate labels
+from all atlas images are then fused to create a final segmentation. In \mb{}
+segmentation, a template library is created by sampling (either randomly or
+representatively) from the subject images. Atlas labels are propagated to all
+template images and then to each subject image (including those used in the template
+library). The candidate the labels for a subject are then fused into a final
+segmentation.  \label{fig:MAGeT}}
 \end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -673,12 +681,10 @@ experiment.
 % \[\text{Jaccard (J)} = \frac{|A \cap B|}{|A \cup B|} = \frac{DSC}{(2-DSC)}\]
 
 where $A$ and $B$ are the regions being compared, and the cardinality is the
-volume measured in voxels. 
-
-The labels produced by \mb{} and \multiatlas{} segmentation are compared to the
-manual labels using the Dice similarity coefficient, and the recorded value for
-each subject at each parameter setting explored in this experiment is the
-average over ten validation rounds. 
+volume measured in voxels. The labels produced by \mb{} and \multiatlas{}
+segmentation are compared to the manual labels using the Dice similarity
+coefficient, and the recorded value for each subject at each parameter setting
+explored in this experiment is the average over ten validation rounds. 
 
 Additionally, the sensitivity of \mb{} and \multiatlas{} to atlas and template
 library composition is evaluated by comparing the variability in Dice scores
@@ -721,11 +727,12 @@ used as the \mb{} atlas library, but in each round of LOOCV a $0.9mm^3$ voxel
 target image corresponding to the left-out atlas is used so as to evaluate \mb{}
 on standard 3T T1-weighted resolution images.
 
-Specifically, two sets of $0.9mm^3$ voxel target images are used in this
-experiment: separately acquired T1 acquisitions of four of the five Winterburn
-atlas subjects (referred to as the {\em BRAVO} set because of the scan
-parameters used, described below), and computationally subsampled versions of
-the Winterburn atlas images (the {\em Subsampled} set).  
+Specifically, this experiments has two parts, each using different sets of
+$0.9mm^3$ voxel target images: trilinear subsampled versions of the Winterburn
+atlas images (Experiment 2a), and separately acquired T1 BRAVO acquisitions of
+four of the five Winterburn atlas subjects (Experiment 2b).  Image subsampling
+of the Winterburn atlas images was performed using trilinear subsampling
+techniques. 
 
 The 3T T1 BRAVO acquisitions of four of the five Winterburn atlas subjects were
 separately obtained within a short time of the original atlas image
@@ -736,11 +743,8 @@ following parameters: $TE/TR/TI = 3.0ms/6.7ms/650ms$, flip angle $=8^\circ$,
 $FOV=15.8cm$, slice thickness$=0.9mm$, 176 in-plane steps for an approximate
 isotropic resolution of 0.9mm dimension voxels.
 
-Image subsampling of the Winterburn atlases was performed using trilinear
-interpolation techniques. 
-
-The template library is composed of all $0.9mm^3$ voxel target images
-(either {\em BRAVO} or {\em Subsampled}), plus an additional set of 16 of
+The template library is composed of all $0.9mm^3$ voxel target images (either
+the {\em BRAVO} or {\em subsampled} sets), plus an additional set of 16 of
 healthy subjects 3T T1 images acquired separately (Table
 \ref{tab:WAval-healthy-demographics}). These images were acquired on a 3T GE
 Discovery MR 750 system (General Electric, Milwaukee, WI) using an 8-channel
@@ -756,6 +760,7 @@ illustrates schematically the experimental set up.
 
 \begin{figure}
   \begin{centering}
+    % TODO: fix schematic
     \includegraphics[width=\textwidth]{figure/WinterburnSubfieldLOOCVSchematic}
   \end{centering}
   \caption{A schematic illustration of the experimental set up of the
@@ -773,7 +778,8 @@ tab <- summary( Diagnosis ~ Age + Sex + Education + Handedness, data = master,
     method="reverse", na.rm = TRUE, test=FALSE)
 caption = 
   "\\textbf{Demographics for the hippocampal subfield cross-validation healthy
-control subject sample.} Education is shown in years."
+control subject sample used in the template library (excluding the Winterburn
+atlas subjects).} Education is shown in years."
 latex(tab, file="", size="scriptsize",landscape=FALSE, ctable=FALSE,
       caption=caption, caption.loc = c("top"),
       title="tab:WAval-healthy-demographics")
@@ -782,18 +788,19 @@ latex(tab, file="", size="scriptsize",landscape=FALSE, ctable=FALSE,
 
 
 \paragraph{Evaluation method}  
-In this experiment we must evaluate \mb{} on a task which is ill-defined since
-there are no segmentation protocols of the hippocampal subfields for T1 images
-at $0.9mm^3$ voxels (in fact, whether subfields can even be differentiated at
-this resolution is debated \citep{who?}). Therefore, we evaluate the {\it
-precision} with \mb{} produces hippocampal subfields that correspond to the
-segmentation protocol used by the given atlas library images. 
-
-Specifically, we compute the relative percent error in volume of the \mb{}-produced
-hippocampal subfields with respect to the full-resolution Winterburn atlas
-segmentations. In addtion, by directly resampling the Winterburn atlas
-segmentations to $0.9mm^3$ voxel images (using nearest-neighbour interpolation)
-we can obtain a baseline relative percent error to compare \mb{} against. 
+Evaluating the accuracy of hippocampal subfields for T1 images at
+$0.9mm^3$-isotropic voxels is inherently ill-defined since there are no manual
+protocols for segmentation at this resolution to use as a reference. Instead, we
+can evaluate the {\it precision} with which \mb{} produces hippocampal subfields
+that correspond to the segmentation protocol used by the given atlas library
+images.  Specifically, we compute the relative percent error in volume of the
+\mb{}-produced hippocampal subfields with respect to the full-resolution
+Winterburn atlas segmentations. In addtion, by directly resampling the
+Winterburn atlas segmentations to $0.9mm^3$ voxels (using standard
+nearest-neighbour image resampling techniques) we obtain a scaled down version
+of the labels preserving the original segmentation protocol within the limits of
+error from rounding and interpolation. The relative percent error in volume of
+these labels provides a baseline to compare \mb{} segmentations against. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%                                                                     %%%%%
@@ -912,7 +919,7 @@ the \verb+run_first_all+ script according to the FIRST user guide
 \footnote{http://fsl.fmrib.ox.ac.uk/fsl/fslwiki/FIRST/UserGuide}.  All images
 in the \adnidataset{} dataset were segmented by both methods. 
 
-One author (MP) performed visual quality inspection for \mb{} and \freesurfer{} 
+One author (MP) performed visual quality inspection for \mb{} and \fsl{} 
 segmentations using similar quality control guidelines (if either hippocampus
 was under or over segmented by $10mm$ or greater in three or more slices then
 the segmentation did not pass).  Only images meeting the conditions of having
@@ -1007,11 +1014,11 @@ images.
 
 In addition to an improvement in accuracy over \multiatlas{}-based segmentation,
 \mb{} also shows a decrease in the variability of segmentation accuracy 
-(Figure \ref{ADNI1-xval-variability}).  The size of template library 
+(Figure \ref{fig:ADNI1-xval-variability}).  The size of template library 
 necessary to reach a decrease ($p < 0.05$) in variance and standard deviation
 grows with the size of atlas library used.  A template library of 19 images is
 sufficient to show significant decrease in variance and standard deviation for
-3-7 atlases. 
+1-9 atlases. 
 
 We have omitted results obtained when using an even number of atlases or
 templates since with this configuration we found significantly decreased
@@ -1283,8 +1290,8 @@ ggplot(wa.xval.volumes, aes(x=gold_0.3mm, y=volume, colour=measure)) +
     \caption{Detailed subfield segmentation results for a single subject. In
     the upper left corner is the original high-resolution Winterburn atlas manual
     subfield segmentation; in the upper right corner is the Winterburn atlas
-    segmentation resampled from 0.3mm- to 0.9mm-isotropic voxels; in the lower left
-    corner is the \mb{} segmentation of the resampled Winterburn atlas images; in the
+    segmentation subsampled from 0.3mm- to 0.9mm-isotropic voxels; in the lower left
+    corner is the \mb{} segmentation of the subsampled Winterburn atlas images; in the
     lower right corner is the \mb{} segmentation of a separately acquired T1 BRAVO
     image of the same subject. In each segmentation, slices from the left
     hemisphere are shown in Talairach-like ICBM152 space: the first row shows axial
@@ -1591,10 +1598,10 @@ Leave-one-out cross-validation.
 \hline\hline
 Method & Atlases & DSC & Reference & Validation \tabularnewline
 \hline
-\mb{}                     &9 & \Sexpr{round(mb.best.kappa, digits=3)} & & 10
-rounds of Monte Carlo CV on a pool of 69 subjects \tabularnewline % TODO: update
 LEAP                    &30&0.848                 &\cite{Wolz2010}  &Segmentation of 60 subjects\tabularnewline
 ACM (AdaBoost-based)    &21&0.862                 &\cite{Morra2008} &LOOCV on atlases\tabularnewline
+\mb{}                   &9 & \Sexpr{round(mb.best.kappa, digits=3)} & & 10
+rounds of Monte Carlo CV on a pool of 69 subjects \tabularnewline % TODO: update
 Patch-based label fusion&16&0.883 (CN) \newline 0.838 (AD)&\cite{Coupe2011e}&LOOCV on atlases\tabularnewline
 Multi-atlas             &30&0.885                 &\cite{Lotjonen2010}&Segmentation of 60 subjects\tabularnewline
 Multi-atlas + weighted fusion&20&0.898 (CN) \newline 0.798 (left HC, MCI) &\cite{Wang2011}  &10 rounds of Monte Carlo CV on 20 subjects, pool of 139 (CN/MCI)\tabularnewline
@@ -1982,9 +1989,11 @@ over ten validation rounds.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ADNI1-XVAL: prep
 % Prepares the data in a the form needed for plotting.
-<<ADNI1-SNT-xval-prep,dependson='ADNI1-xval-load',include=FALSE,cache=TRUE>>=
+<<ADNI1-SNT-xval-prep,include=FALSE,cache=TRUE>>=
 snt_xval_data  <- read.csv(gzfile('data/cache/ADNI-SNT-XVAL:all_data.csv.gz'))
 snt_xval_mean  <- read.csv(gzfile('data/cache/ADNI-SNT-XVAL:all_data_mean.csv.gz'))
+snt_xval_mean$reg_method = factor(snt_xval_mean$reg_method, c("ANTS", "ANIMAL"))
+snt_xval_mean$method.mb = factor(snt_xval_mean$method.mb, c("Majority Vote", "Cross-correlation Vote", "NMI Vote"))
 
 snt_xval_mb.best = mean(subset(snt_xval_data, 
                                   reg_method   == "ANTS" & 
