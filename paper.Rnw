@@ -53,11 +53,16 @@ jens_xval_data  <- read.csv(gzfile('data/cache/ADNI-JENS-XVAL:all_data.csv.gz'))
 jens_xval_mean  <- read.csv(gzfile('data/cache/ADNI-JENS-XVAL:all_data_mean.csv.gz'))
 jens_xval_mean$reg_method = factor(jens_xval_mean$reg_method, c("ANTS", "ANIMAL"))
 jens_xval_mean$method.mb = factor(jens_xval_mean$method.mb, c("Majority Vote", "Cross-correlation Vote", "NMI Vote"))
-mb.best.kappa = mean(subset(jens_xval_mean, 
-                                  reg_method   == "ANTS" & 
-                                  method.mb    == "Majority Vote" &
-                                  templates.mb == 19 & 
-                                  atlases      == 9)$k.mb)
+mb.kappa.best = mean(subset(jens_xval_mean, 
+                                 reg_method   == "ANTS" & 
+                                 method.mb    == "Majority Vote" &
+                                 templates.mb == 19 & 
+                                 atlases      == 9)$k.mb)
+mb.diff.best = mean(subset(jens_xval_mean, 
+                                 reg_method   == "ANTS" & 
+                                 method.mb    == "Majority Vote" &
+                                 templates.mb == 19 & 
+                                 atlases      == 1)$k_diff)
 @
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -186,7 +191,7 @@ Alzheimer's disease populations, and \mb{} segmentations are compared with
 existing automated methods (\fsl{}, \freesurfer{}, \maper{}) and biases are
 explored.\\
 \textbf{Results:} Using 9 atlases and 19 template images, \mb{} achieves a
-mean Dice's Similarity Coefficient (DSC) of \Sexpr{round(mb.best.kappa, digits=3)} 
+mean Dice's Similarity Coefficient (DSC) of \Sexpr{round(mb.kappa.best, digits=3)} 
 (to \psegs{}) over 10-folds of Monte Carlo % TODO: update cross-validation on 60 subjects, and shows
 significantly lower variability in DSC than \multiatlas{} segmentation.
 In a LOOCV, \mb{} reproduces the volumes of the cornu ammonis (CA) 1;
@@ -894,21 +899,35 @@ To validate \mb{} segmentation quality with respect to other established
 automated hippocampal segmentation methods, \mb{} was applied to large dataset
 from the ADNI project and the resulting segmentations were compared to those
 produced by \freesurfer{}, \fsl{}, \maper{}, as well as semi-automated
-hippocampal segmentations (\snt{}) provided by ADNI.
+whole hippocampal segmentations (\snt{}) provided by ADNI.
 
-\paragraph{ADNI1 dataset revisited} 
+\paragraph{\adnidataset dataset} 
 The {\em \adnidataset{}} standardized dataset contains $1919$ images in total.
 \snt{}, \maper, \freesurfer{} hippocampal volumes for a subset of images were
 provided by ADNI, along with quality control data for each \freesurfer{}
-segmentation (guidelines described in \citep{Hartig2010}).  Clinical and
-demographic data for the entire \adnidataset{} dataset are shown in Table
+segmentation (guidelines described in \citep{Hartig2010}).  
+
+Clinical, demographic and pre-processed T1-weighted MRI were downloaded by the
+authors from the ADNI database (adni.loni.ucla.edu) between March 2012 and
+August 2012. The image dataset used was the "\adnidataset{}" standardized dataset
+available from ADNI \footnote{
+\url{http://adni.loni.ucla.edu/methods/mri-analysis/adni-standardized-data/}}
+\citep{Wyman2012}. This image collection contains uniformly pre-processed images
+which have been designated to be the "best" after quality control.  All images
+were acquired using 1.5T scanners (General Electric Healthcare, Philips Medical
+Systems or Siemens Medical Solutions) at multiple sites using the protocol
+described in \citep{Jack2008}.  Representative 1.5T imaging parameters were TR =
+2400ms, TI = 1000ms, TE = 3.5ms, flip angle = $8^{\circ}$, field of view = 240 x
+240mm, a $192 \times 192 \times 166$ matrix ($x$, $y$, and $z$ directions)
+yielding a voxel dimensions of $1.25mm \times 1.25mm \times 1.2mm$.  Clinical
+and demographic data for the entire \adnidataset{} dataset are shown in Table
 \ref{tab:ADNI1-Dataset-Demographics}.
 
 Semi-automated segmentations of the left and right whole hippocampi are made
 available with a subset of ADNI images \citep{Hsu2002}. These labels have been
 generated using the \snt{} tool from Medtronic Surgical Navigation Technologies,
 Louisville, CO (see Supplementary Materials for detailed discussion of the
-segmentation process used).
+segmentation process).
 
 \paragraph{Experiment details} 
 \mb{} was configured with an atlas library composed of the five Winterburn T1
@@ -988,37 +1007,34 @@ In this experiment we conduct 10 rounds of \mb{} and \multiatlas{} segmentation 
 of 60 subjects using atlas and template library sizes varying from 1-9 and 1-20
 images respectively, two registration algorithms (\ants{} or \animal{}), and three
 label fusion techniques (unweighted, cross-correlation, and normalised mutual
-information weighted majority vote).  Hippocampal \mb{}-based segmentations using
-both \animal{} and \ants{} registration algorithms demonstrate good overlap with
-manual segmentations (maximum mean DSC of \Sexpr{round(mb.best.kappa, digits=2)}
-when using 9 atlases, 19 templates, ANTS registration, and majority vote label
-fusion); Figure \ref{fig:ADNI1-xval-k-mean}).  Qualitatively, both \animal{} and
-\ants{}-based segmentations demonstrate trend overlap accuracy that increases with
-the size of atlas library and template library. Improvement in accuracy plateaus
-with template libraries larger than ten images. 
+information weighted majority vote).  Computed segmentations are compared to
+\psegs using Dice's Similarity Coefficient (DSC). 
 
-The use of \mb{} with \ants{} registration shows a pronounced increase
-in segmentation accuracy over \mb{} with \animal{} registration, across all
-other variable settings we tested. Additionally, by itself, using a weighted
+We find that for \mb{} segmentations, similarity score increases
+as atlas and template library size is increased, although with diminishing returns and
+an eventual trend towards a plateau (Figure \ref{fig:ADNI1-xval-k-mean}).  A maximum
+similarity score of \Sexpr{round(mb.kappa.best, digits=3)} is found when using 9
+atlases, 19 templates, ANTS registration, and majority vote label fusion).  The
+\ants{} registration method consistently out-performs \animal{} registration
+over all variable settings we tested. Additionally, by itself, using a weighted
 voting strategy did not significantly improve segmentation accuracy, contrary to
-the findings of \citet{Aljabar2009} in basic \multiatlas{} segmentation. Given
-these findings, in the remainder of this section only results using the \ants{}
-registration algorithm and majority vote fusion will be shown.
+the findings of \citet{Aljabar2009} using basic \multiatlas{} segmentation.
+Given these findings, in the remainder of this section only results using the
+\ants{} registration algorithm and majority vote fusion will be shown.  
 
-With an increasing number of templates, \mb{} shows improvement over
-\multiatlas{}-based segmentation in overlap accuracy when using the same number of
-atlases and voting method (Figure \ref{fig:ADNI1-xval-k-diff}). The two methods
-converge in accuracy when using seven atlases.  Peak improvement in \mb{} accuracy
-(~0.02 DSC) is found when one atlas is used with a template library of 19
-images.
+With at least five templates, \mb{} shows a mean improvement in similarity score
+over \multiatlas{} segmentation when using the same size of atlas library and
+majority vote label fusion (Figure \ref{fig:ADNI1-xval-k-diff}). The magnitude
+of improvement increases with the size of template library, and shows
+diminishing returns with larger atlas libraries. Peak improvement
+(+\Sexpr{round(snt.mb.diff.best, digits=3)} DSC) is found with a single atlas
+and template library of 19 images.
 
-In addition to an improvement in accuracy over \multiatlas{}-based segmentation,
-\mb{} also shows a decrease in the variability of segmentation accuracy 
-(Figure \ref{fig:ADNI1-xval-variability}).  The size of template library 
-necessary to reach a decrease ($p < 0.05$) in variance and standard deviation
-grows with the size of atlas library used.  A template library of 19 images is
-sufficient to show significant decrease in variance and standard deviation for
-1-9 atlases. 
+In addition to a mean increase in similarity score over \multiatlas{}-based
+segmentation, \mb{} also shows more consistency in similarity scores across all
+subjects and validation folds (Figure \ref{ADNI1-xval-variability}). A
+template library of at least 13 images is sufficient to show significant ($p <
+0.05$) decrease in variance for all sizes of atlas library tested (1-9 images).  
 
 We have omitted results obtained when using an even number of atlases or
 templates since with this configuration we found significantly decreased
@@ -1600,7 +1616,7 @@ Method & Atlases & DSC & Reference & Validation \tabularnewline
 \hline
 LEAP                    &30&0.848                 &\cite{Wolz2010}  &Segmentation of 60 subjects\tabularnewline
 ACM (AdaBoost-based)    &21&0.862                 &\cite{Morra2008} &LOOCV on atlases\tabularnewline
-\mb{}                   &9 & \Sexpr{round(mb.best.kappa, digits=3)} & & 10
+\mb{}                   &9 & \Sexpr{round(mb.kappa.best, digits=3)} & & 10
 rounds of Monte Carlo CV on a pool of 69 subjects \tabularnewline % TODO: update
 Patch-based label fusion&16&0.883 (CN) \newline 0.838 (AD)&\cite{Coupe2011e}&LOOCV on atlases\tabularnewline
 Multi-atlas             &30&0.885                 &\cite{Lotjonen2010}&Segmentation of 60 subjects\tabularnewline
@@ -1866,11 +1882,11 @@ NeuroImaging at the University of California, Los Angeles. This research was
 also supported by NIH grants P30 AG010129 and K01 AG030514.
 
 We would also like to thank G. Clinton, E. Hazel, and B. Worrell for inspiring
-this work.
+this work. 
 
 \section{Supplementary Materials}
 
-\subsection{ADNI \snt{} Hippocampal Labels}
+\subsection{\snt{} Hippocampal Labels}
 % The following blurb is taken (except for the first sentence) verbatim 
 Semi-automated hippocampal volumetry was carried out using a commercially
 available high dimensional brain mapping tool (Medtronic Surgical Navigation
@@ -1892,34 +1908,19 @@ documented reliability of an intraclass coefficient better than .94
 \subsection{Experiment 5: Whole Hippocampus Segmentation Cross-Validation with \snt{} 
 Segmentations}
 
-Monte Carlo Cross-Validation (MCCV) \citep{Shao1993} was performed using a pool
-of images and \snt{} semi-automated segmentations from the ADNI dataset
-\citep{Hsu2002}. This form of cross-validation allows us to rigorously validate
-a large number of parameter settings of \mb{} (atlas and template library sizes,
-registration algorithm, and label fusion method) and select the best parameters
-to use in subsequent experiments.
+This experiment is a replication of Experiment 1 using a pool of 69 images and
+\snt{} semi-automated segmentations from the ADNI dataset \citep{Hsu2002}. See
+Experiment 1 for full details on the ADNI dataset, and validation process. 
 
 \subsubsection{Methods}
-\paragraph{\adnidataset{} dataset} 
+\paragraph{Dataset} 
 69 1.5T images were arbitrarily selected from the baseline scans in the {\em
 \adnidataset{}} standardized dataset. 23 subjects were chosen from each disease
 category: cognitively normal (CN), mild cognitive impairment (MCI) and
 Alzheimer's disease (AD). Demographics for this subset are shown in Table
-\ref{tab:ADNI1-xvalidation-demographics}.  
-
-Clinical, demographic and pre-processed T1-weighted MRI were downloaded by the
-authors from the ADNI database (adni.loni.ucla.edu) between March 2012 and
-August 2012. The image dataset used was the "\adnidataset{}" standardized dataset
-available from ADNI \footnote{
-\url{http://adni.loni.ucla.edu/methods/mri-analysis/adni-standardized-data/}}
-\citep{Wyman2012}. This image collection contains uniformly pre-processed images
-which have been designated to be the "best" after quality control.  All images
-were acquired using 1.5T scanners (General Electric Healthcare, Philips Medical
-Systems or Siemens Medical Solutions) at multiple sites using the protocol
-described in \citep{Jack2008}.  Representative 1.5T imaging parameters were TR =
-2400ms, TI = 1000ms, TE = 3.5ms, flip angle = $8^{\circ}$, field of view = 240 x
-240mm, a $192 \times 192 \times 166$ matrix ($x$, $y$, and $z$ directions)
-yielding a voxel dimensions of $1.25mm \times 1.25mm \times 1.2mm$.
+\ref{tab:ADNI1-xvalidation-demographics}.  Each image has a corresponding
+semi-automated segmentation of the left and right whole hippocampus made
+available with ADNI images (\snt; see Supplementary Materials). 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
@@ -1951,37 +1952,15 @@ latex(tab, file="", size="scriptsize",landscape=FALSE, ctable=FALSE,
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \paragraph{Experiment details} 
-
-Monte Carlo Cross-Validation (MCCV), also known as repeated random sub-sampling
-cross-validation, consists of repeated rounds of validation conducted on a fixed
-dataset \citep{Shao1993}. In each round, the dataset is randomly partitioned into
-a training set and a validation set. The method to be validated is then given
-the training data, and its output is compared with the validation set.
-
-In this experiment, our dataset consists of 69 1.5T images and corresponding \snt{} 
-segmentations. In each validation round, the dataset is partitioned into a
-training set consisting of images and \snt{}  segmentations used as an atlas
-library, and a validation set consisting of the remaining images segmented by
-both \mb{} and \multiatlas{}. The computed segmentations were compared to the
-\snt{} segmentations (see below). 
-
 A total of ten validation rounds were performed on each subject in the dataset,
-over each combination of parameter settings. The parameter settings
-explored are: atlas library size (1-9), template library size (1-20),
-registration method (\ants{} or \animal{}, described below), and label fusion method (majority vote,
-cross-correlation weighted majority vote, and normalized mutual information
-weighted majority vote, described below).  A total of $10 \times 69 \times 9
-\times 20 \times 2 \times 3 = \num{7452000}$ validation rounds were conducted,
-resulting in a total of $\num{1490400}$ segmentations analysed. 
-
-Before registration, all images underwent preprocessing with the N3 algorithm
-\citep{Sled1998} to minimize intensity nonuniformity. In this experiment we
-compared two non-linear image registration methods, three label fusion methods. 
-
-The automatically produces labels are compared to the \snt{} labels provided by
-ADNI. The segmentation accuracy reported for a parameter setting is the average
-over ten validation rounds. 
-
+for each combination of parameter settings: atlas library size (1-9), template
+library size (1-20), registration method (\ants{} or \animal{}), and label
+fusion method (majority vote, cross-correlation weighted majority vote, and
+normalized mutual information weighted majority vote).  A total of $10 \times 69
+\times 9 \times 20 \times 2 \times 3 =$ \Sexpr{10*69*9*20*2*3} validation rounds
+are conducted.  The computed segmentations for a subject are compared to the
+\snt{} labels provided by ADNI using Dice's Similarity Coefficient and the score
+is averaged over the validation rounds.
 
 % ######################
 \subsubsection{Results}
@@ -1995,22 +1974,22 @@ snt_xval_mean  <- read.csv(gzfile('data/cache/ADNI-SNT-XVAL:all_data_mean.csv.gz
 snt_xval_mean$reg_method = factor(snt_xval_mean$reg_method, c("ANTS", "ANIMAL"))
 snt_xval_mean$method.mb = factor(snt_xval_mean$method.mb, c("Majority Vote", "Cross-correlation Vote", "NMI Vote"))
 
-snt_xval_mb.best = mean(subset(snt_xval_data, 
-                                  reg_method   == "ANTS" & 
-                                  method.mb    == "Majority Vote" &
-                                  templates.mb == 19 & 
-                                  atlases      == 9)$k.mb)
+snt.mb.kappa.best = mean(subset(snt_xval_mean, 
+                                 reg_method   == "ANTS" & 
+                                 method.mb    == "Majority Vote" &
+                                 templates.mb == 19 & 
+                                 atlases      == 9)$k.mb)
+snt.mb.diff.best = mean(subset(snt_xval_mean, 
+                                 reg_method   == "ANTS" & 
+                                 method.mb    == "Majority Vote" &
+                                 templates.mb == 19 & 
+                                 atlases      == 1)$k_diff)
 @
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
-In this experiment we conduct 10 rounds of \mb{} and \multiatlas{} segmentation of
-of 69 subjects using atlas and template library sizes varying from 1-9 and 1-20
-images respectively, two registration algorithms (\ants{} or \animal{}), and three
-label fusion techniques (unweighted, cross-correlation, and normalised mutual
-information weighted majority vote).  Hippocampal \mb{}-based segmentations using
+\mb{}-based segmentations using
 both \animal{} and \ants{} registration algorithms demonstrate good agreement with \snt{}
-segmentations (maximum mean DSC of \Sexpr{round(snt_xval_mb.best, digits=2)}
+segmentations (maximum mean DSC of \Sexpr{round(snt.mb.kappa.best, digits=2)}
 when using 9 atlases, 19 templates, ANTS registration, and majority vote label
 fusion); Figure \ref{fig:ADNI1-xval-k-mean}).  Qualitatively, both \animal{} and
 \ants{}-based segmentations demonstrate trend overlap accuracy that increases with
@@ -2025,25 +2004,19 @@ the findings of \citet{Aljabar2009} in basic \multiatlas{} segmentation. Given
 these findings, in the remainder of this section only results using the \ants{}
 registration algorithm and majority vote fusion will be shown.
 
-With an increasing number of templates, \mb{} shows improvement over
-\multiatlas{}-based segmentation in overlap accuracy when using the same number of
-atlases and voting method (Figure \ref{fig:ADNI1-SNT-xval-k-diff}). The two methods
-converge in accuracy when using seven atlases.  Peak improvement in \mb{} accuracy
-($+0.02$ DSC) is found when one atlas is used with a template
-library of 19 images.
+With at least five templates, \mb{} shows a mean improvement in similarity score
+over \multiatlas{}-based segmentation for the same size of atlas library with
+majority vote label fusion (Figure \ref{fig:ADNI1-SNT-xval-k-diff}). The
+magnitude of improvement increases with the size of template library, and shows
+diminishing returns with larger atlas libraries. Peak improvement
+(+\Sexpr{round(snt.mb.diff.best, digits=3)} DSC) is found with a single atlas
+and template library of 19 images.
 
-In addition to an improvement in accuracy over \multiatlas{}-based segmentation,
-\mb{} also shows a decrease in the variability of segmentation accuracy 
-(Figure \ref{ADNI1-SNT-xval-variability}).  The size of template library 
-necessary to reach a decrease ($p < 0.05$) in variance and standard deviation
-grows with the size of atlas library used.  A template library of 19 images is
-sufficient to show significant decrease in variance and standard deviation for
-3-7 atlases. 
-
-We have omitted results obtained when using an even number of atlases or
-templates since with this configuration we found significantly decreased
-performance. We believe this is as a result of an inherent bias in the majority
-vote fusion method used (see Discussion).  
+In addition to a mean increase in similarity score over \multiatlas{}-based
+segmentation, \mb{} also shows more consistency in similarity scores across all
+subjects and validation folds (Figure \ref{ADNI1-SNT-xval-variability}). A
+template library of at least 13 images is sufficient to show significant ($p <
+0.05$) decrease in variance for all sizes of atlas library tested (1-9 images).  
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ADNI1-XVAL: mean Kappa plot by atlases, templates, reg and voting method. 
