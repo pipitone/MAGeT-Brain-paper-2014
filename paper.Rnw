@@ -30,11 +30,11 @@ theme_set(theme_bw(base_size = 12))
 lm_eqn = function(m) {
   l <- list(a = format(coef(m)[1], digits = 2),
       b = format(abs(coef(m)[2]), digits = 2),
-      r2 = format(summary(m)$r.squared, digits = 3));
+      pearson = format(sqrt(summary(m)$r.squared), digits = 3));
   if (coef(m)[2] >= 0)  {
-    eq <- substitute(italic(y) == a + b %.% italic(x)*","~~italic(r)^2~"="~r2,l)
+    eq <- substitute(italic(y) == a + b %.% italic(x)*","~~italic(r)~"="~pearson,l)
   } else {
-    eq <- substitute(italic(y) == a - b %.% italic(x)*","~~italic(r)^2~"="~r2,l)    
+    eq <- substitute(italic(y) == a - b %.% italic(x)*","~~italic(r)~"="~pearson,l)    
   }
 
   as.character(as.expression(eq))
@@ -1183,8 +1183,9 @@ ggplot(subset(stats.tests, direction > 0 & stat == "Variance"),
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Experiment 2 Results: Winterburn Atlases Cross-Validation}
 <<WAval-prep, cache=T>>=
-wa.xval.data = subset(read.csv('data/WAval.csv'))
-wa.xval.casted = dcast(melt(wa.xval.data, id.vars=c("file","version")), file + variable ~ version)
+wa.xval.vols = subset(read.csv('data/WAval.csv'))
+wa.xval.kappa = subset(read.csv('data/WAval-kappa.csv'))
+wa.xval.casted = dcast(melt(wa.xval.vols, id.vars=c("file","version")), file + variable ~ version)
 wa.xval.casted = rename(wa.xval.casted, c("variable"="region"))
 levels(wa.xval.casted$region) <-list("CA1"="X1", "CA1"="X101", 
                             "Subiculum"="X2","Subiculum"="X102", 
@@ -1292,11 +1293,48 @@ ggplot(wa.xval.volumes, aes(x=gold_0.3mm, y=volume, colour=measure)) +
   ylab(expression("Automated Unilateral Volume" (mm^3))) +
   geom_text(aes(x=xoffset, y=yoffset, label=eqn), parse=TRUE,
     data=wa.xval.vols.lm, size=2,hjust=0) +
+  scale_color_discrete(name="") + 
   theme(legend.direction = "horizontal", legend.position = "bottom")
 
 @
   \label{fig:WAval-volumes}
 \end{figure}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Winterburn-XVAL: bland-altman 
+\begin{figure}[h!]
+<<WAval-bland,cache=T,fig.width=7,fig.height=6>>=
+wa.xval.volumes = melt(wa.xval.casted, id.vars=c('file', 'region', 'gold_0.3mm'))
+wa.xval.volumes = rename(wa.xval.volumes, c("variable"="measure", "value"="volume"))
+levels(wa.xval.volumes$measure) <- list("Subsampled atlas labels"="gold_0.9mm",
+                               "MAGeT on subsampled atlas images" = "mb_0.9mm",
+                               "MAGeT on T1 BRAVO images"="mb_bravo")
+
+wa.xval.volumes$diff = wa.xval.volumes$gold_0.3mm - wa.xval.volumes$volume 
+wa.xval.volumes$mean = (wa.xval.volumes$gold_0.3mm + wa.xval.volumes$volume)/2
+wa.xval.bland.limits = ddply(wa.xval.volumes,c("region"),function(df) {
+  data.frame(y = mean(df$diff,na.rm=T) + c(-1.96,0,2) * sd(df$diff,na.rm=T))
+})
+
+ggplot(wa.xval.volumes, aes(x=mean, y=diff, colour=measure)) + 
+  facet_wrap(~region, ncol=3, scales='free') + 
+  geom_smooth(method="lm", formula=y~x, fullrange=T, se=F) + 
+  geom_point(size=1) +  
+  geom_hline(aes(yintercept = y), linetype="dashed", colour="brown",
+             data=wa.xval.bland.limits, size=0.3, alpha=0.5) + 
+  geom_text(aes(y = y, x=Inf, label=round(y,0)), colour="black", 
+             data = wa.xval.bland.limits, hjust=1.1,vjust=-0.8, size=2.5) + 
+  xlab(expression('Mean of manual and automated HC volume ' (mm^3))) + 
+  ylab(expression('Difference of manaul and automated HC volume ' (mm^3))) + 
+  scale_color_discrete(name="") + 
+  theme(legend.direction = "horizontal", legend.position = "bottom", 
+        axis.text.y = element_text(angle = 90, hjust=0.5), 
+        axis.text = element_text(size = 8))
+
+@
+  \label{fig:WAval-bland}
+\end{figure}
+
 
 
 \begin{sidewaysfigure}
@@ -1987,36 +2025,23 @@ snt.mb.diff.best = mean(subset(snt_xval_mean,
 @
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\mb{}-based segmentations using
-both \animal{} and \ants{} registration algorithms demonstrate good agreement with \snt{}
-segmentations (maximum mean DSC of \Sexpr{round(snt.mb.kappa.best, digits=2)}
-when using 9 atlases, 19 templates, ANTS registration, and majority vote label
-fusion); Figure \ref{fig:ADNI1-xval-k-mean}).  Qualitatively, both \animal{} and
-\ants{}-based segmentations demonstrate trend overlap accuracy that increases with
-the size of atlas library and template library. Improvement in accuracy plateaus
-with template libraries larger than ten images. 
-
-The use of \mb{} with \ants{} registration shows a pronounced increase
-in segmentation accuracy over \mb{} with \animal{} registration, across all
-other variable settings we tested. Additionally, by itself, using a weighted
-voting strategy did not significantly improve segmentation accuracy, contrary to
-the findings of \citet{Aljabar2009} in basic \multiatlas{} segmentation. Given
-these findings, in the remainder of this section only results using the \ants{}
-registration algorithm and majority vote fusion will be shown.
-
-With at least five templates, \mb{} shows a mean improvement in similarity score
-over \multiatlas{}-based segmentation for the same size of atlas library with
-majority vote label fusion (Figure \ref{fig:ADNI1-SNT-xval-k-diff}). The
-magnitude of improvement increases with the size of template library, and shows
-diminishing returns with larger atlas libraries. Peak improvement
-(+\Sexpr{round(snt.mb.diff.best, digits=3)} DSC) is found with a single atlas
-and template library of 19 images.
-
-In addition to a mean increase in similarity score over \multiatlas{}-based
-segmentation, \mb{} also shows more consistency in similarity scores across all
-subjects and validation folds (Figure \ref{ADNI1-SNT-xval-variability}). A
-template library of at least 13 images is sufficient to show significant ($p <
-0.05$) decrease in variance for all sizes of atlas library tested (1-9 images).  
+As when comparing against manual labels in Experiment 1, we find similar
+behaviour when comparing \mb{} segmentations to \snt{} labels: similarity scores
+increase with increasing numbers of atlases and templates, with diminishing
+increases in improvement trending towards a plateau (Figure
+\ref{fig:ADNI1-xval-k-mean}).  As in Experiment 1, using \ants{} registration
+leads to significantly increased similarity scores, and there is no significant
+difference in scores from any of the label fusion methods.  Mean DSC score peaks
+at \Sexpr{round(snt.mb.kappa.best, digits=3)} when using 9 atlases, 19
+templates, ANTS registration, and majority vote label fusion).  Compared to
+\multiatlas segmentations, we find \mb{} segmentations show increasing
+improvement with larger atlas and template libraries when using more than 9
+templates and 5 or fewer atlases (Figure \ref{fig:ADNI1-SNT-xval-k-diff}). Peak
+improvement (+\Sexpr{round(snt.mb.diff.best, digits=3)} DSC) is found with a
+single atlas and template library of 19 images.  In addition to a mean increase
+in similarity score over \multiatlas{}-based segmentation, \mb{} also shows more
+consistency in similarity scores across all subjects and validation folds
+(Figure \ref{ADNI1-SNT-xval-variability}) with a large enough template library.  
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ADNI1-XVAL: mean Kappa plot by atlases, templates, reg and voting method. 
@@ -2024,15 +2049,15 @@ template library of at least 13 images is sufficient to show significant ($p <
 <<fig:ADNI1-SNT-xval-k-mean, cache=TRUE, dependson='ADNI1-xval-load', fig.width=5, fig.height=5>>=
 stderr <- function(x) sqrt(var(x)/length(x))
 ggplot(subset(snt_xval_mean, (templates.mb*atlases) %% 2 == 1),
-       aes(x=templates.mb,y=k.mb, colour=as.factor(atlases))) + #as.factor((atlases*templates.mb) %% 2 ))) + 
+       aes(x=templates.mb,y=k.mb, colour=as.factor(atlases), linetype=reg_method)) + #as.factor((atlases*templates.mb) %% 2 ))) + 
   facet_grid(.~method.mb) + 
   stat_summary(fun.y=mean,geom='line',
-               aes(y=k.mb, weight=1, group=as.factor(atlases))) + 
+               aes(y=k.mb, weight=1, group=interaction(reg_method,atlases))) + 
   stat_summary(fun.y=mean,
                fun.ymin=function (x) mean(x) - stderr(x),
                fun.ymax=function (x) mean(x) + stderr(x), 
                geom='errorbar',
-               aes(y=k.mb, weight=1, group=as.factor(atlases)), width=0.5) + 
+               aes(y=k.mb, weight=1, group=interaction(reg_method,atlases)), width=0.5) + 
   #stat_smooth(method='lm', formula=y~log(x)) + 
   scale_y_continuous(breaks=seq(0,1,0.05)) + 
   scale_colour_hue(name="Number of Atlases") +
