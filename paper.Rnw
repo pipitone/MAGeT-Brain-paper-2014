@@ -332,7 +332,7 @@ sequences of smaller deformations. Although \citet{Wolz2010} begin with an atlas
 library of 30 MR images, this method could theoretically work using a much
 smaller atlas library.  In their validation, LEAP was used to segment the whole
 hippocampus in the ADNI-1 baseline dataset, achieving a mean Dice score of 0.85
-against \gs{} segmentations. %TODO: which segmentations were used? SNT? 
+against semi-automated segmentations. 
 
 Also of interest to this manuscript are methods that attempt to define
 hippocampal subfields using standard T1-weighted data.  To the best of our
@@ -1029,7 +1029,7 @@ over \multiatlas{} segmentation when using the same size of atlas library and
 majority vote label fusion (Figure \ref{fig:ADNI1-xval-k-diff}). The magnitude
 of improvement increases with the size of template library, and shows
 diminishing returns with larger atlas libraries. Peak improvement
-(+\Sexpr{round(snt.mb.diff.best, digits=3)} DSC) is found with a single atlas
+(+\Sexpr{round(mb.diff.best, digits=3)} DSC) is found with a single atlas
 and template library of 19 images.
 
 In addition to a mean increase in similarity score over \multiatlas{}-based
@@ -1208,18 +1208,13 @@ between percent error of \mb{} volumes compared to image resampling error for th
 CA1, Subiculum, and CA2/CA3 subregions. The \mb{} volumes of CA4/DG and SR/SL/SM 
 subregions show both significantly different (lower) percent error (p < 0.001). 
 
-%the CA1, CA4/DG, and SR/SL/SM
-%subfields all show a percent error in volume that is at or lower than
-%resampling error. The Subiculum and CA2/CA3 subfields show distinctly larger
-%percent error in volume than is found through resampling.  
-
 Figure \ref{fig:subfield-montage} shows a qualitative comparison of \mb{} subfield
 segmentations for a single subject.  
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Winterburn-XVAL: compare resampling
 \begin{figure}[h!]
-<<WAval-vol-boxplot,cache=T,fig.width=6,fig.height=4>>=
+<<WAval-vol-boxplot,cache=T,fig.width=6,fig.height=5>>=
 wa.xval.error = ddply(wa.xval.casted, c("file", "region"), function(df) {
   with(df, 
   data.frame(
@@ -1232,7 +1227,6 @@ wa.xval.error.melted = rename(wa.xval.error.melted, c("variable"="measure", "val
 levels(wa.xval.error.melted$measure) <- list("Subsampled atlas labels"="resampled",
                                "MAGeT on subsampled atlas images" = "mb_0.9mm",
                                "MAGeT on T1 BRAVO images"="mb_bravo")
-
 
 ggplot(wa.xval.error.melted, aes(y=percenterr,x=measure,colour=measure)) +
   facet_grid(.~region) + 
@@ -1303,14 +1297,14 @@ ggplot(wa.xval.volumes, aes(x=gold_0.3mm, y=volume, colour=measure)) +
 % Winterburn-XVAL: bland-altman 
 \begin{figure}[h!]
 <<WAval-bland,cache=T,fig.width=7,fig.height=6>>=
-wa.xval.volumes = melt(wa.xval.casted, id.vars=c('file', 'region', 'gold_0.3mm'))
+wa.xval.volumes = melt(wa.xval.casted, id.vars=c('file', 'region', 'gold_0.3mm', 'gold_0.9mm'))
 wa.xval.volumes = rename(wa.xval.volumes, c("variable"="measure", "value"="volume"))
 levels(wa.xval.volumes$measure) <- list("Subsampled atlas labels"="gold_0.9mm",
                                "MAGeT on subsampled atlas images" = "mb_0.9mm",
                                "MAGeT on T1 BRAVO images"="mb_bravo")
 
-wa.xval.volumes$diff = wa.xval.volumes$gold_0.3mm - wa.xval.volumes$volume 
-wa.xval.volumes$mean = (wa.xval.volumes$gold_0.3mm + wa.xval.volumes$volume)/2
+wa.xval.volumes$diff = wa.xval.volumes$gold_0.9mm - wa.xval.volumes$volume 
+wa.xval.volumes$mean = (wa.xval.volumes$gold_0.9mm + wa.xval.volumes$volume)/2
 wa.xval.bland.limits = ddply(wa.xval.volumes,c("region"),function(df) {
   data.frame(y = mean(df$diff,na.rm=T) + c(-1.96,0,2) * sd(df$diff,na.rm=T))
 })
@@ -1509,18 +1503,25 @@ levels(melted$Method) = c("FS"    = "FreeSurfer",
                           "MAPER" = "MAPER", 
                           "MAGeT" = "MAGeT")
 
+adni.volumes.lm = ddply(melted,c("Method"), function (df) {
+  data.frame(eqn=lm_eqn(lm(volume ~ SNT, df)))})
+adni.volumes.lm$y = 6450-0:3*300
+
 ggplot(data=melted, aes(x=SNT, y=volume, colour=Method)) + 
     geom_point(size=1) + 
     geom_smooth(method="lm") + 
-    xlab(expression("\\snt mean hippocampus volume " (mm^3))) + 
+    xlab(expression("SNT mean hippocampus volume " (mm^3))) + 
     ylab(expression("Automated mean hippocampal volume " (mm^3))) +
-    annotate("text", y = c(2000,1500,1000,500), x=Inf-100, size=2.5,
-              label = c(paste("FS r =", round(cor(df$SNT, df$FS),2)),
-                        paste("FSL r =", round(cor(df$SNT, df$FSL),2)),
-                        paste("MAPER r =", round(cor(df$SNT, df$MAPER),2)),
-                        paste("MAGeT r =", round(cor(df$SNT, df$MAGeT),2))),
-              hjust=1.1,vjust=1.5) +
+    geom_text(aes(x=850,y=y,label=eqn),parse=T,data=adni.volumes.lm,
+      size=2.5,hjust=0) +
     theme(legend.direction = "horizontal", legend.position = "bottom")
+
+#    annotate("text", y = c(2000,1500,1000,500), x=Inf-100, size=2.5,
+#              label = c(paste("FS r =", round(cor(df$SNT, df$FS),2)),
+#                        paste("FSL r =", round(cor(df$SNT, df$FSL),2)),
+#                        paste("MAPER r =", round(cor(df$SNT, df$MAPER),2)),
+#                        paste("MAGeT r =", round(cor(df$SNT, df$MAGeT),2))),
+#              hjust=1.1,vjust=1.5) +
 @
   \caption{Subject mean hippocampal volume as measured in the \adnidataset{}
 dataset by each of the four automated methods investigated (\freesurfer{} (FS), \fsl{},
@@ -1651,7 +1652,8 @@ Leave-one-out cross-validation.
 \hline\hline
 Method & Atlases & DSC & Reference & Validation \tabularnewline
 \hline
-LEAP                    &30&0.848                 &\cite{Wolz2010}  &Segmentation of 60 subjects\tabularnewline
+LEAP                    &30&0.848                 &\cite{Wolz2010}
+&Segmentation of 182 subjects\tabularnewline
 ACM (AdaBoost-based)    &21&0.862                 &\cite{Morra2008} &LOOCV on atlases\tabularnewline
 \mb{}                   &9 & \Sexpr{round(mb.kappa.best, digits=3)} & & 10
 rounds of Monte Carlo CV on a pool of 69 subjects \tabularnewline % TODO: update
