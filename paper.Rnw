@@ -110,8 +110,6 @@ package_totals   <- read.csv('data/cache/ADNI1:package_totals.csv')
 \newcommand{\fsl}{FSL FIRST}
 \newcommand{\freesurfer}{FreeSurfer}
 \newcommand{\maper}{MAPER}
-\newcommand{\gs}{Gold Standard}
-\newcommand{\silver}{silver standard}
 \newcommand{\prsnr}{Pruessner}
 \newcommand{\pseg}{\prsnr-protocol manual segmentation}
 \newcommand{\psegs}{\prsnr-protocol manual segmentations}
@@ -457,13 +455,15 @@ well-known automated methods and assessed segmentation bias.
 \subsubsection{Experiment 1: Whole Hippocampus Cross-Validation}
 
 Monte Carlo Cross-Validation (MCCV) \citep{Shao1993} was performed using images
-from the ADNI dataset \citep{Hsu2002}, and manual whole hippocampus
-segmentations following the protocol laid out in \citep{Pruessner2000}. 
-
-This form of cross-validation allows us to rigorously validate a large number of
+from the ADNI dataset \citep{Jack2008}, and manual whole hippocampus
+segmentations following the protocol laid out in \citep{Pruessner2000}.  This
+form of cross-validation allows us to rigorously validate a large number of
 parameter settings of \mb{} (atlas and template library sizes, registration
 algorithm, and label fusion method) and select the best parameters to use in
-subsequent experiments.
+subsequent experiments. 
+
+In the Supplementary Materials we have replicated this experiment using the \snt
+semi-automated labels included with the ADNI dataset.
 
 \paragraph{\adnidataset{} dataset} 
 Data used in the preparation of this article were obtained from the Alzheimer's
@@ -1008,7 +1008,9 @@ of 60 subjects using atlas and template library sizes varying from 1-9 and 1-20
 images respectively, two registration algorithms (\ants{} or \animal{}), and three
 label fusion techniques (unweighted, cross-correlation, and normalised mutual
 information weighted majority vote).  Computed segmentations are compared to
-\psegs using Dice's Similarity Coefficient (DSC). 
+\psegs using Dice's Similarity Coefficient (DSC).  In the Supplementary
+Materials we have replicated this experiment using the \snt semi-automated
+labels included with the ADNI dataset.
 
 We find that for \mb{} segmentations, similarity score increases
 as atlas and template library size is increased, although with diminishing returns and
@@ -1265,7 +1267,6 @@ wa.xval.volumes = rename(wa.xval.volumes, c("variable"="measure", "value"="volum
 levels(wa.xval.volumes$measure) <- list("Subsampled atlas labels"="gold_0.9mm",
                                "MAGeT on subsampled atlas images" = "mb_0.9mm",
                                "MAGeT on T1 BRAVO images"="mb_bravo")
-
 wa.xval.vols.lm = ddply(wa.xval.volumes, c("region", "measure"), function(df) {
    model = lm(volume ~ gold_0.3mm, df)
    pearson = cor(df$volume, df$gold_0.3mm, use='pairwise.complete.obs')
@@ -1277,13 +1278,11 @@ wa.xval.vols.lm$yoffset = c( 1225 - 0:2 * 40,
                              750  - 0:2 * 30,
                              325  - 0:2 * 18, 
                              1100 - 0:2 * 40 )
-
 wa.xval.vols.lm$xoffset = c( rep(700, 3),
                              rep(250, 3),
                              rep(490, 3),
                              rep(140, 3), 
                              rep(570, 3) )
-
 ggplot(wa.xval.volumes, aes(x=gold_0.3mm, y=volume, colour=measure)) + 
   facet_wrap(~region, ncol=3, scales='free') + 
   geom_point() + 
@@ -1666,112 +1665,107 @@ Multi-atlas (MAPS)    &55&0.890                   &\cite{Leung2010}&Segmentation
 \end{table}
 
 In this manuscript we have presented the implementation and validation of the
-\mb{} framework -- a methodology that requires very few input atlases in
-order to provide accurate and reliable segmentations.  Experiment 1 establishes
-\mb{} as effective and as comparable to \multiatlas{} segmentation. This experiment
-also rigorously characterizes the behaviour of \mb{} whole hippocampal
-segmentation under various parameter settings, allowing us to choose an optimal
-setting for subsequent experiments. Experiment 2 demonstrates the accuracy of
-\mb{} hippocampal subfield identification despite contrast and resolution
-limitations in standard T1-weighted image volumes.  Experiments 2 and 3 validate
-\mb{} whole hippocampal segmentation accuracy and consistency on populations with
-different ageing and neuropsychiatric characteristics.  Furthermore, taken
-together, these experiments demonstrate that algorithmic performance is not
-dependent on a single definition of the hippocampus but is effective with
-differing hippocampal definitions \citep{Winterburn2013,Pruessner2000,Hsu2002}.  
+\mb{} framework -- a methodology that requires very few input atlases in order
+to provide accurate and reliable segmentations.  Experiment 1 compares \mb{} to
+basic-\multiatlas{} segmentation by characterising the behaviour of each
+approach with varying parameter settings, and allows us to choose an optimal
+setting for subsequent experiments. Experiment 2 demonstrates the reliability of
+\mb{} in producing subfield segmentations which match the segmentation protocol
+of the input atlases despite contrast and resolution limitations in standard
+T1-weighted image volumes. Experiments 2 and 3 validate whole hippocampal
+segmentation precision and consistency on populations with different ageing and
+neuropsychiatric characteristics. All of these experiments together demonstrate
+that \mb{} algorithmic performance is not dependent on a single definition of
+the hippocampus but is effective with differing hippocampal definitions
+\citep{Winterburn2013,Pruessner2000,Hsu2002}.  
 
-Throughout the cross validation in Experiment 1 (10-fold Monte Carlo cross
-validation in the \adnidataset{} dataset subsample) we find that two parameter
-choices improve segmentation accuracy: increasing the number of atlases, and the
-number of templates. However, after setting the parameters to 5 atlases and 15
-templates there are diminishing returns with respect to this improvement. 
+The core claim the \mb{} method is based on, that we can meaningfully bootstrap
+a template library from a small set of labelled atlas images, is validated in
+the cross validation conducted in Experiment 1.  We find that both increasing
+the number of atlases and the number of templates used improves \mb{}
+segmentation over and above basic-\multiatlas segmentations using the same
+number of atlas images. That is, by taking the extra step of generating a
+template library from a small atlas set \mb{} is able to improve the final
+segmentation similarity. The magnitude of this improvement is greatest with a
+small number of atlases, but even with larger atlas libraries we have found that
+generating a template library reduces the variability in segmentations (i.e.
+\mb{} more consistently produces high quality segmentations than does
+basic-\multiatlas). 
 
-Previous work on \multiatlas{} segmentation methods
+Interestingly, previous work on \multiatlas{} segmentation methods
 \citep{Aljabar2009,Collins2010} has found that cross-correlation and normalized
 mutual information-based weighted label fusion improves segmentation accuracy
-over simple majority vote label fusion. Selectively filtering out atlases with
-lower image similarity is believed to reduce sources of error from estimating
-deformations via nonlinear registration, partial volume effects from nearest
-neighbour image resampling, and neuroanatomical mismatch between atlases and
-subjects. That \mb{} does not see the same boost in performance from weighted
-voting may suggest that the neuroanatomical variability of a template library
-constructed from study subjects more closely matches any particular subject and
-thereby leaving less error to filter. From our previous work on the \mb{}
-algorithm we have shown that the reduction in error is not simply a smoothing or
-averaging effect \citep{Chakravarty2013}.
+over simple majority vote label fusion, and yet we did not see a significant
+indication of this effect in the \mb{} segmentations. Selectively filtering out
+atlases with lower image similarity is believed to reduce sources of error from
+estimating deformations via nonlinear registration, partial volume effects from
+nearest neighbour image resampling, and neuroanatomical mismatch between atlases
+and subjects. That \mb{} does not see the same boost in performance from
+weighted voting may suggest that the neuroanatomical variability of a template
+library constructed from study subjects more closely matches any particular
+subject and thereby leaving less error to filter. From our previous work on the
+\mb{} algorithm we have shown that the reduction in error is not simply a
+smoothing or averaging effect \citep{Chakravarty2013}.
 
 Although, the goal of this manuscript was not to exhaustively test or validate
 multiple different voting strategies in the context of our segmentation
 algorithm, it is important to note that other strategies for voting are
 available.  For example, other groups have used the STAPLE algorithm
 \citep{Warfield2004} (or variants of the STAPLE algorithm
-\citep{Robitaille2012}) which weights each segmentation based upon its
-estimated performance level with respect to the other available candidate
-segmentations.  Further, the sensitivity and specificity parameters can also be
-tuned to potentially improve segmentation accuracy and reliability.  It is
-likely that using more sophisticated voting methods would have a positive effect
-on the overall segmentation performance, as demonstrated by the STAPLE
-algorithm.  
+\citep{Robitaille2012}) which weights each segmentation based upon its estimated
+performance level with respect to the other available candidate segmentations.
+Further, the sensitivity and specificity parameters can also be tuned to
+potentially improve segmentation accuracy and reliability.  It is likely that
+using more sophisticated voting methods would have a positive effect on the
+overall segmentation performance, as demonstrated by the STAPLE algorithm.  
 
-To this end, more work is required to determine the source of the slight
-decrease in segmentation performance when the number of templates are set to an
-even number.  Our initial concern was that this dip in performance was a
-by-product of the \mb{} algorithm itself.  However, this this pattern is also
-found in the results of the \multiatlas{} segmentations we used in our
-experiments.  We believe that our majority voting methodology is biased towards
-labels with the lowest numeric values when breaking ties (by way of the
-implementation of the \verb+mode+ function used to determine majority), thus
-causing the slight bias observed when using an even number of templates. This is
-another area where the voting scheme could be used to improve performance.
-However, it is worth noting that this limitation was previously identified by
-\citet{Heckemann2006a} and, subsequently, other groups have not even considered
-the potential pitfalls of an even number of candidate labels (e.g.
-\citet{Leung2010}).
+More work is required to determine the source of the slight decrease in
+segmentation performance when the number of templates are set to an even number.
+Our initial concern was that this dip in performance was a by-product of the
+\mb{} algorithm itself.  However, this this pattern is also found in the results
+of the \multiatlas{} segmentations we used in our experiments.  We believe that
+our majority voting methodology is biased towards labels with the lowest numeric
+values when breaking ties (by way of the implementation of the \verb+mode+
+function used to determine majority), thus causing the slight bias observed when
+using an even number of templates. This is another area where the voting scheme
+could be used to improve performance.  However, it is worth noting that this
+limitation was previously identified by \citet{Heckemann2006a} and,
+subsequently, other groups have not even considered the potential pitfalls of an
+even number of candidate labels (e.g.  \citet{Leung2010}).
 
-Another concern is the moderate-to-small improvement observed in \mb{} in
-comparison to \multiatlas{} segmentation when using the same number of atlases.
-The actual benefit in using \mb{} is consistency of the labelling regardless of
-atlas or template choice. This is an important consideration that few have
-touched on previously. The 10-fold Monte Carlo leave-one-out cross-validation
-that we present in Experiment 1 is amongst one of the most stringent performed
-in the \multiatlas/segmentation literature. To the best of our knowledge, other
-groups using ADNI data for validation do at most a single round of
-leave-one-out-validation (Table \ref{tab:other-methods}), aside from
-\citep{Wang2011} who perform a similarly rigorous validation as us. The
-thoroughness of our validation suggests that our results are reflective of a
+Another concern is the moderate improvement observed in \mb{} in comparison to
+\multiatlas{} segmentation when using the same number of atlases.  The actual
+benefit in using \mb{} is consistency of the labelling regardless of atlas or
+template choice, as mentioned above. This is an important consideration that few
+have touched on previously. The 10-fold Monte Carlo cross-validation that we
+present in Experiment 1 is amongst one of the most stringent performed in the
+\multiatlas/segmentation literature. To the best of our knowledge, with the
+exception of \citep{Wang2011}, other groups using ADNI data for validation do at
+most a single round of leave-one-out-validation (Table \ref{tab:other-methods}).
+The thoroughness of our validation suggests that our results are reflective of a
 true average over the choice of parameter settings and are independent of atlas
 or template choice (provided the input atlases are consistently segmented).  
 
 On that note, one author (JW), an expert manual rater, identified regular
 inconsistencies in the \snt{} segmentations: occurrences of over- and
 under-estimation, as well as misalignments of the entire segmentation volume
-(Figure \ref{fig:ADNI-segmentations}). Although the \snt{} segmentations are used
-as gold standards for validation in many other studies (Table
-\ref{tab:other-methods}) providing a benchmark for comparison, their use in
-Experiments 1 and 4 presents the possibility that the DSC scores and
-correlations we obtained are lower than what would be found with a more
-accurate and consistent gold standard.
+(Figure \ref{fig:ADNI-segmentations}). Although the \snt{} segmentations are
+used as benchmarks for validation in many other studies (Table
+\ref{tab:other-methods}), these segmentation inconsistencies present the
+possibility that a more accurate and consistent benchmark segmentation protocol
+ought to be used in order to truly understand the results of such validations.
+Indeed, our replication of the 10-fold cross-validation using \snt{}
+segmentations (Experiment 5) shows noticeably poorer mean similarity scores for
+both \mb{} and \multiatlas. 
 
-% Validation of ADNI in other works
-% Chupin 2009: LOOCV, 1-fold validation
-% Heckemann 2011: QC of segmentations, comparison across field strengths, 
-%                 agreement between two different atlas sets
-% Coupe 2011e: LOOCV
-% Lotjonen 2010: LOOCV, 1-fold validation
-% Leung 2010: 1-fold, QC, classification
-% Wolz 2010: 1-fold over different leap settings, classification
-% Collins 2010: 1-fold validation, QC
-% Morra 2008: LOOCV with 21 atlases, 2 manual raters
-% Wang 2011: 10 rounds of MCCV with 20 atlases and 20 subjects, chosen from 
-%            a pool of 139 images
-
-In comparison to other methodologies in the field \mb{} performs favourably. Table
-\ref{tab:other-methods} surveys some of the most recent reported DSC values
-reported on ADNI dataset, using \snt{} segmentations for the atlas library and as
-gold standards for evaluation.  While it is difficult to compare segmentation
-results across studies, gold standards, evaluation metrics, and algorithms it is
-worth noting that the methods summarized require more atlases (between 16-55)
-than our \mb{} implementation with the Winterburn atlases \citep{Winterburn2013}.
+Thus, in comparison to other methodologies in the field \mb{} performs
+favourably. Table \ref{tab:other-methods} surveys some of the most recent
+reported DSC values reported on ADNI dataset, using \snt{} segmentations for the
+atlas library and as gold standards for evaluation.  While it is difficult to
+compare segmentation results across studies, gold standards, evaluation metrics,
+and algorithms it is worth noting that the methods summarized require more
+atlases (between 16-55) than our \mb{} implementation with the Winterburn
+atlases \citep{Winterburn2013}.
 
 There are some important differences between our method and these specific
 methods. Others have reported the difficulty with mis-registrations in
@@ -1805,7 +1799,7 @@ increased computational cost ($O(log(n))$), as previously mentioned in
 other work \citep{Heckemann2006}. 
 
 Among the automated segmentation methods we compared in this paper
-(\freesurfer{}, \maper{}, \fsl{}-FIRST), we find extremely variable
+(\freesurfer{}, \maper{}, \fsl{}), we find extremely variable
 performance of all methods.  With the exception of \fsl{} all methods correlate
 well with the \snt{} volumes provided in the ADNI database.  However, \freesurfer{}
 and \fsl{} provide radically different definitions of the size of the hippocampus
@@ -1849,27 +1843,32 @@ Protocol & Labelled Subfields  \tabularnewline
 \end{table}
 
 
-Finally, we have also demonstrated that our algorithmic framework is
+Finally, we have provide evidence that using the Winterburn high-resolution
+hippocampal subfield atlases \citep{Winterburn2013} our algorithmic framework is
 appropriate for the segmentation of hippocampal subfields in standard
-T1-weighted data.  Subfield segmentation is a burgeoning topic in the
-literature although very few automated methods are available for the
-segmentation of 3T data \citep{Yushkevich2009,VanLeemput2009}. While recent
-work demonstrates that subfield segmentations can be used for classification of
-AD, MCI, and CN, there has been no explicit validation of the methodology based
-on accuracy or precision.  Although the initial hippocampal subfield
-segmentations from the Yushkevich group have been demonstrated to work on the
-ADNI population, there has also been no validation of their work. In addition,
-their work requires some manual initialization to properly function.  Our work
-demonstrates that we can reliably identify the CA1, subiculum, and CA4/dentate
-with only modest amounts of error.  The fact that CA2/CA3 and molecular layers
-cannot be reasonably identified should not be surprising as these are extremely
+T1-weighted data. Subfield segmentation is a burgeoning topic in the literature
+although very few automated methods are available for the segmentation of 3T
+data \citep{Yushkevich2009,VanLeemput2009}. While recent work demonstrates that
+subfield segmentations can be used for classification of AD, MCI, and CN, there
+has been no explicit validation of the segmentations being produced other than
+indirectly via classification accuracy (for instance, the semi-automated
+subfield segmentations produced in \citet{Yushkevich2009}).  Our work
+demonstrates that we can reliably produce CA1, subiculum, and CA4/dentate
+subfield segmentations that correspond to those in the input atlas with only 
+only modest amounts of error in volume.  The fact that CA2/CA3 and molecular layers
+cannot be reasonably reproduced should not be surprising as these are extremely
 thin and spatially convoluted regions that originally required high-resolution
-MRI for identification.  It is likely that the extents of these regions are
-well below the resolution offered by standard T1-weighted images and, in fact,
-many manual segmentation methodologies do not attempt to parse these regions
-either \citep{Wisse2012, Mueller2009}.
+MRI for identification and so it is likely that the extents of these regions are
+well below the resolution and contrast offered by standard T1-weighted images.
+In addition, some manual subfield segmentation methodologies do not attempt to parse
+these regions even on high-resolution scans (\citep{Wisse2012, Mueller2009}; see
+also Table \label{tab:subfield-segmentation-protocols}). Note, it is because of
+both these reasons (the inability to discern subregions in standard T1-weighted
+images, and the definitional uncertainty in subfield segmentation at the present
+moment) that we opted to speak of the precision or reliability of \mb{} subfield
+segmentation rather than speak of accuracy. 
 
-In conclusion, we have presented a flexible \multiatlas{} framework that has
+In conclusion, we have presented a flexible \multiatlas{}-based framework that has
 considerable advantages over other methods since only a small number of atlases
 is required to initialize the algorithm.  We demonstrate that our method works
 robustly over hippocampal definitions, different disease populations, and
