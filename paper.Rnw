@@ -520,7 +520,7 @@ yielding a voxel dimensions of $1.25mm \times 1.25mm \times 1.2mm$.
 %
 % ADNI1 X-Validation Dataset Demographics Table
 %
-<<ADNI-xval-demographics, echo=F, dependson='ADNI1-xval-load', results="asis",cache=FALSE>>=
+<<tab:ADNI-xval-demographics, echo=F, dependson='ADNI1-xval-load', results="asis",cache=FALSE>>=
 tab <- summary(DX.bl ~ AGE + PTGENDER + PTEDUCAT + CDRSB + ADAS13 +
                MMSE, data = adnimerge, subset = VISCODE == 'bl' & RID %in%
                jens_atlases$RID, method = "reverse", test=FALSE, overall=TRUE)
@@ -777,7 +777,7 @@ illustrates schematically the experimental set up.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Subfield Validation Template library demographics (healthy controls)
 %                                     
-<<WAval-healthy-demographics, echo=F, results="asis",cache=FALSE>>=
+<<tab:WAval-healthy-demographics, echo=F, results="asis",cache=FALSE>>=
 master = read.csv('data/DT_study.csv')
 tab <- summary( Diagnosis ~ Age + Sex + Education + Handedness, data = master,
     method="reverse", na.rm = TRUE, test=FALSE)
@@ -867,7 +867,7 @@ subjects produced by each method.
 %
 % First Episode SZ Demographics Table
 %
-<<FEP-SZ-demographics, echo=F, results="asis",cache=FALSE>>=
+<<tab:FEP-SZ-demographics, echo=F, results="asis",cache=FALSE>>=
 caption = 
   "\\textbf{Schizophrenia First Episode Patient Demographics.}
   ambi - ambidextrous. 
@@ -960,7 +960,7 @@ using Bland-Altman plots \citep{Bland1986}.
 %                                                                             
 % ADNI1 Complete 1Yr Dataset Demographics Table 
 %                                                                             
-<<ADNI1-Dataset-Demographics, echo=F, results="asis",cache=FALSE>>=
+<<tab:ADNI1-Dataset-Demographics, echo=F, results="asis",cache=FALSE>>=
 # RID < 2000 ensures only ADNI1 patients
 yr1 = read.csv("data/ADNI_baseline_volumes/ADNI1_Complete_1Yr_1.5T_11_15_2012.csv")
 yr1$VISCODE <- factor(yr1$Visit, levels = c(1,2,3,4), labels=c("bl","m03","m06","m12"))
@@ -1113,7 +1113,7 @@ ggplot(subset(jens_xval_mean, reg_method=="ANTS" &
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ADNI1-XVAL: show variability of MAGeT over parameters
 \begin{figure}
-<<ADN1-Xval-variability,cache=TRUE,dependson='ADNI1-Xval-prep',fig.width=5,fig.height=5>>=
+<<fig:ADN1-Xval-variability,cache=TRUE,dependson='ADNI1-Xval-prep',fig.width=5,fig.height=5>>=
 ants = subset(jens_xval_data, 
                      reg_method=="ANTS" & 
                      method.mb=="Majority Vote" &
@@ -1185,8 +1185,7 @@ ggplot(subset(stats.tests, direction > 0 & stat == "Variance"),
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Experiment 2 Results: Winterburn Atlases Cross-Validation}
 <<WAval-prep, cache=T>>=
-wa.xval.vols = subset(read.csv('data/WAval.csv'))
-wa.xval.kappa = subset(read.csv('data/WAval-kappa.csv'))
+wa.xval.vols = na.omit(read.csv('data/WAval.csv'))
 wa.xval.casted = dcast(melt(wa.xval.vols, id.vars=c("file","version")), file + variable ~ version)
 wa.xval.casted = rename(wa.xval.casted, c("variable"="region"))
 levels(wa.xval.casted$region) <-list("CA1"="X1", "CA1"="X101", 
@@ -1194,33 +1193,60 @@ levels(wa.xval.casted$region) <-list("CA1"="X1", "CA1"="X101",
                             "CA4/DG"="X4","CA4/DG"="X104", 
                             "CA2/CA3"="X5","CA2/CA3"="X105", 
                             "SR/SL/SM"="X6","SR/SL/SM"="X106")
-@
-This experiment explores \mb{} segmentation of hippocampal subfields. To achieve
-this, a leave-one-out validation was conducted in which lower-resolution images
-($0.9mm^3$ voxels) of each Winterburn atlas subject were segmented using the
-remaining high-resolution Winterburn atlas subjects' images. 
 
-In general, across hippocampal subfields the percent error in volume of \mb{}
-segmentations (relative to the full-resolution Winterburn atlas segmentation)
-compares favourably to the error resulting from image resampling (Figure
-\ref{fig:WAval-vol-boxplot}). In particular, there is no significant difference 
-between percent error of \mb{} volumes compared to image resampling error for the 
-CA1, Subiculum, and CA2/CA3 subregions. The \mb{} volumes of CA4/DG and SR/SL/SM 
-subregions show both significantly different (lower) percent error (p < 0.001). 
-
-Figure \ref{fig:subfield-montage} shows a qualitative comparison of \mb{} subfield
-segmentations for a single subject.  
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Winterburn-XVAL: compare resampling
-\begin{figure}[h!]
-<<WAval-vol-boxplot,cache=T,fig.width=6,fig.height=5>>=
 wa.xval.error = ddply(wa.xval.casted, c("file", "region"), function(df) {
   with(df, 
   data.frame(
     resampled = (gold_0.9mm - gold_0.3mm) / gold_0.3mm * 100, 
     mb_bravo  = (mb_bravo   - gold_0.3mm) / gold_0.3mm * 100, 
     mb_0.9mm  = (mb_0.9mm   - gold_0.3mm) / gold_0.3mm * 100))})
+
+wa.s = ddply(wa.xval.error, c('region'), function(df) {
+  with(df,data.frame(
+    m_res = mean(resampled,na.rm=T), sd_res = sd(resampled,na.rm=T),
+    m_bravo = mean(mb_bravo,na.rm=T), sd_bravo = sd(mb_bravo,na.rm=T),
+    m_mb_res = mean(mb_0.9mm,na.rm=T), sd_mb_res = sd(mb_0.9mm,na.rm=T)))})
+@
+
+In this experiment the \mb{} segmentation of hippocampal subfields is assessed
+through a leave-one-out validation in which resampled images ($0.9mm^3$
+voxels) of each Winterburn atlas subject are segmented using the remaining
+high-resolution Winterburn atlas subjects' images. 
+
+Figure \ref{fig:WAval-vol-boxplot}) shows the mean relative percent error in volume, 
+with respect to the full-resolution Winterburn atlas, of each hippocampal subfield
+of the resampled Winterburn labels, and of the \mb{} segmentations of the resampled
+Winterburn atlas images and T1 BRAVO Winterburn subject acquisitions.  A
+paired-samples t-test was conducted to compare the distribution of relative
+percent error in the \mb{} segmentation volumes and the resampled segmentation
+volumes. There was no significant difference found for the CA1, Subiculum, and
+CA2/CA3 subregions. The CA4/DG subregion shows significantly lower percent error 
+  ($M_{res}=$\Sexpr{wa.s$m_res[wa.s$region=='CA4/DG']},
+  $SD_{res}=$\Sexpr{wa.s$sd_res[wa.s$region=='CA4/DG']};
+  $M_{mb-bravo}=$\Sexpr{wa.s$m_bravo[wa.s$region=='CA4/DG']},    
+  $SD_{mb-bravo}=$\Sexpr{wa.s$sd_bravo[wa.s$region=='CA4/DG']};    
+  $M_{mb-res}=$\Sexpr{wa.s$m_mb_res[wa.s$region=='CA4/DG']},    
+  $SD_{mb-res}=$\Sexpr{wa.s$sd_mb_res[wa.s$region=='CA4/DG']};    
+  $p < 0.001$), and the SR/SL/SM shows significantly different percent error in the opposite
+direction 
+  ($M_{res}=$\Sexpr{wa.s$m_res[wa.s$region=='SR/SL/SM']},
+  $SD_{res}=$\Sexpr{wa.s$sd_res[wa.s$region=='SR/SL/SM']};
+  $M_{mb-bravo}=$\Sexpr{wa.s$m_bravo[wa.s$region=='SR/SL/SM']},    
+  $SD_{mb-bravo}=$\Sexpr{wa.s$sd_bravo[wa.s$region=='SR/SL/SM']};    
+  $M_{mb-res}=$\Sexpr{wa.s$m_mb_res[wa.s$region=='SR/SL/SM']},    
+  $SD_{mb-res}=$\Sexpr{wa.s$sd_mb_res[wa.s$region=='SR/SL/SM']};    
+  $p < 0.001$). Bland-Altman plots comparing \mb{} to subsampled segmentation
+volume reveals a proportional bias towards underestimating volumes in all
+subregions, and a noticeable fixed bias in the CA4/DG and SR/SL/SM subregions. 
+
+
+Figure \ref{fig:subfield-montage} shows slices subfield segmentations for a
+single subject for qualitative inspection.  
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Winterburn-XVAL: compare resampling
+\begin{figure}[h!]
+<<fig:WAval-vol-boxplot,cache=T,fig.width=6,fig.height=5>>=
 
 wa.xval.error.melted = melt(wa.xval.error,id.vars=c("file", "region"))
 wa.xval.error.melted = rename(wa.xval.error.melted, c("variable"="measure", "value"="percenterr"))
@@ -1233,12 +1259,13 @@ ggplot(wa.xval.error.melted, aes(y=percenterr,x=measure,colour=measure)) +
   geom_hline(aes(yintercept=0), colour="grey", size=1) + 
   geom_boxplot() + 
   geom_point(group=1, position="dodge") + 
-  labs(y="Unilateral subregion volume percent error", x="Subfield") +
+  labs(y="Percent error in volume", x="Subfield") +
   theme(axis.ticks = element_blank(), axis.text.x = element_blank()) + 
   scale_colour_discrete("") + 
   theme(legend.direction = "vertical", legend.position = "bottom")
 @
-  \caption{{\bf Percent error in unilateral subfield volume.} 
+  \caption{{\bf Percent error in computed unilateral hippocampal subfield
+segmentation volume relative to manual segmentation volume.} 
   Percent error is measured against the volumes of the unmodified Winterburn
   atlas subfield segmentations.
   {\bf Subsampled atlas labels} volumes of the manual segmentations of the Winterburn
@@ -1247,56 +1274,14 @@ ggplot(wa.xval.error.melted, aes(y=percenterr,x=measure,colour=measure)) +
   images after resampling to $0.9mm^3$ voxels.
   {\bf MAGeT on T1 BRAVO} volumes are \mb{} segmentations of T1 BRAVO images
   ($0.9mm^3$ voxels) acquired separately of four of the five Winterburn atlas
-  subjects.} 
-  \label{fig:WAval-vol-boxplot}
+  subjects.\label{fig:WAval-vol-boxplot}}
 \end{figure}
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Winterburn-XVAL: volume plots
-\begin{figure}[h!]
-<<WAval-vol-plots,cache=T,fig.width=7,fig.height=6>>=
-wa.xval.volumes = melt(wa.xval.casted, id.vars=c('file', 'region', 'gold_0.3mm'))
-wa.xval.volumes = rename(wa.xval.volumes, c("variable"="measure", "value"="volume"))
-levels(wa.xval.volumes$measure) <- list("Subsampled atlas labels"="gold_0.9mm",
-                               "MAGeT on subsampled atlas images" = "mb_0.9mm",
-                               "MAGeT on T1 BRAVO images"="mb_bravo")
-wa.xval.vols.lm = ddply(wa.xval.volumes, c("region", "measure"), function(df) {
-   model = lm(volume ~ gold_0.3mm, df)
-   pearson = cor(df$volume, df$gold_0.3mm, use='pairwise.complete.obs')
-   data.frame(
-     eqn  = lm_eqn(model), 
-     corr = pearson)})
-wa.xval.vols.lm$yoffset = c( 1225 - 0:2 * 40,
-                             465  - 0:2 * 15, 
-                             750  - 0:2 * 30,
-                             325  - 0:2 * 18, 
-                             1100 - 0:2 * 40 )
-wa.xval.vols.lm$xoffset = c( rep(700, 3),
-                             rep(250, 3),
-                             rep(490, 3),
-                             rep(140, 3), 
-                             rep(570, 3) )
-ggplot(wa.xval.volumes, aes(x=gold_0.3mm, y=volume, colour=measure)) + 
-  facet_wrap(~region, ncol=3, scales='free') + 
-  geom_point() + 
-  coord_equal() + 
-  geom_smooth(method='lm')  + 
-  xlab(expression("Manual Unilateral Volume" (mm^3))) +
-  ylab(expression("Automated Unilateral Volume" (mm^3))) +
-  geom_text(aes(x=xoffset, y=yoffset, label=eqn), parse=TRUE,
-    data=wa.xval.vols.lm, size=2,hjust=0) +
-  scale_color_discrete(name="") + 
-  theme(legend.direction = "horizontal", legend.position = "bottom")
-
-@
-  \label{fig:WAval-volumes}
-\end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Winterburn-XVAL: bland-altman 
 \begin{figure}[h!]
-<<WAval-bland,cache=T,fig.width=7,fig.height=6>>=
+<<fig:WAval-bland,cache=T,fig.width=7,fig.height=6>>=
 wa.xval.volumes = melt(wa.xval.casted, id.vars=c('file', 'region', 'gold_0.3mm', 'gold_0.9mm'))
 wa.xval.volumes = rename(wa.xval.volumes, c("variable"="measure", "value"="volume"))
 levels(wa.xval.volumes$measure) <- list("Subsampled atlas labels"="gold_0.9mm",
@@ -1317,17 +1302,22 @@ ggplot(wa.xval.volumes, aes(x=mean, y=diff, colour=measure)) +
              data=wa.xval.bland.limits, size=0.3, alpha=0.5) + 
   geom_text(aes(y = y, x=Inf, label=round(y,0)), colour="black", 
              data = wa.xval.bland.limits, hjust=1.1,vjust=-0.8, size=2.5) + 
-  xlab(expression('Mean of manual and automated HC volume ' (mm^3))) + 
-  ylab(expression('Difference of manaul and automated HC volume ' (mm^3))) + 
+  xlab(expression('Mean of resampled and \\mb subregion volume ' (mm^3))) + 
+  ylab(expression('Difference between manual and \\mb subregion volume ' (mm^3))) + 
   scale_color_discrete(name="") + 
   theme(legend.direction = "horizontal", legend.position = "bottom", 
         axis.text.y = element_text(angle = 90, hjust=0.5), 
         axis.text = element_text(size = 8))
 
 @
-  \label{fig:WAval-bland}
+  \caption{{\bf Bland-Altman plots comparing unilateral \mb{} subfield
+segmentation volume with resampled subfield segmentation volume.} The overall
+mean difference in volume, and limits of agreement ($\pm 1.96SD$) are shown by
+dashed horizontal lines. Linear fit lines are shown for each target image type.
+Note, points below the mean difference indicate overestimation of the volume
+with respect to the resampled volume, and vice versa. 
+  \label{fig:WAval-bland}}
 \end{figure}
-
 
 
 \begin{sidewaysfigure}
@@ -1365,7 +1355,7 @@ schizophrenia patients, using the Winterburn atlases and a template library of
 segmentations are used as a gold standard. 
 
 \begin{figure}
-<<FEP-volumes,cache=FALSE,dependson="setup",fig.width=5,fig.height=5>>=
+<<fig:FEP-volumes,cache=FALSE,dependson="setup",fig.width=5,fig.height=5>>=
 SZ_volumes=read.csv("data/SZ_volumes_by_method.csv", sep="\t")
 mean_sz_vols = ddply(SZ_volumes, c('Subject', 'Method'), function (df) {
   data.frame(Volume = mean(df$Volume))})
@@ -1389,9 +1379,9 @@ ggplot(data=casted, aes(x = Manual, y = MAGeT)) +
 <<FEP-t-test,cache=TRUE,dependson="FEP-volumes">>=
   fep.cor.test = cor.test(casted$Manual, casted$MAGeT)
 @
-\mb{} produces hippocampal volumes that are highly correlated with 
-manual segmentation volumes (Pearson $r = \Sexpr{fep.cor.test$estimate}$, 
-$t = \Sexpr{fep.cor.test$statistic}$, $p < \Sexpr{max(0.001, fep.cor.test$p.value)}$; 
+\mb{} produces hippocampal volumes that are highly correlated with manual
+segmentation volumes (Pearson $r = \Sexpr{fep.cor.test$estimate}$, $t =
+\Sexpr{fep.cor.test$statistic}$, $p < \Sexpr{max(0.001, fep.cor.test$p.value)}$;
 Figure \ref{fig:SZ-volumes}). 
 
 
@@ -1449,7 +1439,7 @@ under-estimates the hippocampal body in comparison to the \snt{} segmentation.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ADNI1 1yr Complete Dataset Package Totals & Failures
 %                        
-<<ADNI-seg-package-totals, echo=F, results="asis",cache=FALSE>>=
+<<tab:ADNI-seg-package-totals, echo=F, results="asis",cache=FALSE>>=
 package_totals$Total <- NULL
 latex(package_totals, file="", size="scriptsize",landscape=FALSE, ctable=TRUE,
     caption="\\textbf{Number of segmented images and quality control failures of 
@@ -1461,7 +1451,7 @@ latex(package_totals, file="", size="scriptsize",landscape=FALSE, ctable=TRUE,
 
 
 \begin{figure}[h]
-<<ADNI-volumes-boxplot,dependson='ADNI-volumes-prep',cache=T,fig.width=7,fig.height=4>>=
+<<fig:ADNI-volumes-boxplot,dependson='ADNI-volumes-prep',cache=T,fig.width=7,fig.height=4>>=
 melted = melt(means.complete,measure.vars=c("FS", "FSL", "MAPER","MAGeT"),
               variable.name="Method", value.name="Volume")
 correlations = ddply(melted, c("DX","Method"), function (df) {
@@ -1492,7 +1482,7 @@ category.}
 \end{figure}
 
 \begin{figure}[h]
-<<ADNI-volumes-plot,dependson='ADNI-volumes-prep',cache=T,fig.width=6,fig.height=4>>=
+<<fig:ADNI-volumes-plot,dependson='ADNI-volumes-prep',cache=T,fig.width=6,fig.height=4>>=
 melted=melt(means.complete, measure.vars=c("FS", "FSL", "MAPER","MAGeT"), 
             variable.name = "Method", value.name = "volume")
 
@@ -1531,7 +1521,7 @@ for each method.}
 \end{figure}
  
 \begin{figure}
-<<ADNI-Bland-Altman, cache=TRUE, dependson='ADNI-volumes-prep', fig.width=7, fig.height=7>>=
+<<fig:ADNI-Bland-Altman, cache=TRUE, dependson='ADNI-volumes-prep', fig.width=7, fig.height=7>>=
 names(means.complete)[8] = "FreeSurfer"
 melted=melt(means.complete, measure.vars=c("FreeSurfer", "FSL", "MAPER","MAGeT"), 
             variable.name = "method", value.name = "volume")
@@ -1965,7 +1955,7 @@ available with ADNI images (\snt; see Supplementary Materials).
 %
 % ADNI1 X-Validation Dataset Demographics Table
 %
-<<ADNI-SNT-Xval-demographics, echo=F, results="asis",cache=FALSE>>=
+<<tab:ADNI-SNT-Xval-demographics, echo=F, results="asis",cache=FALSE>>=
 adni_69_RIDs = c(295,413,619,685,729,782,938,954,1018,1155,907,981,222,324,448,
                  546,553,572,602,610,814,1341,675,681,731,1130,41,68,70,101,
                  249,293,316,414,698,1206,1222,1339,751,1030,3,5,10,16,22,53,
@@ -2111,7 +2101,7 @@ ggplot(subset(snt_xval_mean, reg_method=="ANTS" &
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ADNI1-SNT-XVAL: show variability of MAGeT over parameters
 \begin{figure}
-<<ADN1-SNT-Xval-variability, cache=TRUE, dependson='ADNI1-Xval-prep', fig.width=5, fig.width=5>>=
+<<fig:ADN1-SNT-Xval-variability, cache=TRUE, dependson='ADNI1-Xval-prep', fig.width=5, fig.width=5>>=
 ants = subset(snt_xval_data, 
                      reg_method=="ANTS" & 
                      method.mb=="Majority Vote" &
