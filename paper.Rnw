@@ -78,7 +78,7 @@ package_totals   <- read.csv('data/cache/ADNI1:package_totals.csv')
 
 \documentclass{article}
 \usepackage[margin=1in]{geometry}
-\usepackage{algorithm, color, algpseudocode, amsmath, lrl, geometry, ctable}
+\usepackage{algorithm, color, algpseudocode, url, amsmath, geometry, ctable}
 \usepackage{titlesec, siunitx, graphicx}
 \usepackage[round,authoryear]{natbib}
 \usepackage[section]{placeins}   % keep floats in their place.
@@ -1440,18 +1440,21 @@ ggplot(data=fep.volumes, aes(x=manual, y=volume, colour=method)) +
   geom_point() + 
   geom_text(aes(x=3350,y=y,label=eqn),parse=T,data=fep.lm,
       size=3,hjust=0) +
-  xlab(expression("Mean bilateral manual hippocampus volume " (mm^3))) + 
-  ylab(expression("Mean bilateral computed hippocampus volume "  (mm^3))) + 
-  scale_size_continuous(guide="none") 
+  xlab(expression("Mean manual hippocampus volume " (mm^3))) + 
+  ylab(expression("Mean computed hippocampus volume "  (mm^3))) + 
+  theme(legend.direction = "horizontal", legend.position = "bottom")
 @
-  \caption{Mean bilateral hippocampus volume as measured by \mb{}  vs. manually
-  segmented volumes from the First Episode Patients with Schizophrenia dataset.
-  A linear fit line is shown, with shaded region showing standard error. 
+  \caption{Mean bilateral hippocampus volume as measured by \mb{}, \fsl{}, and
+\freesurfer{} vs. manually segmented volumes from the First Episode Patients with
+Schizophrenia dataset. \mb{} is run two ways: with an atlas library consistening
+of the five Winterburn atlases, or with five manually segmented FEP subjects as
+atlases (not included as subjects). Linear fit lines are shown, with shaded
+region showing standard error. 
   \label{fig:SZ-volumes}}
 \end{figure}
 
 \begin{figure}
-<<fig:FEP-Bland-Altman, cache=TRUE, dependson='ADNI-volumes-prep', fig.width=7, fig.height=7>>=
+<<fig:FEP-Bland-Altman, cache=TRUE, dependson='fig:FEP-volumes', fig.width=7, fig.height=7>>=
 fep.volumes$diff = fep.volumes$manual - fep.volumes$volume
 fep.volumes$mean = (fep.volumes$manual + fep.volumes$volume)/2
 limits = ddply(fep.volumes, c("method"), function (df) { 
@@ -1467,8 +1470,8 @@ ggplot(fep.volumes, aes(x= mean, y = diff)) +
              data=limits, size=0.3, alpha=0.5) + 
   geom_text(aes(y = y, x=Inf, label=round(y,0)), colour="black", data = limits,
             hjust=1.1,vjust=-0.8, size=2.5) + 
-  xlab(expression('Mean of SNT and automated hippocampal volume ' (mm^3))) + 
-  ylab(expression('Difference in manual and automated hippocampal volume ' (mm^3))) + 
+  xlab(expression('Mean manual and computed volume ' (mm^3))) + 
+  ylab(expression('Difference in manual and computed volume ' (mm^3))) + 
   scale_y_continuous(breaks=seq(-10000,4000, 1000)) + 
   scale_x_continuous(breaks=seq(0,10000, 1000)) + 
   theme(legend.direction = "horizontal", legend.position = "bottom", 
@@ -1476,26 +1479,24 @@ ggplot(fep.volumes, aes(x= mean, y = diff)) +
         axis.text = element_text(size = 8))
 @
   \caption{Bland-Altman plots comparing subject mean hippocampal volume as
-measured in the FEP dataset by \snt{} segmentation and each of the
-four automated methods investigated (\freesurfer{}, \fsl{}, \maper{}, \mb{}). The overall
+measured in the FEP dataset by manual segmentation and each of the
+four automated methods investigated (\freesurfer{}, \fsl{}, \mb{} with
+Winterburn atlases, \mb{} with FEP manual atlases). The overall
 mean difference in volume, and limits of agreement ($\pm 1.96SD$) are shown by
 dashed horizontal lines. Linear fit lines are shown for each diagnosis group.
 Note, points below the mean difference indicate overestimation of the volume
-with respect to the \snt{} volume, and vice versa. }
+with respect to the manual volume, and vice versa. }
   \label{fig:FEP-Bland-Altman}
 \end{figure}
 
-
-
-
-<<FEP-t-test,cache=TRUE,dependson="FEP-volumes">>=
-  fep.cor.test = cor.test(fep.volumes$manual,fep.volumes$MAGeT_Winterburn)
-@
-\mb{} produces hippocampal volumes that are highly correlated with manual
-segmentation volumes (Pearson $r = \Sexpr{fep.cor.test$estimate}$, $t =
-\Sexpr{fep.cor.test$statistic}$, $p < \Sexpr{max(0.001, fep.cor.test$p.value)}$;
-Figure \ref{fig:SZ-volumes}). 
-
+% <<FEP-t-test,cache=TRUE,dependson="FEP-volumes">>=
+%   fep.cor.test = cor.test(fep.volumes$manual,fep.volumes$MAGeT_Winterburn)
+% @
+% \mb{} produces hippocampal volumes that are highly correlated with manual
+% segmentation volumes (Pearson $r = \Sexpr{fep.cor.test$estimate}$, $t =
+% \Sexpr{fep.cor.test$statistic}$, $p < \Sexpr{max(0.001, fep.cor.test$p.value)}$;
+% Figure \ref{fig:SZ-volumes}). 
+% 
 
 \FloatBarrier
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
