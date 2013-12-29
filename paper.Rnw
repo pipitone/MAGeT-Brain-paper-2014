@@ -53,11 +53,11 @@ jens_xval_data  <- read.csv(gzfile('data/cache/ADNI-JENS-XVAL:all_data.csv.gz'))
 jens_xval_mean  <- read.csv(gzfile('data/cache/ADNI-JENS-XVAL:all_data_mean.csv.gz'))
 jens_xval_mean$reg_method = factor(jens_xval_mean$reg_method, c("ANTS", "ANIMAL"))
 jens_xval_mean$method.mb = factor(jens_xval_mean$method.mb, c("Majority Vote", "Cross-correlation Vote", "NMI Vote"))
-mb.kappa.best = mean(subset(jens_xval_mean, 
+mb.kappa.best = round(mean(subset(jens_xval_mean, 
                                  reg_method   == "ANTS" & 
                                  method.mb    == "Majority Vote" &
                                  templates.mb == 19 & 
-                                 atlases      == 9)$k.mb)
+                                 atlases      == 9)$k.mb), digits=3)
 mb.diff.best = mean(subset(jens_xval_mean, 
                                  reg_method   == "ANTS" & 
                                  method.mb    == "Majority Vote" &
@@ -76,20 +76,40 @@ means.complete   <- read.csv('data/cache/ADNI1:qc.csv')
 package_totals   <- read.csv('data/cache/ADNI1:package_totals.csv')
 @
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% ADNI1-XVAL: prep
+% Prepares the data in a the form needed for plotting.
+<<ADNI1-SNT-xval-prep,include=FALSE,cache=TRUE>>=
+snt_xval_data  <- read.csv(gzfile('data/cache/ADNI-SNT-XVAL:all_data.csv.gz'))
+snt_xval_mean  <- read.csv(gzfile('data/cache/ADNI-SNT-XVAL:all_data_mean.csv.gz'))
+snt_xval_mean$reg_method = factor(snt_xval_mean$reg_method, c("ANTS", "ANIMAL"))
+snt_xval_mean$method.mb = factor(snt_xval_mean$method.mb, c("Majority Vote", "Cross-correlation Vote", "NMI Vote"))
+
+snt.mb.kappa.best =round(mean(subset(snt_xval_mean, 
+                                 reg_method   == "ANTS" & 
+                                 method.mb    == "Majority Vote" &
+                                 templates.mb == 19 & 
+                                 atlases      == 9)$k.mb), digits=3)
+snt.mb.diff.best = mean(subset(snt_xval_mean, 
+                                 reg_method   == "ANTS" & 
+                                 method.mb    == "Majority Vote" &
+                                 templates.mb == 19 & 
+                                 atlases      == 1)$k_diff)
+@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \documentclass{article}
 \usepackage[margin=1in]{geometry}
-\usepackage{algorithm, color, algpseudocode, url, amsmath, geometry, ctable}
+\usepackage{color, url, amsmath, geometry, ctable}
 \usepackage{titlesec, siunitx, graphicx}
 \usepackage[round,authoryear]{natbib}
 \usepackage[section]{placeins}   % keep floats in their place.
 \usepackage{authblk}             % Listing Author affiliations
 \usepackage{rotating}            % rotating figures
 \usepackage[hypcap]{caption}
-\usepackage{lineno}
-
-%draft mode
-\usepackage[colorinlistoftodos, textwidth=4cm, shadow]{todonotes}
-\usepackage[displaymath, tightpage]{preview}
+\usepackage{lineno}              % line numbers
+\usepackage{multirow,rotating}   % vertical text in tables
+\usepackage[displaymath, tightpage]{preview} %draft mode
 \setlength{\marginparwidth}{1.2in}
 \usepackage{fancyhdr}
 \pagestyle{fancy}
@@ -188,7 +208,7 @@ Alzheimer's disease populations, and \mb{} segmentations are compared with
 existing automated methods (\fsl{}, \freesurfer{}, \maper{}) and biases are
 explored.\\
 \textbf{Results:} Using 9 atlases and 19 template images, \mb{} achieves a
-mean Dice's Similarity Coefficient (DSC) of \Sexpr{round(mb.kappa.best, digits=3)} 
+mean Dice's Similarity Coefficient (DSC) of \Sexpr{mb.kappa.best} 
 (to \psegs{}) over 10-folds of Monte Carlo % TODO: update cross-validation on 60 subjects, and shows
 significantly lower variability in DSC than \multiatlas{} segmentation.
 In a LOOCV, \mb{} reproduces the volumes of the cornu ammonis (CA) 1;
@@ -1017,7 +1037,7 @@ labels included with the ADNI dataset.
 We find that for \mb{} segmentations, similarity score increases
 as atlas and template library size is increased, although with diminishing returns and
 an eventual trend towards a plateau (Figure \ref{fig:ADNI1-xval-k-mean}).  A maximum
-similarity score of \Sexpr{round(mb.kappa.best, digits=3)} is found when using 9
+similarity score of \Sexpr{mb.kappa.best} is found when using 9
 atlases, 19 templates, ANTS registration, and majority vote label fusion).  The
 \ants{} registration method consistently out-performs \animal{} registration
 over all variable settings we tested. Additionally, by itself, using a weighted
@@ -1080,8 +1100,9 @@ ggplot(subset(jens_xval_mean, (templates.mb*atlases) %% 2 == 1 & templates.mb < 
 @
   \caption{Mean Dice's Similarity Coefficient of \mb{} segmentations relative to
   \psegs{} for 60 ADNI subjects vs. atlas and template library
-  size, registration algorithm, and label fusion method. Error bars indicate
-  standard error.
+  size, registration algorithm, and label fusion method over 10 folds of Monte Carlo       
+  cross validation. 
+  Error bars indicate standard error.
   \label{fig:ADNI1-xval-k-mean}}
 \end{figure}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1112,7 +1133,8 @@ ggplot(subset(jens_xval_mean, reg_method=="ANTS" &
 @
   \caption{Increase in mean Dice's Similarity Coefficient of \mb{} over
   \multiatlas{} segmentations vs. atlas and template library size when using the
-  \ants{} registration method, and majority-vote label fusion.
+  \ants{} registration method, and majority-vote label fusion over 10 folds of Monte 
+  Carlo cross validation. . 
   Segmentation similarity is computed against \psegs{}.  
   Error bars indicate standard error.
   \label{fig:ADNI1-xval-k-diff}}
@@ -1174,7 +1196,8 @@ ggplot(subset(stats.tests, direction > 0 & stat == "Variance"),
   \caption{{\bf Difference in variability of \mb{} vs. \multiatlas{} segmentation
   with respect to manual segmentation.}
   Variance of segmentation accuracy between \mb{} and \multiatlas{} segmentation
-  is computed for each subject across all ten rounds of validation. 
+  is computed for each subject across over 10 folds of Monte Carlo       
+  cross validation. . 
   Shown on the y-axis is the  p-value resulting from a t-test comparing the
   distribution of variances at each parameter setting (atlas/template library
   size). 
@@ -1423,6 +1446,44 @@ schizophrenia patients, using the Winterburn atlases and a template library of
 21 subject images selected at random.  Expert manual whole hippocampal
 segmentations are used as a gold standard. 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% ADNI1-XVAL: mean Kappa plot by atlases, templates, reg and voting method. 
+\begin{figure}
+<<fig:FEP-xval-k-mean, cache=TRUE, dependson='ADNI1-xval-load', fig.width=7, fig.height=7>>=
+fep.xval <- subset(read.csv('data/results-fep-xval-ants-2013-12-28-020512.csv'),
+                   k > 0.5)
+fep.xval$atlases <- as.factor(fep.xval$atlases)
+fep.xval.mean <- ddply(fep.xval, .(subject,atlases,templates,label), function (df) {
+  data.frame(k=mean(df$k),volume=mean(df$volume))
+})
+stderr <- function(x) sqrt(var(x)/length(x))
+ggplot(fep.xval.mean, aes(x=templates,y=k, colour=atlases)) + 
+  stat_summary(fun.y=mean,geom='line', aes(y=k,weight=1,group=atlases)) + 
+  stat_summary(fun.y=mean,geom='point',aes(y=k,weight=1,group=atlases)) + 
+  stat_summary(fun.y=mean,
+               fun.ymin=function (x) mean(x) - stderr(x),
+               fun.ymax=function (x) mean(x) + stderr(x), 
+               geom='errorbar',aes(y=k, weight=1, group=atlases), 
+               linetype='solid', width=0.5) + 
+  #stat_smooth(method='lm', formula=y~log(x)) + 
+  scale_y_continuous(breaks=seq(0,1,0.01)) + 
+  scale_colour_hue(name="Number of Atlases") +
+  scale_linetype(name="Registration Method") +
+  xlab( "Number of Templates" ) + 
+  ylab( "Mean similarity (DSC)" ) + 
+  theme(legend.direction = "horizontal", legend.position = "bottom", 
+        axis.text = element_text(size = 8))
+@
+  \caption{Mean Dice's Similarity Coefficient of \mb{} unilateral hippocampal 
+  segmentations relative to
+  \psegs{} for 81 FEP subjects vs. atlas and template library
+  size using \ants registration algorithm and majority vote label fusion method 
+  over 3 folds of Monte Carlo cross validation. 
+  Error bars indicate standard error.
+  \label{fig:FEP-xval-k-mean}}
+\end{figure}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 \begin{figure}
 <<fig:FEP-volumes,cache=FALSE,dependson="setup",fig.width=5,fig.height=5>>=
 fep.raw.volumes=read.csv('data/SZ_vol_by_method.csv')
@@ -1446,7 +1507,7 @@ ggplot(data=fep.volumes, aes(x=manual, y=volume, colour=method)) +
 @
   \caption{Mean bilateral hippocampus volume as measured by \mb{}, \fsl{}, and
 \freesurfer{} vs. manually segmented volumes from the First Episode Patients with
-Schizophrenia dataset. \mb{} is run two ways: with an atlas library consistening
+Schizophrenia dataset. \mb{} is run two ways: with an atlas library consisting
 of the five Winterburn atlases, or with five manually segmented FEP subjects as
 atlases (not included as subjects). Linear fit lines are shown, with shaded
 region showing standard error. 
@@ -1739,34 +1800,121 @@ with respect to the \snt{} volume, and vice versa. }
 % Tabulation of segmentation accuracies of existing methods (ADNI)
 %
 %
-\begin{table}[!tbp]
+\begin{sidewaystable}[!tbp]
 \scriptsize
-\caption{\textbf{Automated segmentation accuracy (overlap with \snt{} labels)
-of the ADNI dataset.} For each method, the number of labelled atlases
-used for training, the best Dice's overlap measure, the disease classes
-measured, and the validation procedure are shown. Unless specified, validation
-datasets are composed equally of subjects diagnosed with Alzheimer's Disease
-(AD), Mild Cognitive Impairment (MCI), and Cognitively Normal (CN). LOOCV =
-Leave-one-out cross-validation. 
-   Some studies of automated segmentation of ADNI images are excluded because they 
-   do not not provide overlap measures for the hippocampus \citep{Heckemann2011,Chupin2009}.
+\caption{\textbf{Automated segmentation accuracy of the Hippocampus} 
+This table shows the best published Dice's overlap measure between automated and
+ground truth segmentations of various methods.  Unless otherwise specified,
+validation datasets are composed equally of cases and control subjects, and use
+manual segmenation labels as ground truth in computing DSC scores. AD =
+Alzheimer's Disease; MCI = Mild Cognitive Impairment; CN = Cognitively Normal
+(CN); LOOCV = Leave-one-out cross-validation; MCCV = Monte Carlo
+cross-validation; SNT = Surgical Medtronic Navigation Technologies
+semi-automated labels.  Some studies of automated segmentation of ADNI images
+are excluded because they do not not provide overlap measures for the
+hippocampus \citep{Heckemann2011,Chupin2009}.
   \label{tab:other-methods}} 
 \begin{center}
-\begin{tabular}{ l  c  p{1in}  l  p{2in}  }
+\begin{tabular}{ p{1.2in}  c  p{1.1in} l  p{3.2in} p{1in} }
 \hline\hline
-Method & Atlases & DSC & Reference & Validation \tabularnewline
+Method & Atlases & DSC \newline {\tiny mean (AD; MCI; CN)} & Reference & Validation & Dataset (Truth)\tabularnewline
 \hline
-\mb{}                        &9 & \Sexpr{round(mb.kappa.best, digits=3)} & & 10 rounds of Monte Carlo CV on a pool of 69 subjects \tabularnewline % TODO: update
-LEAP                         &30&0.848                 &\cite{Wolz2010}  &Segmentation of 182 subjects\tabularnewline
-ACM (AdaBoost-based)         &21&0.862                 &\cite{Morra2008} &LOOCV on atlases\tabularnewline
-Patch-based label fusion     &16&0.883 (CN) \newline 0.838 (AD)&\cite{Coupe2011e}&LOOCV on atlases\tabularnewline
-Multi-atlas                  &30&0.885                 &\cite{Lotjonen2010}&Segmentation of 60 subjects\tabularnewline
-Multi-atlas + weighted fusion&20&0.898 (CN) \newline 0.798 (left HC, MCI) &\cite{Wang2011}  &10 rounds of Monte Carlo CV on 20 subjects, pool of 139 (CN/MCI)\tabularnewline
-Multi-atlas (MAPS)           &55&0.890                   &\cite{Leung2010}&Segmentation of 30 subjects (10 AD, MCI, and CN)\tabularnewline
+%%  
+\mb{}                     &9 & \Sexpr{snt.mb.kappa.best} & \cite{Pipitone2014}
+& 10-fold MCCV on 69 subjects 
+& ADNI (SNT) 
+\tabularnewline 
+%%  
+Patch-based label fusion  &16&0.861 {\tiny (0.838; ---; 0.883)} &\cite{Coupe2011e}
+& LOOCV 
+& ADNI (SNT) 
+\tabularnewline
+%%  
+Multi-atlas               &20&0.848 {\tiny (---; 0.798, 0.898)} &\cite{Wang2011}  
+& 10-fold MCCV on 20 of 139 subjects
+& ADNI (SNT) 
+\tabularnewline
+%%  
+ACM (AdaBoost-based)      &21&0.862                           &\cite{Morra2008} 
+& LOOCV                                          
+& ADNI (SNT)                                           
+\tabularnewline                                  
+%%                                               
+LEAP                      &30&0.848                           &\cite{Wolz2010}  
+& Segmentation of 182 subjects                   
+& ADNI (SNT)                                           
+\tabularnewline                                  
+%%                                               
+Multi-atlas               &30&0.885                           &\cite{Lotjonen2010}
+& Segmentation of 60 subjects                    
+& ADNI (SNT)                                           
+\tabularnewline                                  
+%%                                               
+Multi-atlas (MAPS)        &55&0.890                           &\cite{Leung2010}
+& Segmentation of 30 subjects (10 AD, MCI, and CN)
+& ADNI (SNT) 
+\tabularnewline
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\hline
+%& & {\tiny mean (right; left)} & & & \tabularnewline
+%\hline
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%
+\mb{}                      &9 & \Sexpr{mb.kappa.best}       &\cite{Pipitone2014} 
+& 10-fold MCCV on 60 subjects 
+& ADNI (\prsnr)
+\tabularnewline 
+%%
+Neural nets                &10&0.740   &\cite{Powell2008} % {\tiny (0.72, 0.75)} 
+& Segmentation of 5 subjects 
+& controls %Other
+\tabularnewline
+%%
+Probablistic atlas         &11&0.852   &\cite{VanderLijn2008}
+& 11 atlases used in 100 rounds of LOOCV on 20 elderly subjects
+& elderly controls %Other
+\tabularnewline
+%%
+Probabilistic Atlas        &16&0.860   &\cite{Chupin2009}
+& LOOCV 
+& AD subjects %Other
+\tabularnewline
+%%
+Anatomically-guided EM     &17&0.812   &\cite{Pohl2007} %{\tiny (0.815, 0.808)} 
+& LOOCV on 17 controls, segmentation of 33 mixed subjects
+& mixed diagnosis %Other
+\tabularnewline
+%%
+Multi-atlas                &30&0.820   &\cite{Heckemann2006} %{\tiny (0.83, 0.81)}    
+& LOOCV
+& controls %Other
+\tabularnewline
+%%
+Multi-atlas                &30&0.880   &\cite{Gousias2008} %{\tiny (0.88,---)}    
+& 30 adult atlas used, segmentation of 33 2yr old subjects 
+& 2yr old controls  %Other
+\tabularnewline
+%%
+Multi-atlas                &80&0.890   &\cite{Collins2010}
+& LOOCV                 
+& controls %Other       
+\tabularnewline
+%%                      
+Multi-atlas                &55&0.860   &\cite{Barnes2008}%{\tiny (---,0.86)}    
+& LOOCV 
+& controls and AD %Other
+\tabularnewline
+%%
+Multi-atlas               &275&0.835   &\cite{Aljabar2009}% {\tiny (0.832, 0.837)} 
+& LOOCV 
+& controls %Other
+\tabularnewline
 \hline
 \end{tabular}
 \end{center}
-\end{table}
+\end{sidewaystable}
 
 In this manuscript we have presented the implementation and validation of the
 \mb{} framework -- a methodology that requires very few input atlases in order
@@ -2119,28 +2267,6 @@ is averaged over the validation rounds.
 % ######################
 \subsubsection{Results}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% ADNI1-XVAL: prep
-% Prepares the data in a the form needed for plotting.
-<<ADNI1-SNT-xval-prep,include=FALSE,cache=TRUE>>=
-snt_xval_data  <- read.csv(gzfile('data/cache/ADNI-SNT-XVAL:all_data.csv.gz'))
-snt_xval_mean  <- read.csv(gzfile('data/cache/ADNI-SNT-XVAL:all_data_mean.csv.gz'))
-snt_xval_mean$reg_method = factor(snt_xval_mean$reg_method, c("ANTS", "ANIMAL"))
-snt_xval_mean$method.mb = factor(snt_xval_mean$method.mb, c("Majority Vote", "Cross-correlation Vote", "NMI Vote"))
-
-snt.mb.kappa.best = mean(subset(snt_xval_mean, 
-                                 reg_method   == "ANTS" & 
-                                 method.mb    == "Majority Vote" &
-                                 templates.mb == 19 & 
-                                 atlases      == 9)$k.mb)
-snt.mb.diff.best = mean(subset(snt_xval_mean, 
-                                 reg_method   == "ANTS" & 
-                                 method.mb    == "Majority Vote" &
-                                 templates.mb == 19 & 
-                                 atlases      == 1)$k_diff)
-@
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 As when comparing against manual labels in Experiment 1, we find similar
 behaviour when comparing \mb{} segmentations to \snt{} labels: similarity scores
 increase with increasing numbers of atlases and templates, with diminishing
@@ -2148,7 +2274,7 @@ increases in improvement trending towards a plateau (Figure
 \ref{fig:ADNI1-xval-k-mean}).  As in Experiment 1, using \ants{} registration
 leads to significantly increased similarity scores, and there is no significant
 difference in scores from any of the label fusion methods.  Mean DSC score peaks
-at \Sexpr{round(snt.mb.kappa.best, digits=3)} when using 9 atlases, 19
+at \Sexpr{snt.mb.kappa.best} when using 9 atlases, 19
 templates, ANTS registration, and majority vote label fusion).  Compared to
 \multiatlas segmentations, we find \mb{} segmentations show increasing
 improvement with larger atlas and template libraries when using more than 9
