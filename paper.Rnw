@@ -1450,8 +1450,7 @@ segmentations are used as a gold standard.
 % ADNI1-XVAL: mean Kappa plot by atlases, templates, reg and voting method. 
 \begin{figure}
 <<fig:FEP-xval-k-mean, cache=TRUE, dependson='ADNI1-xval-load', fig.width=7, fig.height=7>>=
-fep.xval <- subset(read.csv('data/results-fep-xval-ants-2013-12-28-020512.csv'),
-                   k > 0.5)
+fep.xval <-subset(read.csv('data/results-fep-xval-ants-2013-12-28-223825.csv'), k > 0.5)
 fep.xval$atlases <- as.factor(fep.xval$atlases)
 fep.xval.mean <- ddply(fep.xval, .(subject,atlases,templates,label), function (df) {
   data.frame(k=mean(df$k),volume=mean(df$volume))
