@@ -107,6 +107,8 @@ snt.mb.diff.best = mean(subset(snt_xval_mean,
 \usepackage{authblk}             % Listing Author affiliations
 \usepackage{rotating}            % rotating figures
 \usepackage[hypcap]{caption}
+\usepackage{subcaption}
+\newcommand{\subfloat}[2][need a sub-caption]{\subcaptionbox{#1}{#2}}
 \usepackage{lineno}              % line numbers
 \usepackage{multirow,rotating}   % vertical text in tables
 \usepackage[displaymath, tightpage]{preview} %draft mode
@@ -1075,7 +1077,7 @@ vote fusion method used (see Discussion).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ADNI1-XVAL: mean Kappa plot by atlases, templates, reg and voting method. 
 \begin{figure}
-<<fig:ADNI1-xval-k-mean, cache=TRUE, dependson='ADNI1-xval-load', fig.width=7, fig.height=7>>=
+<<fig:ADNI1-xval-k-mean,dependson='ADNI1-xval-load'>>=
 stderr <- function(x) sqrt(var(x)/length(x))
 ggplot(subset(jens_xval_mean, (templates.mb*atlases) %% 2 == 1 & templates.mb < 21),
        aes(x=templates.mb,y=k.mb, colour=as.factor(atlases), linetype=reg_method)) + #as.factor((atlases*templates.mb) %% 2 ))) + 
@@ -1110,7 +1112,7 @@ ggplot(subset(jens_xval_mean, (templates.mb*atlases) %% 2 == 1 & templates.mb < 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ADNI1-XVAL: "increase" in mean kappa over \multiatlas{}
 \begin{figure}
-<<fig:ADN11-xval-k-diff,cache=TRUE,dependson='ADNI1-xval-load'>>=
+<<fig:ADN11-xval-k-diff,dependson='ADNI1-xval-load'>>=
 ggplot(subset(jens_xval_mean, reg_method=="ANTS" & 
                 method.mb=="Majority Vote" & (templates.mb*atlases) %% 2 == 1), 
        aes(x=templates.mb, y=k_diff, colour=as.factor(atlases))) + 
@@ -1144,7 +1146,7 @@ ggplot(subset(jens_xval_mean, reg_method=="ANTS" &
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ADNI1-XVAL: show variability of MAGeT over parameters
 \begin{figure}
-<<fig:ADN1-Xval-variability,cache=TRUE,dependson='ADNI1-Xval-prep',fig.width=5,fig.height=5>>=
+<<fig:ADN1-Xval-variability,dependson='ADNI1-Xval-prep'>>=
 ants = subset(jens_xval_data, 
                      reg_method=="ANTS" & 
                      method.mb=="Majority Vote" &
@@ -1216,7 +1218,7 @@ ggplot(subset(stats.tests, direction > 0 & stat == "Variance"),
 %%%%%                                                                     %%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Experiment 2 Results: Winterburn Atlases Cross-Validation}
-<<WAval-prep, cache=T>>=
+<<WAval-prep>>=
 wa.xval.vols = na.omit(read.csv('data/WAval.csv'))
 wa.xval.casted = dcast(melt(wa.xval.vols, id.vars=c("file","version")), file + variable ~ version)
 wa.xval.casted = rename(wa.xval.casted, c("variable"="region"))
@@ -1311,35 +1313,10 @@ latex(wa.p, file="", size="scriptsize",landscape=FALSE, ctable=TRUE,
 @
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%% % Winterburn-XVAL: boxplot showing raw volumes of all methods and all subjects
-%% \begin{figure}[h!]
-%% <<fig:WAval-volumes,cache=T,fig.width=6,fig.height=5>>=
-%% m=melt(wa.xval.casted, id.vars=c('region','file'))
-%% levels(m$variable) <- list("Original atlas images"="gold_0.3mm",
-%%                            "Subsampled atlas images"="gold_0.9mm",
-%%                            "MAGeT on subsampled atlas images" = "mb_0.9mm",
-%%                            "MAGeT on T1 BRAVO images"="mb_bravo")
-%% m = rename(m, c(
-%%   'region'='Subregion','value'='Volume',
-%%   'variable'='Method'))
-%% 
-%% ggplot(m,aes(y=Volume,x=Subregion,colour=Method))  + 
-%%   geom_boxplot() + 
-%%   geom_point(position=position_dodge(width=0.75)) +
-%%   ylab(expression('Volume ' (mm^3))) + 
-%%   theme(legend.direction = "horizontal", legend.position = "bottom")
-%% @
-%%   \caption{{\bf Manual and computed unilateral hippocampal subfield
-%% volumes.}\label{fig:WAval-volumes}}
-%% \end{figure}
-%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Winterburn-XVAL: compare resampling
 \begin{figure}[h!]
-<<fig:WAval-vol-boxplot,cache=T,fig.width=6,fig.height=5>>=
+<<fig:WAval-vol-boxplot>>=
 wa.xval.error.melted = melt(wa.xval.error,id.vars=c("file", "region"))
 wa.xval.error.melted = rename(wa.xval.error.melted, c("variable"="measure", "value"="percenterr"))
 levels(wa.xval.error.melted$measure) <- list("Subsampled atlas labels"="resampled",
@@ -1373,7 +1350,7 @@ segmentation volume relative to manual segmentation volume.}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Winterburn-XVAL: bland-altman 
 \begin{figure}[h!]
-<<fig:WAval-bland,cache=T,fig.width=7,fig.height=6>>=
+<<fig:WAval-bland>>=
 wa.xval.volumes = melt(wa.xval.casted, id.vars=c('file', 'region', 'gold_0.3mm', 'gold_0.9mm'))
 wa.xval.volumes = rename(wa.xval.volumes, c("variable"="measure", "value"="volume"))
 levels(wa.xval.volumes$measure) <- list("Subsampled atlas labels"="gold_0.9mm",
@@ -1446,84 +1423,66 @@ schizophrenia patients, using the Winterburn atlases and a template library of
 21 subject images selected at random.  Expert manual whole hippocampal
 segmentations are used as a gold standard. 
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% ADNI1-XVAL: mean Kappa plot by atlases, templates, reg and voting method. 
-\begin{figure}
-<<fig:FEP-xval-k-mean, cache=TRUE, dependson='ADNI1-xval-load', fig.width=7, fig.height=7>>=
-fep.xval <-subset(read.csv('data/results-fep-xval-ants-2013-12-28-223825.csv'), k > 0.5)
-fep.xval$atlases <- as.factor(fep.xval$atlases)
-fep.xval.mean <- ddply(fep.xval, .(subject,atlases,templates,label), function (df) {
-  data.frame(k=mean(df$k),volume=mean(df$volume))
-})
-stderr <- function(x) sqrt(var(x)/length(x))
-ggplot(fep.xval.mean, aes(x=templates,y=k, colour=atlases)) + 
-  stat_summary(fun.y=mean,geom='line', aes(y=k,weight=1,group=atlases)) + 
-  stat_summary(fun.y=mean,geom='point',aes(y=k,weight=1,group=atlases)) + 
-  stat_summary(fun.y=mean,
-               fun.ymin=function (x) mean(x) - stderr(x),
-               fun.ymax=function (x) mean(x) + stderr(x), 
-               geom='errorbar',aes(y=k, weight=1, group=atlases), 
-               linetype='solid', width=0.5) + 
-  #stat_smooth(method='lm', formula=y~log(x)) + 
-  scale_y_continuous(breaks=seq(0,1,0.01)) + 
-  scale_colour_hue(name="Number of Atlases") +
-  scale_linetype(name="Registration Method") +
-  xlab( "Number of Templates" ) + 
-  ylab( "Mean similarity (DSC)" ) + 
-  theme(legend.direction = "horizontal", legend.position = "bottom", 
-        axis.text = element_text(size = 8))
+% FEP-XVAL: mean Kappa plot by atlases, templates, reg and voting method. 
+<<fig:FEP-xval,fig.show='hide'>>=
+  fep.xval <-read.csv('data/results-fep-xval-ants-2013-12-29-191914.csv')
+  fep.xval$atlases <- as.factor(fep.xval$atlases)
+  fep.xval.mean <- ddply(fep.xval, .(subject,atlases,templates,label), function (df) {
+    data.frame(k=mean(df$k),volume=mean(df$volume))
+  })
+  stderr <- function(x) sqrt(var(x)/length(x))
+  ggplot(fep.xval.mean, aes(x=templates,y=k, colour=atlases)) + 
+    stat_summary(fun.y=mean,geom='line', aes(y=k,weight=1,group=atlases)) + 
+    stat_summary(fun.y=mean,geom='point',aes(y=k,weight=1,group=atlases)) + 
+    stat_summary(fun.y=mean,
+                 fun.ymin=function (x) mean(x) - stderr(x),
+                 fun.ymax=function (x) mean(x) + stderr(x), 
+                 geom='errorbar',aes(y=k, weight=1, group=atlases), 
+                 linetype='solid', width=0.5) + 
+    #stat_smooth(method='lm', formula=y~log(x)) + 
+    scale_y_continuous(breaks=seq(0,1,0.01)) + 
+    scale_colour_hue(name="Number of Atlases") +
+    scale_linetype(name="Registration Method") +
+    xlab( "Number of Templates" ) + 
+    ylab( "Mean similarity (DSC)" ) + 
+    theme(legend.direction = "horizontal", legend.position = "bottom") 
 @
-  \caption{Mean Dice's Similarity Coefficient of \mb{} unilateral hippocampal 
-  segmentations relative to
-  \psegs{} for 81 FEP subjects vs. atlas and template library
-  size using \ants registration algorithm and majority vote label fusion method 
-  over 3 folds of Monte Carlo cross validation. 
-  Error bars indicate standard error.
-  \label{fig:FEP-xval-k-mean}}
-\end{figure}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% FEP-volumes
+<<fig:FEP-vols,fig.show='hide'>>=
+  fep.raw.volumes=read.csv('data/SZ_vol_by_method.csv')
+  fep.raw.volumes=subset(fep.raw.volumes, SID <= 81)
+  fep.raw.volumes=melt(fep.raw.volumes, id.vars=c('SID','Method')) 
+  fep.volumes = dcast(fep.raw.volumes, SID~Method, value.var="value", fun.aggregate=mean)
+  fep.volumes = melt(fep.volumes, id.vars=c('SID', 'manual'), variable.name='Method', value.name='volume')
 
-\begin{figure}
-<<fig:FEP-volumes,cache=FALSE,dependson="setup",fig.width=5,fig.height=5>>=
-fep.raw.volumes=read.csv('data/SZ_vol_by_method.csv')
-fep.raw.volumes=subset(fep.raw.volumes, SID <= 81)
-fep.raw.volumes=melt(fep.raw.volumes, id.vars=c('SID','method')) 
-fep.volumes = dcast(fep.raw.volumes, SID~method, value.var="value", fun.aggregate=mean)
-fep.volumes = melt(fep.volumes, id.vars=c('SID', 'manual'), variable.name='method', value.name='volume')
+  fep.lm = ddply(fep.volumes,c("Method"), function (df) {
+    data.frame(eqn=lm_eqn(lm(manual ~ volume, df)))})
+  fep.lm$y = 6900-0:3*150
 
-fep.lm = ddply(fep.volumes,c("method"), function (df) {
-  data.frame(eqn=lm_eqn(lm(manual ~ volume, df)))})
-fep.lm$y = 6800-0:3*150
-
-ggplot(data=fep.volumes, aes(x=manual, y=volume, colour=method)) + 
-  geom_smooth(method="lm", formula=y~x) + 
-  geom_point() + 
-  geom_text(aes(x=3350,y=y,label=eqn),parse=T,data=fep.lm,
-      size=3,hjust=0) +
-  xlab(expression("Mean manual hippocampus volume " (mm^3))) + 
-  ylab(expression("Mean computed hippocampus volume "  (mm^3))) + 
-  theme(legend.direction = "horizontal", legend.position = "bottom")
+  ggplot(data=fep.volumes, aes(x=manual, y=volume, colour=Method)) + 
+    geom_smooth(method="lm", formula=y~x) + 
+    geom_point() + 
+    geom_text(aes(x=3350,y=y,label=eqn),parse=T,data=fep.lm,
+        size=3,hjust=0) +
+    xlab(expression("Mean manual hippocampus volume " (mm^3))) + 
+    ylab(expression("Mean computed hippocampus volume "  (mm^3))) + 
+    theme(legend.direction = "horizontal", legend.position = "bottom")
 @
-  \caption{Mean bilateral hippocampus volume as measured by \mb{}, \fsl{}, and
-\freesurfer{} vs. manually segmented volumes from the First Episode Patients with
-Schizophrenia dataset. \mb{} is run two ways: with an atlas library consisting
-of the five Winterburn atlases, or with five manually segmented FEP subjects as
-atlases (not included as subjects). Linear fit lines are shown, with shaded
-region showing standard error. 
-  \label{fig:SZ-volumes}}
-\end{figure}
 
-\begin{figure}
-<<fig:FEP-Bland-Altman, cache=TRUE, dependson='fig:FEP-volumes', fig.width=7, fig.height=7>>=
+<<fig:FEP-Bland-Altman,dependson='fig:FEP-vols',fig.width=7,fig.height=3,fig.show='hide'>>=
 fep.volumes$diff = fep.volumes$manual - fep.volumes$volume
 fep.volumes$mean = (fep.volumes$manual + fep.volumes$volume)/2
-limits = ddply(fep.volumes, c("method"), function (df) { 
+limits = ddply(fep.volumes, c("Method"), function (df) { 
   data.frame(
     y = mean(df$diff,na.rm=T) + c(-1.96,0,2) * sd(df$diff,na.rm=T) 
 )}) 
 
 ggplot(fep.volumes, aes(x= mean, y = diff)) + 
-  facet_wrap( ~ method, nrow=2, scales="fixed") + 
+  facet_wrap( ~ Method, nrow=1, scales="fixed") + 
   geom_smooth(method="lm", formula=y~x, fullrange=T, se=F) + 
   geom_point(size=1) +  
   geom_hline(aes(yintercept = y), linetype="dashed", colour="brown",
@@ -1531,23 +1490,52 @@ ggplot(fep.volumes, aes(x= mean, y = diff)) +
   geom_text(aes(y = y, x=Inf, label=round(y,0)), colour="black", data = limits,
             hjust=1.1,vjust=-0.8, size=2.5) + 
   xlab(expression('Mean manual and computed volume ' (mm^3))) + 
-  ylab(expression('Difference in manual and computed volume ' (mm^3))) + 
+  ylab(expression('manual - computed volume ' (mm^3))) + 
   scale_y_continuous(breaks=seq(-10000,4000, 1000)) + 
   scale_x_continuous(breaks=seq(0,10000, 1000)) + 
   theme(legend.direction = "horizontal", legend.position = "bottom", 
         axis.text.y = element_text(angle = 90, hjust=0.5), 
         axis.text = element_text(size = 8))
 @
-  \caption{Bland-Altman plots comparing subject mean hippocampal volume as
-measured in the FEP dataset by manual segmentation and each of the
-four automated methods investigated (\freesurfer{}, \fsl{}, \mb{} with
-Winterburn atlases, \mb{} with FEP manual atlases). The overall
-mean difference in volume, and limits of agreement ($\pm 1.96SD$) are shown by
-dashed horizontal lines. Linear fit lines are shown for each diagnosis group.
-Note, points below the mean difference indicate overestimation of the volume
-with respect to the manual volume, and vice versa. }
-  \label{fig:FEP-Bland-Altman}
+
+
+\begin{figure}
+  \centering
+  \begin{subfigure}[t]{0.48\textwidth} 
+    \includegraphics[width=\textwidth]{figure/fig:FEP-xval}
+    \caption{Mean DSC overlap score vs. atlas and template library size in
+    a 5-fold Monte Carlo cross-validation (MCCV) of \mb. Error bars
+    indicate standard error. }
+    \label{fig:FEP-xval}
+  \end{subfigure}%
+  \hfill
+  \begin{subfigure}[t]{0.48\textwidth}
+    \includegraphics[width=\textwidth]{figure/fig:FEP-vols} 
+    \caption{Computed vs. manually segmented mean hippocampus volume. Linear fit
+      lines are shown, with the shaded region showing standard error. }
+    \label{fig:FEP-vols}
+  \end{subfigure}
+  \begin{subfigure}[b]{\textwidth}
+    \includegraphics[width=\textwidth]{figure/fig:FEP-Bland-Altman}
+    \caption{Bland-Altman plots comparing subject mean hippocampal volume as
+      measured in the FEP dataset by manual segmentation and each of the
+      four automated methods investigated (\freesurfer{}, \fsl{}, \mb{} with
+      Winterburn atlases, \mb{} with FEP manual atlases). The overall
+      mean difference in volume, and limits of agreement ($\pm 1.96SD$) are shown by
+      dashed horizontal lines. Linear fit lines are shown for each diagnosis group.
+      Note, points below the mean difference indicate overestimation of the volume
+      with respect to the manual volume, and vice versa. }
+    \label{fig:FEP-Bland-Altman}
+  \end{subfigure}
+  \caption{\textbf{First Episode Patient dataset automated segmentation.}
+Manual segmentation of all 81 subjects is completed using the \prsnr-protocol.
+\mb{} is configured using \ants{} registration algorithm and majority vote label
+fusion. In Figure \ref{fig:FEP-vols} \mb{} is run both with an atlas library
+consisting of the five Winterburn atlases (MAGeT-Winterburn), or with an atlas
+library of five manually segmented FEP subjects as atlases (MAGeT-FEP).}
 \end{figure}
+
+
 
 % <<FEP-t-test,cache=TRUE,dependson="FEP-volumes">>=
 %   fep.cor.test = cor.test(fep.volumes$manual,fep.volumes$MAGeT_Winterburn)
