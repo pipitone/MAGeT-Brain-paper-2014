@@ -8,7 +8,8 @@
 %  - check that chart labels are sensible 
 %  - in particular, check that Experiment 5 match Experiment 1
 %  - fix figure 2 schematic language for the experiments (not 2a 2b). 
-% 
+%  - ADNI-1 or ADNI1, standardize
+
 <<setup, include=FALSE, cache=FALSE>>=
 library(knitr)
 opts_chunk$set(echo = FALSE, 
@@ -355,26 +356,27 @@ smaller atlas library.  In their validation, LEAP was used to segment the whole
 hippocampus in the ADNI-1 baseline dataset, achieving a mean Dice score of 0.85
 against semi-automated segmentations. 
 
-Also of interest to this manuscript are methods that attempt to define
-hippocampal subfields using standard T1- or T2-weighted data.  To the best of our
-knowledge, there are only two automated segmentation algorithms that attempt
-this problem. The first is included with the \freesurfer{} package
-\citep{VanLeemput2009}. This work is limited as it omits the tail of the
-hippocampus and the segmentation protocol has yet to be fully validated.
-Nonetheless, it demonstrates that the applicability of hippocampal subfield
-segmentation using data from 10 subjects. In the second method,
-\citet{Yushkevich2009} hippocampal subfields were manually labelled on
-high-resolution (either $0.2mm^3$ isotropic or $0.2mm \times 0.3mm \times 0.2mm$
-resolution voxels) T2-weighted MR images acquired from five post-mortem medial
-temporal lobe samples. Using nonlinear registration guided by shape-based models
-of the subfield segmentations, and manually derived hippocampus masks of the
-target images, the authors demonstrate accurate parcellation of hippocampal
-subfields in clinical 3T T1-weighted MRI volumes. This method is not fully
-automatic as it requires whole hippocampal parcellation of the target images.
-%TODO: ref other Yush paper
+Also of interest to this manuscript are the methods that attempt to define
+hippocampal subfields using standard T1- or T2-weighted data, of which there are
+few.  \citet{VanLeemput2009} demonstrate that the applicability of hippocampal
+subfield segmentation in T1-weighted images by using Markov random field priors
+learned from 10 manual segmentations.  This work, available as part of the
+\freesurfer{} package, is limited as the segmentation omits the tail of the
+hippocampus and the protocol has yet to be fully validated.
+\citet{Yushkevich2009} manually segment hippocampal subfields on high-resolution
+(either $0.2mm^3$ isotropic or $0.2mm \times 0.3mm \times 0.2mm$ resolution
+voxels) T2-weighted MR images acquired from five post-mortem medial temporal
+lobe samples. Then, using nonlinear registration guided by shape-based models of
+the subfield segmentations, and manually derived hippocampus masks of the target
+images, the authors demonstrate accurate parcellation of hippocampal subfields
+in clinical 3T T1-weighted MRI volumes.  Using \multiatlas with bias correction
+techniques, \citet{Yushkevich2010} demonstrate a semi-automated method of
+subfield segmentation on in vivo focal T2-weighted MR acquisitions of the
+temporal lobe. Manual input is only needed to mark mark divisions between the
+head, body and tail of the hippocampus on target images. 
 
-In this paper we have describe a thorough validation of the \mb{} algorithm for
-the automatic segmentation of the hippocampus and its subfields. First, we
+In this paper we describe a thorough validation of the \mb{} algorithm for the
+fully automatic segmentation of the hippocampus and its subfields. First, we
 address the feasibility of whole hippocampus segmentation with a limited number
 of input atlases \citep{Chakravarty2013} by performing a multi-fold validation
 experiment using a subset of the Alzheimer's Disease Neuroimaging Initiative
@@ -1228,6 +1230,15 @@ levels(wa.xval.casted$region) <-list("CA1"="X1", "CA1"="X101",
                             "CA2/CA3"="X5","CA2/CA3"="X105", 
                             "SR/SL/SM"="X6","SR/SL/SM"="X106")
 
+d = ddply(na.omit(wa.xval.casted), c('region'), function (df) {
+  icc = ICC(df[4:5])
+  data.frame(
+    icc  = icc$results$ICC[3],
+    f    = icc$results$F[3],
+    lower= icc$results$"lower bound"[3],
+    upper= icc$results$"upper bound"[3],
+  )
+})
 
 fmt_tstat = function(a, b) {
   test = t.test(a,b, paired=T)
