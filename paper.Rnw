@@ -1272,7 +1272,75 @@ wa.s = ddply(wa.xval.error, c('region'), function(df) {
     m_res = mean(resampled,na.rm=T), sd_res = sd(resampled,na.rm=T),
     m_bravo = mean(mb_bravo,na.rm=T), sd_bravo = sd(mb_bravo,na.rm=T),
     m_mb_res = mean(mb_0.9mm,na.rm=T), sd_mb_res = sd(mb_0.9mm,na.rm=T)))})
+
+
+wa.n.sim = read.csv('data/winterburn.xval.similarity.csv')
+wa.n.vol = read.csv('data/winterburn.xval.volumes.csv')
+winterburn = read.csv('data/winterburn.volumes.csv')
+
+wa.n.vol.melt = melt(wa.n.vol, id.vars=c('atlases','subject','res'))
+winterburn.melt = melt(winterburn, id.vars=c('subject','res'))
+winterburn.cast = dcast(winterburn.melt, subject + variable ~ res)
+wa.n.all.vols = merge(wa.n.vol.melt, winterburn.cast, by=c('subject','variable'))
+#wa.n.vols.mean = ddply(wa.n.all.vols,c('subject','variable'),function (df) {
+#  data.frame(
+#    mb=mean(df$value),
+#    X.3=mean(df$'0.3'),
+#    X.9=mean(df$'0.9'))})
+  
+levels(wa.n.all.vols$variable) <-list(
+  "CA1"="X1", "CA1"="X101", "Subiculum"="X2","Subiculum"="X102", 
+  "CA4/DG"="X4","CA4/DG"="X104", "CA2/CA3"="X5","CA2/CA3"="X105", 
+  "SR/SL/SM"="X6","SR/SL/SM"="X106")
+
+wa.n.all.vols$diff = wa.n.all.vols$'0.9' - wa.n.all.vols$value
+wa.n.all.vols$mean = (wa.n.all.vols$'0.9' + wa.n.all.vols$value)/2
+
+wa.n.xval.bland.limits = ddply(wa.n.all.vols,c("variable"),function(df) {
+  data.frame(y = mean(df$diff,na.rm=T) + c(-1.96,0,2) * sd(df$diff,na.rm=T))
+})
 @
+
+
+\begin{figure}[h!]
+<<fig:WAxval-kappa>>=
+wa.n.sim$label = as.factor(wa.n.sim$label)
+levels(wa.n.sim$label) <-list(
+  "CA1"=1, "CA1"=101, "Subiculum"=2,"Subiculum"=102, 
+  "CA4/DG"=4,"CA4/DG"=104, "CA2/CA3"=5,"CA2/CA3"=105, 
+  "SR/SL/SM"=6,"SR/SL/SM"=106)
+
+
+# kappa vs. region
+ggplot(wa.n.sim, aes(x=as.factor(label),y=k)) + 
+  geom_boxplot() + 
+  xlab("Subregion") + 
+  ylab("Dice's Similarity Coefficient (DSC)")
+@
+  \caption{Similarity of \mb{} segmentation of subregions and resampled Winterburn atlas labels at $0.9mm^3$ voxel resolution over all folds of a leave-one-out cross validation.}
+\end{figure}
+
+\begin{figure}[h!]
+<<fig:WAxval-Bland-Altman>>=
+ggplot(wa.n.all.vols, aes(x=mean, y=diff)) + 
+  facet_wrap(~variable, ncol=3, scales='free') + 
+  geom_smooth(method="lm", formula=y~x, fullrange=T, se=F) + 
+  geom_point(size=1) +  
+  geom_hline(aes(yintercept = y), linetype="dashed", colour="brown",
+             data=wa.n.xval.bland.limits, size=0.3, alpha=0.5) + 
+  geom_text(aes(y = y, x=Inf, label=round(y,0)), colour="black", 
+             data = wa.xval.bland.limits, hjust=1.1,vjust=-0.8, size=2.5) + 
+  xlab(expression('Mean of resampled and \\mb subregion volume ' (mm^3))) + 
+  ylab(expression('Difference between manual and \\mb subregion volume ' (mm^3))) + 
+  scale_color_discrete(name="") + 
+  theme(legend.direction = "horizontal", legend.position = "bottom", 
+        axis.text.y = element_text(angle = 90, hjust=0.5), 
+        axis.text = element_text(size = 8))
+@
+  \caption{Bland-Altman plots across all folds of Winterburn atlas cross validation.}
+\end{figure}
+
+
 
 In this experiment the \mb{} segmentation of hippocampal subfields is assessed
 through a leave-one-out validation in which resampled images ($0.9mm^3$
