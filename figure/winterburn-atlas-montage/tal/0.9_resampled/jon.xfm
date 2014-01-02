@@ -1,0 +1,9 @@
+MNI Transform File
+%Fri Aug 30 12:24:36 2013>>> /quarantine/minc-tools/2012.01/x86_64/bin/minctracc /tmp/1847726.1.main.q/mritotal_7613//jon_8_dxyz.mnc /home/jp/prj/hippo/figure/winterburn-atlas-montage/data/icbm_0.9_model/icbm_avg_152_t1_tal_nlin_symmetric_VI_0.9_8_dxyz.mnc /home/jp/prj/hippo/figure/winterburn-atlas-montage/data/tal/0.9_resampled/jon.xfm -transformation /tmp/1847726.1.main.q/mritotal_7613//jon_8tmp2c.xfm -lsq9 -xcorr -model_mask /home/jp/prj/hippo/figure/winterburn-atlas-montage/data/icbm_0.9_model/icbm_avg_152_t1_tal_nlin_symmetric_VI_0.9_8_mask.mnc -center -0.430014 22.007664 23.322653 -step 4 4 4 -tol 0.004 -simplex 2
+%(Package mni_autoreg 0.99.6, compiled by @nissl (x86_64-unknown-linux-gnu) on Wed Jan  4 18:22:47 EST 2012)
+
+Transform_Type = Linear;
+Linear_Transform =
+ 1.09006559848785 -0.0610101483762264 -0.0315196588635445 2.57851243019104
+ 0.0527891665697098 0.989920914173126 -0.090469554066658 -35.472526550293
+ 0.039874117821455 0.105277463793755 1.17521607875824 -33.3161582946777;
