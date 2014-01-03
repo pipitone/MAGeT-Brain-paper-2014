@@ -438,9 +438,8 @@ Figure \ref{fig:MAGeT} illustrates the \mb{} algorithm graphically. Source code
 for \mb{} can be found at \url{http://github.com/pipitone/MAGeTbrain}.
 
 \begin{figure}
-  \begin{centering}
+  \centering
     \includegraphics[width=\textwidth]{figure/MA-MAGeTBrain-Schematic}
-  \end{centering}
   \caption{A schematic illustration of basic \multiatlas{} segmentation and
 \mb{} segmentation. In multi-atlas segmentation, manual labels from atlas images
 are warped (propagated) into subject space by applying the transformations
@@ -790,9 +789,8 @@ method found in Experiment 1 are used. Figure \ref{fig:LOOCV-schematic}
 illustrates schematically the experimental set up.
 
 \begin{figure}
-  \begin{centering}
-    \includegraphics[width=\textwidth]{figure/WinterburnSubfieldLOOCVSchematic}
-  \end{centering}
+  \centering
+  \includegraphics[width=\textwidth]{figure/WinterburnSubfieldLOOCVSchematic}
   \caption{A schematic illustration of the experimental set up of the
   leave-one-out cross-validation (LOOCV) subfield experiment.}
   \label{fig:LOOCV-schematic}
@@ -1230,15 +1228,15 @@ levels(wa.xval.casted$region) <-list("CA1"="X1", "CA1"="X101",
                             "CA2/CA3"="X5","CA2/CA3"="X105", 
                             "SR/SL/SM"="X6","SR/SL/SM"="X106")
 
-d = ddply(na.omit(wa.xval.casted), c('region'), function (df) {
-  icc = ICC(df[4:5])
-  data.frame(
-    icc  = icc$results$ICC[3],
-    f    = icc$results$F[3],
-    lower= icc$results$"lower bound"[3],
-    upper= icc$results$"upper bound"[3],
-  )
-})
+#d = ddply(na.omit(wa.xval.casted), c('region'), function (df) {
+#  icc = ICC(df[4:5])
+#  data.frame(
+#    icc  = icc$results$ICC[3],
+#    f    = icc$results$F[3],
+#    lower= icc$results$"lower bound"[3],
+#    upper= icc$results$"upper bound"[3],
+#  )
+#})
 
 fmt_tstat = function(a, b) {
   test = t.test(a,b, paired=T)
@@ -1272,9 +1270,32 @@ wa.s = ddply(wa.xval.error, c('region'), function(df) {
     m_res = mean(resampled,na.rm=T), sd_res = sd(resampled,na.rm=T),
     m_bravo = mean(mb_bravo,na.rm=T), sd_bravo = sd(mb_bravo,na.rm=T),
     m_mb_res = mean(mb_0.9mm,na.rm=T), sd_mb_res = sd(mb_0.9mm,na.rm=T)))})
+@
 
 
+\begin{figure}[h!]
+<<fig:WAxval-kappa>>=
 wa.n.sim = read.csv('data/winterburn.xval.similarity.csv')
+wa.n.sim$label = as.factor(wa.n.sim$label)
+levels(wa.n.sim$label) <-list(
+  "CA1"=1, "CA1"=101, "Subiculum"=2,"Subiculum"=102, 
+  "CA4/DG"=4,"CA4/DG"=104, "CA2/CA3"=5,"CA2/CA3"=105, 
+  "SR/SL/SM"=6,"SR/SL/SM"=106)
+
+
+# kappa vs. region
+ggplot(wa.n.sim, aes(x=as.factor(label),y=k)) + 
+  geom_boxplot(fill='lightblue') + 
+  xlab("Subregion") + 
+  ylab("Dice's Similarity Coefficient (DSC)")
+@
+  \caption{Similarity of \mb{} segmentation of subregions and resampled
+  Winterburn atlas labels at $0.9mm^3$ voxel resolution over all folds of a
+  leave-one-out cross validation.}
+\end{figure}
+
+\begin{figure}[h!]
+<<fig:WAxval-Bland-Altman>>=
 wa.n.vol = read.csv('data/winterburn.xval.volumes.csv')
 winterburn = read.csv('data/winterburn.volumes.csv')
 
@@ -1299,37 +1320,14 @@ wa.n.all.vols$mean = (wa.n.all.vols$'0.9' + wa.n.all.vols$value)/2
 wa.n.xval.bland.limits = ddply(wa.n.all.vols,c("variable"),function(df) {
   data.frame(y = mean(df$diff,na.rm=T) + c(-1.96,0,2) * sd(df$diff,na.rm=T))
 })
-@
-
-
-\begin{figure}[h!]
-<<fig:WAxval-kappa>>=
-wa.n.sim$label = as.factor(wa.n.sim$label)
-levels(wa.n.sim$label) <-list(
-  "CA1"=1, "CA1"=101, "Subiculum"=2,"Subiculum"=102, 
-  "CA4/DG"=4,"CA4/DG"=104, "CA2/CA3"=5,"CA2/CA3"=105, 
-  "SR/SL/SM"=6,"SR/SL/SM"=106)
-
-
-# kappa vs. region
-ggplot(wa.n.sim, aes(x=as.factor(label),y=k)) + 
-  geom_boxplot() + 
-  xlab("Subregion") + 
-  ylab("Dice's Similarity Coefficient (DSC)")
-@
-  \caption{Similarity of \mb{} segmentation of subregions and resampled Winterburn atlas labels at $0.9mm^3$ voxel resolution over all folds of a leave-one-out cross validation.}
-\end{figure}
-
-\begin{figure}[h!]
-<<fig:WAxval-Bland-Altman>>=
 ggplot(wa.n.all.vols, aes(x=mean, y=diff)) + 
-  facet_wrap(~variable, ncol=3, scales='free') + 
+  facet_wrap(~variable, ncol=3, scales='free_x') + 
   geom_smooth(method="lm", formula=y~x, fullrange=T, se=F) + 
   geom_point(size=1) +  
   geom_hline(aes(yintercept = y), linetype="dashed", colour="brown",
              data=wa.n.xval.bland.limits, size=0.3, alpha=0.5) + 
   geom_text(aes(y = y, x=Inf, label=round(y,0)), colour="black", 
-             data = wa.xval.bland.limits, hjust=1.1,vjust=-0.8, size=2.5) + 
+             data = wa.n.xval.bland.limits, hjust=1.1,vjust=-0.8, size=2.5) + 
   xlab(expression('Mean of resampled and \\mb subregion volume ' (mm^3))) + 
   ylab(expression('Difference between manual and \\mb subregion volume ' (mm^3))) + 
   scale_color_discrete(name="") + 
@@ -1468,22 +1466,20 @@ with respect to the resampled volume, and vice versa.
 \end{figure}
 
 
-\begin{sidewaysfigure}
-    \begin{centering}
-      \includegraphics[width=\linewidth]{figure/winterburn-atlas-montage/figure.pdf}
-    \end{centering}
-    \caption{Detailed subfield segmentation results for a single subject. In
+\begin{figure}
+    \centering
+    \includegraphics[width=5in]{figure/winterburn-atlas-montage/figure.pdf}
+    \caption{\textbf{Detailed subfield segmentation results for a single subject.} In
     the upper left corner is the original high-resolution Winterburn atlas manual
     subfield segmentation; in the upper right corner is the Winterburn atlas
     segmentation subsampled from 0.3mm- to 0.9mm-isotropic voxels; in the lower left
-    corner is the \mb{} segmentation of the subsampled Winterburn atlas images; in the
-    lower right corner is the \mb{} segmentation of a separately acquired T1 BRAVO
-    image of the same subject. In each segmentation, slices from the left
+    corner is the \mb{} segmentation of the subsampled Winterburn atlas image
+    from a single fold of the cross-validation. In each segmentation, slices from the left
     hemisphere are shown in Talairach-like ICBM152 space: the first row shows axial
     slices from inferior to superior; the second row shows sagittal slices from
     lateral to medial; the third row shows coronal slices from anterior to
-    posterior.  \label{fig:subfield-montage}}
-\end{sidewaysfigure}
+    posterior. \label{fig:subfield-montage}}
+\end{figure}
 
 
 
@@ -1812,9 +1808,8 @@ with respect to the \snt{} volume, and vice versa. }
 
 
 \begin{figure}
-  \begin{centering}
-    \includegraphics[width=6in]{figure/ADNI1_SNT_MB_montage/montage.pdf}
-  \end{centering}
+  \centering
+  \includegraphics[width=6in]{figure/ADNI1_SNT_MB_montage/montage.pdf}
   \caption{\snt{} and \mb{} segmentations for 30 ADNI subjects (10
   subjects randomly selected from each disease category in the subject pool used
   in Experiment 1). Sagittal slices are shown for each unlabelled T1-weighted
