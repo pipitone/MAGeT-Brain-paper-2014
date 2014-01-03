@@ -603,9 +603,9 @@ correlation between blurred MR intensities and gradient magnitude over the whole
 brain \citep{Collins}. In the second phase, nonlinear registration is completed
 using the \animal{} algorithm \citep{Collins1995}: an iterative procedure that
 estimates a 3D deformation field between two MR images. At first, large
-deformations are estimated using a blurred version of the input data. These larger
-deformations are then input to subsequent steps where the fit is refined by
-estimating smaller deformations on data blurred with a Gaussian kernel with a
+deformations are estimated using a blurred version of the input data. These
+larger deformations are then input to subsequent steps where the fit is refined
+by estimating smaller deformations on data blurred with a Gaussian kernel with a
 smaller full width at half maximum (FWHM). The final transformation is a set of
 local translations defined on a bed of equally spaced nodes that were estimated
 through the optimization of the correlation coefficient.  For the purposes of
@@ -732,9 +732,9 @@ smaller level of variability between methods.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Experiment 2: Hippocampal Subfield Cross-Validation}
 The previous experiment assesses \mb{} peformance on whole hippocampus
-segmentation. In this experiment, we assess \mb{} hippocampal subfield
-segmentation of standard 3T T1-weighted images using a leave-one-out
-cross-validation (LOOCV) design. 
+segmentation. In this experiment, we aim to evaluate \mb{} hippocampal subfield
+segmentation of standard 3T T1-weighted images at $0.9m^3$-isotropic voxels.  We
+use a modified leave-one-out cross-validation (LOOCV) design. 
 
 \paragraph{Winterburn Atlases} 
 The Winterburn atlases \citep{Winterburn2013} are digital hippocampal
@@ -748,54 +748,31 @@ females.
 \paragraph{Experiment details} 
 Leave-one-out cross-validation (LOOCV) is a validation approach in which an
 algorithm is given all but one item in a dataset as training data (in our case,
-atlas images and labels) and then is applied to the left-out item. This is done,
-in turn, for each item in the dataset and the output across all items is
-evaluated. 
+atlas images and labels) and then the algorithm is applied to the left-out item.
+This is done, in turn, for each item in the dataset and the output across all
+items is evaluated together. 
 
-In this experiment, the high-resolution $0.3mm^3$ voxel Winterburn atlases are
-used as the \mb{} atlas library, but in each round of LOOCV a $0.9mm^3$ voxel
-target image corresponding to the left-out atlas is used so as to evaluate \mb{}
-on standard 3T T1-weighted resolution images.
+In this experiment, the Winterburn atlases are resampled to $0.9mm^3$-isotropic
+voxel images to simulate standard 3T T1-weighted resolution images. Image
+subsampling is performed using trilinear subsampling techniques.  
 
-Specifically, this experiments has two parts, each using different sets of
-$0.9mm^3$ voxel target images: trilinear subsampled versions of the Winterburn
-atlas images (Experiment 2a), and separately acquired T1 BRAVO acquisitions of
-four of the five Winterburn atlas subjects (Experiment 2b).  Image subsampling
-of the Winterburn atlas images was performed using trilinear subsampling
-techniques. 
+In each round of LOOCV, one atlas is selected and segmented with \mb{} once
+using each possible triplet of atlas images from the remaining four unselected
+atlases. We chose to use an atlas library with an odd number of images so as to
+ensure an unbiased label fusion when using majority voting (see Discussion). 
 
-The 3T T1 BRAVO acquisitions of four of the five Winterburn atlas subjects were
-separately obtained within a short time of the original atlas image
-acquisitions.  Images were acquired on a 3T GE Discovery MR 750 system (General
-Electric, Milwaukee, WI) using an 8-channel head coil with the enhanced fast
-gradient recalled echo 3-dimensional acquisition protocol, EFGRE-BRAVO, with the
-following parameters: $TE/TR/TI = 3.0ms/6.7ms/650ms$, flip angle $=8^\circ$,
-$FOV=15.8cm$, slice thickness$=0.9mm$, 176 in-plane steps for an approximate
-isotropic resolution of 0.9mm dimension voxels.
-
-The template library is composed of all $0.9mm^3$ voxel target images (either
-the {\em BRAVO} or {\em subsampled} sets), plus an additional set of 16 of
-healthy subjects 3T T1 images acquired separately (Table
-\ref{tab:WAval-healthy-demographics}). These images were acquired on a 3T GE
-Discovery MR 750 system (General Electric, Milwaukee, WI) using an 8-channel
-head coil with the enhanced fast gradient recalled echo 3-dimensional
-acquisition protocol, EFGRE-BRAVO, with the following parameters: $TE/TR/TI =
-3.0ms/6.7ms/650ms$, flip angle=$8^\circ$ , $FOV = 15.3cm$, slice
+The template library used has a total of 19 images composed of all $0.9mm^3$
+voxel target images plus an additional set of 14 of healthy subject 3T T1 images
+acquired separately (Table \ref{tab:WAval-healthy-demographics}). These images
+were acquired on a 3T GE Discovery MR 750 system (General Electric, Milwaukee,
+WI) using an 8-channel head coil with the enhanced fast gradient recalled echo
+3-dimensional acquisition protocol, EFGRE-BRAVO, with the following parameters:
+$TE/TR/TI = 3.0ms/6.7ms/650ms$, flip angle=$8^\circ$ , $FOV = 15.3cm$, slice
 thickness$=0.9mm$, 170 in-plane steps for an approximate isotropic resolution of
 0.9mm dimension voxels.
 
 The optimal size of template library, registration method, and label fusion
-method found in Experiment 1 are used. Figure \ref{fig:LOOCV-schematic}
-illustrates schematically the experimental set up.
-
-\begin{figure}
-  \centering
-  \includegraphics[width=\textwidth]{figure/WinterburnSubfieldLOOCVSchematic}
-  \caption{A schematic illustration of the experimental set up of the
-  leave-one-out cross-validation (LOOCV) subfield experiment.}
-  \label{fig:LOOCV-schematic}
-\end{figure}
-
+method found in Experiment 1 are used. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Subfield Validation Template library demographics (healthy controls)
@@ -813,7 +790,6 @@ latex(tab, file="", size="scriptsize",landscape=FALSE, ctable=FALSE,
       title="tab:WAval-healthy-demographics")
 @
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 
 \paragraph{Evaluation method}  
 Evaluating the accuracy of hippocampal subfields for T1 images at
@@ -1218,62 +1194,8 @@ ggplot(subset(stats.tests, direction > 0 & stat == "Variance"),
 %%%%%                                                                     %%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Experiment 2 Results: Winterburn Atlases Cross-Validation}
-<<WAval-prep>>=
-wa.xval.vols = na.omit(read.csv('data/WAval.csv'))
-wa.xval.casted = dcast(melt(wa.xval.vols, id.vars=c("file","version")), file + variable ~ version)
-wa.xval.casted = rename(wa.xval.casted, c("variable"="region"))
-levels(wa.xval.casted$region) <-list("CA1"="X1", "CA1"="X101", 
-                            "Subiculum"="X2","Subiculum"="X102", 
-                            "CA4/DG"="X4","CA4/DG"="X104", 
-                            "CA2/CA3"="X5","CA2/CA3"="X105", 
-                            "SR/SL/SM"="X6","SR/SL/SM"="X106")
 
-#d = ddply(na.omit(wa.xval.casted), c('region'), function (df) {
-#  icc = ICC(df[4:5])
-#  data.frame(
-#    icc  = icc$results$ICC[3],
-#    f    = icc$results$F[3],
-#    lower= icc$results$"lower bound"[3],
-#    upper= icc$results$"upper bound"[3],
-#  )
-#})
-
-fmt_tstat = function(a, b) {
-  test = t.test(a,b, paired=T)
-  p = sprintf("%0.3f", max(0.001,round(test$p.value,3)))
-  t = sprintf("%0.3f", round(test$statistic,3))
-  paste(t," (",p,")")
-}
-
-wa.p = ddply(wa.xval.casted, c("region"), function (df) {
-  with(df, {
-       data.frame(
-         res = fmt_tstat(gold_0.3mm, gold_0.9mm),
-         bra = fmt_tstat(gold_0.3mm, mb_bravo),
-         mbr = fmt_tstat(gold_0.3mm, mb_0.9mm)
-       )})
-  })
-
-wa.p = rename(wa.p, c(
-  'region'='Subregion','res'='Resampled',
-  'bra'='MAGeT on BRAVO','mbr'='MAGeT on Resampled'))
-
-wa.xval.error = ddply(wa.xval.casted, c("file", "region"), function(df) {
-  with(df, 
-  data.frame(
-    resampled = (gold_0.9mm - gold_0.3mm) / gold_0.3mm * 100, 
-    mb_bravo  = (mb_bravo   - gold_0.3mm) / gold_0.3mm * 100, 
-    mb_0.9mm  = (mb_0.9mm   - gold_0.3mm) / gold_0.3mm * 100))})
-
-wa.s = ddply(wa.xval.error, c('region'), function(df) {
-  with(df,data.frame(
-    m_res = mean(resampled,na.rm=T), sd_res = sd(resampled,na.rm=T),
-    m_bravo = mean(mb_bravo,na.rm=T), sd_bravo = sd(mb_bravo,na.rm=T),
-    m_mb_res = mean(mb_0.9mm,na.rm=T), sd_mb_res = sd(mb_0.9mm,na.rm=T)))})
-@
-
-
-\begin{figure}[h!]
+\begin{figure}
 <<fig:WAxval-kappa>>=
 wa.n.sim = read.csv('data/winterburn.xval.similarity.csv')
 wa.n.sim$label = as.factor(wa.n.sim$label)
@@ -1288,13 +1210,40 @@ ggplot(wa.n.sim, aes(x=as.factor(label),y=k)) +
   geom_boxplot(fill='lightblue') + 
   xlab("Subregion") + 
   ylab("Dice's Similarity Coefficient (DSC)")
+
+CA1   = subset(wa.n.sim,label=='CA1')$k
+CA23  = subset(wa.n.sim,label=='CA2/CA3')$k
+CA4DG = subset(wa.n.sim,label=='CA4/DG')$k
+Sub   = subset(wa.n.sim,label=='Subiculum')$k
+SRLM  = subset(wa.n.sim,label=='SR/SL/SM')$k
 @
-  \caption{Similarity of \mb{} segmentation of subregions and resampled
-  Winterburn atlas labels at $0.9mm^3$ voxel resolution over all folds of a
-  leave-one-out cross validation.}
+  \caption{Similarity of \mb{} segmentation of subregions and the resampled
+  Winterburn atlas segmentations at $0.9mm^3$ voxel resolution, over all folds of a
+  leave-one-out cross validation. Overlap score for each hemisphere is measured
+  separately. \label{fig:WAxval-kappa}}
 \end{figure}
 
-\begin{figure}[h!]
+In this experiment the \mb{} segmentation of hippocampal subfields is assessed
+through a leave-one-out validation in which resampled images ($0.9mm^3$
+voxels) of each Winterburn atlas subject are segmented using the remaining
+high-resolution Winterburn atlas subjects' images as atlases. 
+
+Figure \ref{fig:WAval-kappa} shows the overlap similarity scores between the
+\mb{} segmentations and the resampled Winterburn atlases for each hippocampal
+subregion across all subjects and folds of the validation. Mean (standard
+deviation) DSC scores of the subregions are: 
+  \Sexpr{mean(CA1)}   ($\pm$\Sexpr{sd(CA1)}) for the CA1 region,  
+  \Sexpr{mean(CA23)}  ($\pm$\Sexpr{sd(CA23)}) for the CA2/CA3 regions,  
+  \Sexpr{mean(CA4DG)} ($\pm$\Sexpr{sd(CA4DG)}) for the CA4/DG regions,  
+  \Sexpr{mean(Sub)}   ($\pm$\Sexpr{sd(Sub)}) for the Subiculum region, and
+  \Sexpr{mean(SRLM)}  ($\pm$\Sexpr{sd(SRLM)}) for the moleculare regions.
+Bland-Altman plots comparing \mb{} to resampled subregion volumes reveal a
+proportional bias towards underestimating volumes in all subregions (Figure
+\ref{fig:WAxval-Bland-Altman}). Prominent fixed biases in the volumes of the
+CA4/DG and SR/SL/SM subregions are congruent with the lower similarity scores
+seen in these regions. 
+
+\begin{figure}
 <<fig:WAxval-Bland-Altman>>=
 wa.n.vol = read.csv('data/winterburn.xval.volumes.csv')
 winterburn = read.csv('data/winterburn.volumes.csv')
@@ -1303,11 +1252,6 @@ wa.n.vol.melt = melt(wa.n.vol, id.vars=c('atlases','subject','res'))
 winterburn.melt = melt(winterburn, id.vars=c('subject','res'))
 winterburn.cast = dcast(winterburn.melt, subject + variable ~ res)
 wa.n.all.vols = merge(wa.n.vol.melt, winterburn.cast, by=c('subject','variable'))
-#wa.n.vols.mean = ddply(wa.n.all.vols,c('subject','variable'),function (df) {
-#  data.frame(
-#    mb=mean(df$value),
-#    X.3=mean(df$'0.3'),
-#    X.9=mean(df$'0.9'))})
   
 levels(wa.n.all.vols$variable) <-list(
   "CA1"="X1", "CA1"="X101", "Subiculum"="X2","Subiculum"="X102", 
@@ -1335,136 +1279,16 @@ ggplot(wa.n.all.vols, aes(x=mean, y=diff)) +
         axis.text.y = element_text(angle = 90, hjust=0.5), 
         axis.text = element_text(size = 8))
 @
-  \caption{Bland-Altman plots across all folds of Winterburn atlas cross validation.}
+  \caption{\textbf{Bland-Altman plots comparing unilateral hippocampal subregion volume
+across all folds of Winterburn atlas cross validation.} The overall mean
+difference in volume, and limits of agreement ($\pm 1.96SD$) are shown by dashed
+horizontal lines. Linear fit lines are shown. Note, points below the mean
+difference indication overestimation of the volume with respect to the resampled
+volume, and vice versa. \label{fig:WAxval-Bland-Altman}}
 \end{figure}
-
-
-
-In this experiment the \mb{} segmentation of hippocampal subfields is assessed
-through a leave-one-out validation in which resampled images ($0.9mm^3$
-voxels) of each Winterburn atlas subject are segmented using the remaining
-high-resolution Winterburn atlas subjects' images. 
-
-Figure \ref{fig:WAval-vol-boxplot} shows the mean relative percent error in volume, 
-with respect to the full-resolution Winterburn atlas, of each hippocampal subfield
-of the resampled Winterburn labels, and of the \mb{} segmentations of the resampled
-Winterburn atlas images and T1 BRAVO Winterburn subject acquisitions.  A
-paired-samples t-test was conducted to compare the distribution of relative
-percent error in the \mb{} segmentation volumes and the resampled segmentation
-volumes. There was no significant difference found for the CA1, Subiculum, and
-CA2/CA3 subregions. The CA4/DG subregion shows significantly lower percent error 
-  ($M_{resampled}=$\Sexpr{wa.s$m_res[wa.s$region=='CA4/DG']},
-  $SD_{resampled}=$\Sexpr{wa.s$sd_res[wa.s$region=='CA4/DG']};
-  $M_{MAGeT(BRAVO)}=$\Sexpr{wa.s$m_bravo[wa.s$region=='CA4/DG']},    
-  $SD_{MAGeT(BRAVO)}=$\Sexpr{wa.s$sd_bravo[wa.s$region=='CA4/DG']};    
-  $M_{MAGeT(resampled)}=$\Sexpr{wa.s$m_mb_res[wa.s$region=='CA4/DG']},    
-  $SD_{MAGeT(resampled)}=$\Sexpr{wa.s$sd_mb_res[wa.s$region=='CA4/DG']};    
-  $p < 0.001$), and the SR/SL/SM shows significantly different percent error in the opposite
-direction 
-  ($M_{resampled}=$\Sexpr{wa.s$m_res[wa.s$region=='SR/SL/SM']},
-  $SD_{resampled}=$\Sexpr{wa.s$sd_res[wa.s$region=='SR/SL/SM']};
-  $M_{MAGeT(BRAVO)}=$\Sexpr{wa.s$m_bravo[wa.s$region=='SR/SL/SM']},    
-  $SD_{MAGeT(BRAVO)}=$\Sexpr{wa.s$sd_bravo[wa.s$region=='SR/SL/SM']};    
-  $M_{MAGeT(resampled)}=$\Sexpr{wa.s$m_mb_res[wa.s$region=='SR/SL/SM']},    
-  $SD_{MAGeT(resampled)}=$\Sexpr{wa.s$sd_mb_res[wa.s$region=='SR/SL/SM']};    
-  $p < 0.001$). Bland-Altman plots comparing \mb{} to subsampled segmentation
-volume reveals a proportional bias towards underestimating volumes in all
-subregions, and prominant fixed biases in the volumes of the CA4/DG and SR/SL/SM subregions 
-congruent with significant differences seen in percent error in volume
-associated with subsampling alone. 
-
 
 Figure \ref{fig:subfield-montage} shows slices subfield segmentations for a
 single subject for qualitative inspection.  
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% WAxval - t.test comparing Manual volumes and Computed volumes of subregions 
-%          across folds
-<<tab:WAxval-t-test-manual-computed, echo=F, results="asis",cache=FALSE>>=
-latex(wa.p, file="", size="scriptsize",landscape=FALSE, ctable=TRUE,
-    caption="\\textbf{Paired-sample t-tests comparing manually segmented
-             Winterburn atlas subregion volumes and computed volumes (reported
-             as $t (p)$). }", 
-    col.just=c("l","r","r","r"),
-    caption.loc = c("bottom"), rowname=NULL, 
-    label="tab:WAxval-t-test-manual-computed")
-@
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Winterburn-XVAL: compare resampling
-\begin{figure}[h!]
-<<fig:WAval-vol-boxplot>>=
-wa.xval.error.melted = melt(wa.xval.error,id.vars=c("file", "region"))
-wa.xval.error.melted = rename(wa.xval.error.melted, c("variable"="measure", "value"="percenterr"))
-levels(wa.xval.error.melted$measure) <- list("Subsampled atlas labels"="resampled",
-                               "MAGeT on subsampled atlas images" = "mb_0.9mm",
-                               "MAGeT on T1 BRAVO images"="mb_bravo")
-
-ggplot(wa.xval.error.melted, aes(y=percenterr,x=measure,colour=measure)) +
-  facet_grid(.~region) + 
-  geom_hline(aes(yintercept=0), colour="grey", size=1) + 
-  geom_boxplot() + 
-  geom_point(group=1, position="dodge") + 
-  labs(y="Percent error in volume", x="Subfield") +
-  theme(axis.ticks = element_blank(), axis.text.x = element_blank()) + 
-  scale_colour_discrete("") + 
-  theme(legend.direction = "vertical", legend.position = "bottom")
-@
-  \caption{{\bf Percent error in computed unilateral hippocampal subfield
-segmentation volume relative to manual segmentation volume.} 
-  Percent error is measured against the volumes of the unmodified Winterburn
-  atlas subfield segmentations.
-  {\bf Subsampled atlas labels} volumes of the manual segmentations of the Winterburn
-  atlases after resampling to $0.9mm^3$ voxels.  
-  {\bf MAGeT on subsampled atlas images} volumes are \mb{} segmentations of the Winterburn atlas
-  images after resampling to $0.9mm^3$ voxels.
-  {\bf MAGeT on T1 BRAVO} volumes are \mb{} segmentations of T1 BRAVO images
-  ($0.9mm^3$ voxels) acquired separately of four of the five Winterburn atlas
-  subjects.\label{fig:WAval-vol-boxplot}}
-\end{figure}
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Winterburn-XVAL: bland-altman 
-\begin{figure}[h!]
-<<fig:WAval-bland>>=
-wa.xval.volumes = melt(wa.xval.casted, id.vars=c('file', 'region', 'gold_0.3mm', 'gold_0.9mm'))
-wa.xval.volumes = rename(wa.xval.volumes, c("variable"="measure", "value"="volume"))
-levels(wa.xval.volumes$measure) <- list("Subsampled atlas labels"="gold_0.9mm",
-                               "MAGeT on subsampled atlas images" = "mb_0.9mm",
-                               "MAGeT on T1 BRAVO images"="mb_bravo")
-
-wa.xval.volumes$diff = wa.xval.volumes$gold_0.9mm - wa.xval.volumes$volume 
-wa.xval.volumes$mean = (wa.xval.volumes$gold_0.9mm + wa.xval.volumes$volume)/2
-wa.xval.bland.limits = ddply(wa.xval.volumes,c("region"),function(df) {
-  data.frame(y = mean(df$diff,na.rm=T) + c(-1.96,0,2) * sd(df$diff,na.rm=T))
-})
-
-ggplot(wa.xval.volumes, aes(x=mean, y=diff, colour=measure)) + 
-  facet_wrap(~region, ncol=3, scales='free') + 
-  geom_smooth(method="lm", formula=y~x, fullrange=T, se=F) + 
-  geom_point(size=1) +  
-  geom_hline(aes(yintercept = y), linetype="dashed", colour="brown",
-             data=wa.xval.bland.limits, size=0.3, alpha=0.5) + 
-  geom_text(aes(y = y, x=Inf, label=round(y,0)), colour="black", 
-             data = wa.xval.bland.limits, hjust=1.1,vjust=-0.8, size=2.5) + 
-  xlab(expression('Mean of resampled and \\mb subregion volume ' (mm^3))) + 
-  ylab(expression('Difference between manual and \\mb subregion volume ' (mm^3))) + 
-  scale_color_discrete(name="") + 
-  theme(legend.direction = "horizontal", legend.position = "bottom", 
-        axis.text.y = element_text(angle = 90, hjust=0.5), 
-        axis.text = element_text(size = 8))
-
-@
-  \caption{{\bf Bland-Altman plots comparing unilateral \mb{} subfield
-segmentation volume with resampled subfield segmentation volume.} The overall
-mean difference in volume, and limits of agreement ($\pm 1.96SD$) are shown by
-dashed horizontal lines. Linear fit lines are shown for each target image type.
-Note, points below the mean difference indicate overestimation of the volume
-with respect to the resampled volume, and vice versa. 
-  \label{fig:WAval-bland}}
-\end{figure}
-
 
 \begin{figure}
     \centering
@@ -1828,34 +1652,6 @@ with respect to the \snt{} volume, and vice versa. }
 %                                Discussion
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Discussion}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Tabulation of segmentation accuracies of existing methods (ADNI)
-%
-<<ADNI1-literature, echo=F, results="asis",cache=FALSE>>=
-# caption = 
-#   "\\textbf{Automated segmentation accuracy (overlap with manual labels) of the 
-#    ADNI dataset.} For each method, the number of manually labelled atlases used for 
-#    training, the best Dice's overlap measure, the disease classes measured, and 
-#    the validation procedure are shown. LOOCV = Leave-one-out cross-validation. 
-#    Some studies of automated segmentation of ADNI images are excluded because they 
-#    do not not provide overlap measures for the hippocampus \\cite{Heckemann2011, Chupin2009}.
-#   "
-# 
-# tab = read.csv("data/ADNI-existing-work.csv")
-# tab$Notes <- NULL
-# 
-# adni_lit = subset(tab, Dataset=="ADNI")
-# adni_lit$Dataset <- NULL
-# 
-# 
-# latex(adni_lit, #file="", 
-#       size="scriptsize",
-#       caption=caption, 
-#       rowname=NULL,
-#       col.just=c("p{2in}","p{1in}","p{1in}","p{1in}","p{1in}"),
-#       title="")
-@
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Tabulation of segmentation accuracies of existing methods (ADNI)
@@ -1992,8 +1788,8 @@ that \mb{} algorithmic performance is not dependent on a single definition of
 the hippocampus but is effective with differing hippocampal definitions
 \citep{Winterburn2013,Pruessner2000,Hsu2002}.  
 
-The core claim the \mb{} method is based on, that we can meaningfully bootstrap
-a template library from a small set of labelled atlas images, is validated in
+The core claim the \mb{} method is based on -- that we can meaningfully bootstrap
+a template library from a small set of labelled atlas images -- is validated in
 the cross validation conducted in Experiment 1 (and the replication in
 Experiment 5, Supplementary Materials). We find that both increasing the number
 of atlases and the number of templates used improves \mb{} segmentation over and
@@ -2159,7 +1955,7 @@ Protocol & Labelled Subfields  \tabularnewline
 \end{center}
 \end{table}
 
-Finally, we have provide evidence that using the Winterburn high-resolution
+Finally, we have provided evidence that using the Winterburn high-resolution
 hippocampal subfield atlases \citep{Winterburn2013} our algorithmic framework is
 appropriate for the segmentation of hippocampal subfields in standard
 T1-weighted data. Subfield segmentation is a burgeoning topic in the literature
@@ -2169,37 +1965,39 @@ subfield segmentations can be used for classification of AD, MCI, and CN, there
 has been no explicit validation of the segmentations being produced other than
 indirectly via classification accuracy (for instance, the semi-automated
 subfield segmentations produced in \citet{Yushkevich2009}).  Our work
-demonstrates that we can reliably reproduce segmentations, corresponding in volumes 
-to the input atlases used, with only modest error for the CA1, subiculum, and 
-CA4/dentate subregions.
+demonstrates that we can reliably reproduce segmentations for the CA1,
+subiculum, and CA4/dentate subregions.  That the CA2/CA3 and molecular
+layers are less well reproduced should not be surprising as these are extremely
+thin and spatially convoluted regions that originally required high-resolution
+MRI for identification and so it is likely that the extents of these regions are
+well below the resolution and contrast offered by standard T1-weighted images. 
 
-The fact that CA2/CA3 and molecular layers cannot be reasonably reproduced
-should not be surprising as these are extremely thin and spatially convoluted
-regions that originally required high-resolution MRI for identification and so
-it is likely that the extents of these regions are well below the resolution and
-contrast offered by standard T1-weighted images. In addition, some manual
-subfield segmentation methodologies do not attempt to parse these regions even
-on high-resolution scans. See Table \ref{ab:subfield-segmentation-protocols} for
-a comparison of manual subfield segmentation methodologies. Further complicating
-this, is that that different research groups have different operational
-definitions for these different subfields. The disagreement in the community has
-led to an international working group devoted to normalizing the ontology and
-segmentation rules for the hippocampal subfields
+This points to a larger issue of how to truly validate subfield segmentations,
+both in high resolution images and in standard T1-weighted images.  There are
+several manual subfield segmentation methodologies, and they do not agree on
+which regions can be differentiated, even on high-resolution scans. See Table
+\ref{ab:subfield-segmentation-protocols} for a comparison of manual subfield
+segmentation methodologies. A further complication is that different
+researchers have differing operational definitions for the subfields and how
+they ought to be parcellated. The disagreement in the community has led to an
+international working group devoted to normalizing the ontology and segmentation
+rules for the hippocampal subfields
 (\url{http://www.hippocampalsubfields.com/}). The definitional and operational
 disagreements make evaluating the accuracy of automated methodologies with
 respect to a "ground truth" (e.g. using overlap similarity metrics, such as
 Dice's Kappa) not particularly meaningful until these disagreements have been
-resolved.  Thus, because of this, and the inability to discern subregions in
-standard T1-weighted images, we opted to speak of the precision or reliability
-of \mb{} subfield segmentation rather than speak of accuracy.  
-
+resolved.  Thus, because of these disagreements and the difficulting discerning
+subregions in standard T1-weighted images, we opted to speak of the precision or
+reliability of \mb{} subfield segmentation rather than speak of accuracy.  
 
 In conclusion, we have presented a flexible \multiatlas{}-based framework that has
 considerable advantages over other methods since only a small number of atlases
-is required to initialize the algorithm.  We demonstrate that our method works
+is required to initialize the algorithm. We demonstrate that our method works
 robustly over hippocampal definitions, different disease populations, and
 different acquisition types. Finally, we also demonstrate that accurate
-identification of the hippocampal subfields is possible.
+identification of the hippocampal subfields is possible. 
+% TODO: say that we have shown the viability of template generation, and as such
+% it may also serve as a useful addition to existing segmentation techniques
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                               Conclusion 
