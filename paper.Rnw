@@ -249,9 +249,9 @@ jon.pipitone@camh.ca; mallar.chakravarty@camh.ca}
 
 The hippocampus is a brain structure situated in the medial temporal
 lobe, and has long been associated with learning and memory
-\citep{DenHeijer2012,Scoville2000}. The hippocampus is of interest to
-clinical neuroscientists because it is implicated in many forms of brain
-dysfunction, including Alzheimer's disease \citep{Sabuncu2011} and
+\citep{DenHeijer2012,Jeneson2012,Wixted2011,Scoville2000}. The hippocampus is of
+interest to clinical neuroscientists because it is implicated in many forms of
+brain dysfunction, including Alzheimer's disease \citep{Sabuncu2011} and
 schizophrenia \citep{Narr2004,Karnik-Henry2012}. In neuroimaging studies,
 structural magnetic resonance images (MRI) are often used for the volumetric
 assessment of the hippocampus.  As such, accurate segmentation of the
@@ -336,9 +336,9 @@ segmentation of the striatum, pallidum, and thalamus using a single atlas
 derived from serial histological data is possible \citep{Chakravarty2013}.
 The novelty of this manuscript is the extension of our \multiatlas{} methodology
 to the hippocampus using more than a single input atlas, while simultaneously
-limiting the number of inputs used during segmentation, and demonstrating that
-accurate identification of the hippocampal subfields is indeed possible using
-this methodology.
+limiting the number of inputs used during segmentation, and so demonstrating that
+reliable application of the atlases' subfield segmentation to an unlabelled
+target image is indeed possible using this methodology.
 
 Of particular relevance to the present work is the LEAP algorithm (Learning
 Embeddings for Atlas Propagation; \citet{Wolz2010}) because of its focus on
@@ -359,21 +359,21 @@ against semi-automated segmentations.
 Also of interest to this manuscript are the methods that attempt to define
 hippocampal subfields using standard T1- or T2-weighted data, of which there are
 few.  \citet{VanLeemput2009} demonstrate that the applicability of hippocampal
-subfield segmentation in T1-weighted images by using Markov random field priors
-learned from 10 manual segmentations.  This work, available as part of the
-\freesurfer{} package, is limited as the segmentation omits the tail of the
-hippocampus and the protocol has yet to be fully validated.
-\citet{Yushkevich2009} manually segment hippocampal subfields on high-resolution
-(either $0.2mm^3$ isotropic or $0.2mm \times 0.3mm \times 0.2mm$ resolution
-voxels) T2-weighted MR images acquired from five post-mortem medial temporal
-lobe samples. Then, using nonlinear registration guided by shape-based models of
-the subfield segmentations, and manually derived hippocampus masks of the target
-images, the authors demonstrate accurate parcellation of hippocampal subfields
-in clinical 3T T1-weighted MRI volumes.  Using \multiatlas with bias correction
-techniques, \citet{Yushkevich2010} demonstrate a semi-automated method of
-subfield segmentation on in vivo focal T2-weighted MR acquisitions of the
-temporal lobe. Manual input is only needed to mark mark divisions between the
-head, body and tail of the hippocampus on target images. 
+subfield segmentation in T1-weighted images by Bayesian techniques using Markov
+random field shape priors learned from 10 manual segmentations.  This work,
+available as part of the \freesurfer{} package, is limited as the segmentation
+omits the tail of the hippocampus and the protocol has yet to be fully
+validated.  \citet{Yushkevich2009} manually segment hippocampal subfields on
+high-resolution (either $0.2mm^3$ isotropic or $0.2mm \times 0.3mm \times 0.2mm$
+resolution voxels) T2-weighted MR images acquired from five post-mortem medial
+temporal lobe samples. Then, using nonlinear registration guided by shape-based
+models of the subfield segmentations, and manually derived hippocampus masks of
+the target images, the authors demonstrate accurate parcellation of hippocampal
+subfields in clinical 3T T1-weighted MRI volumes.  Using \multiatlas with bias
+correction techniques, \citet{Yushkevich2010} demonstrate a semi-automated
+method of subfield segmentation on in vivo focal T2-weighted MR acquisitions of
+the temporal lobe. Manual input is only needed to mark mark divisions between
+the head, body and tail of the hippocampus on target images. 
 
 In this paper we describe a thorough validation of the \mb{} algorithm for the
 fully automatic segmentation of the hippocampus and its subfields. First, we
@@ -732,7 +732,7 @@ smaller level of variability between methods.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Experiment 2: Hippocampal Subfield Cross-Validation}
 The previous experiment assesses \mb{} peformance on whole hippocampus
-segmentation. In this experiment, we aim to evaluate \mb{} hippocampal subfield
+segmentation. In this experiment, we evaluate \mb{} hippocampal subfield
 segmentation of standard 3T T1-weighted images at $0.9m^3$-isotropic voxels.  We
 use a modified leave-one-out cross-validation (LOOCV) design. 
 
@@ -752,14 +752,15 @@ atlas images and labels) and then the algorithm is applied to the left-out item.
 This is done, in turn, for each item in the dataset and the output across all
 items is evaluated together. 
 
-In this experiment, the Winterburn atlases are resampled to $0.9mm^3$-isotropic
+In this experiment, the Winterburn atlases are resampled to $0.9mm$-isotropic
 voxel images to simulate standard 3T T1-weighted resolution images. Image
-subsampling is performed using trilinear subsampling techniques.  
-
-In each round of LOOCV, one atlas is selected and segmented with \mb{} once
-using each possible triplet of atlas images from the remaining four unselected
-atlases. We chose to use an atlas library with an odd number of images so as to
-ensure an unbiased label fusion when using majority voting (see Discussion). 
+subsampling is performed using trilinear subsampling techniques.  In each round
+of LOOCV, a single atlas is selected and segmented with \mb{} once using each
+possible triplet of atlas images from the remaining four unselected atlases.
+Thus, a total of ${3 \choose 4}=4$ segmentations are evaluated for each atlas
+image, for $5\times4=20$ segmentations evaluated in total.  We chose an atlas library
+with an odd number of images so as to ensure an unbiased label fusion when using
+majority voting (see Discussion). 
 
 The template library used has a total of 19 images composed of all $0.9mm^3$
 voxel target images plus an additional set of 14 of healthy subject 3T T1 images
@@ -1200,10 +1201,11 @@ ggplot(subset(stats.tests, direction > 0 & stat == "Variance"),
 wa.n.sim = read.csv('data/winterburn.xval.similarity.csv')
 wa.n.sim$label = as.factor(wa.n.sim$label)
 levels(wa.n.sim$label) <-list(
-  "CA1"=1, "CA1"=101, "Subiculum"=2,"Subiculum"=102, 
-  "CA4/DG"=4,"CA4/DG"=104, "CA2/CA3"=5,"CA2/CA3"=105, 
+  "CA1"=1, "CA1"=101, 
+  "CA2/CA3"=5,"CA2/CA3"=105, 
+  "CA4/DG"=4,"CA4/DG"=104, 
+  "Subiculum"=2,"Subiculum"=102, 
   "SR/SL/SM"=6,"SR/SL/SM"=106)
-
 
 # kappa vs. region
 ggplot(wa.n.sim, aes(x=as.factor(label),y=k)) + 
@@ -1230,18 +1232,50 @@ high-resolution Winterburn atlas subjects' images as atlases.
 
 Figure \ref{fig:WAval-kappa} shows the overlap similarity scores between the
 \mb{} segmentations and the resampled Winterburn atlases for each hippocampal
-subregion across all subjects and folds of the validation. Mean (standard
-deviation) DSC scores of the subregions are: 
-  \Sexpr{mean(CA1)}   ($\pm$\Sexpr{sd(CA1)}) for the CA1 region,  
-  \Sexpr{mean(CA23)}  ($\pm$\Sexpr{sd(CA23)}) for the CA2/CA3 regions,  
-  \Sexpr{mean(CA4DG)} ($\pm$\Sexpr{sd(CA4DG)}) for the CA4/DG regions,  
-  \Sexpr{mean(Sub)}   ($\pm$\Sexpr{sd(Sub)}) for the Subiculum region, and
-  \Sexpr{mean(SRLM)}  ($\pm$\Sexpr{sd(SRLM)}) for the moleculare regions.
+subregion across all subjects and folds of the validation. Mean and standard
+deviation DSC scores of the subregions are: 
+  \Sexpr{mean(CA1)}  $\pm$\Sexpr{sd(CA1)} for the CA1 region,  
+  \Sexpr{mean(CA23)} $\pm$\Sexpr{sd(CA23)} for the CA2/CA3 regions,  
+  \Sexpr{mean(CA4DG)}$\pm$\Sexpr{sd(CA4DG)} for the CA4/DG regions,  
+  \Sexpr{mean(Sub)}  $\pm$\Sexpr{sd(Sub)} for the Subiculum region, and
+  \Sexpr{mean(SRLM)} $\pm$\Sexpr{sd(SRLM)} for the moleculare regions.
+
 Bland-Altman plots comparing \mb{} to resampled subregion volumes reveal a
 proportional bias towards underestimating volumes in all subregions (Figure
 \ref{fig:WAxval-Bland-Altman}). Prominent fixed biases in the volumes of the
 CA4/DG and SR/SL/SM subregions are congruent with the lower similarity scores
 seen in these regions. 
+
+
+<<tab:WAxval-perturb-kappa, echo=F,results="asis">>=
+wa.perturb = read.csv('data/winterburn.perturb.kappa.csv')
+wa.perturb = wa.perturb[c("subject","label","operation","k")]
+wa.perturb$label = as.factor(wa.perturb$label)
+levels(wa.perturb$label) <-list(
+  "CA1"="1", "CA1"="101",  "CA2/CA3"="5","CA2/CA3"="105",
+  "CA4/DG"="4","CA4/DG"="104",  "Subiculum"="2","Subiculum"="102", 
+  "SR/SL/SM"="6", "SR/SL/SM"="106")
+mean_range = function (v) {
+  sprintf("$%0.2f \\pm %0.2f$", mean(v), sd(v))
+}
+wa.perturb.table = dcast(wa.perturb, label ~ operation, fun.aggregate=mean_range)
+wa.sim.sum = dcast(wa.n.sim, label ~ ., value.var = 'k', fun.aggregate=mean_range)
+names(wa.sim.sum)[2] = 'MAGeT'
+wa.perturb.table = merge(wa.perturb.table, wa.sim.sum)
+
+wa.perturb.table=wa.perturb.table[c('label','MAGeT', 'translate','contract','expand')]
+names(wa.perturb.table) = c("Subfield", "MAGeT", "0.9mm translation", "0.99 scaling", "1.01 scaling")
+
+caption="Overlap similarity results for the each of the subfields of the hippocampus. 
+Simulated overlap similarity results are also given for resampled labels that were 
+translated by one voxel (i.e.: $0.9mm$ in all directions), scaled by 0.99, and scaled
+by 1.01 (representing a 1\\% shrinkage or scale in all three cardinal directions).
+Values are given as mean Dice's Kappa coefficient \\pm stddev."
+latex(wa.perturb.table, #file="", size="scriptsize",landscape=FALSE, ctable=FALSE,
+      caption=caption, caption.loc = c("top"),
+      label="tab:WAxval-perturb-kappa", rowname=NULL)
+@
+
 
 \begin{figure}
 <<fig:WAxval-Bland-Altman>>=
@@ -1257,6 +1291,7 @@ levels(wa.n.all.vols$variable) <-list(
   "CA1"="X1", "CA1"="X101", "Subiculum"="X2","Subiculum"="X102", 
   "CA4/DG"="X4","CA4/DG"="X104", "CA2/CA3"="X5","CA2/CA3"="X105", 
   "SR/SL/SM"="X6","SR/SL/SM"="X106")
+
 
 wa.n.all.vols$diff = wa.n.all.vols$'0.9' - wa.n.all.vols$value
 wa.n.all.vols$mean = (wa.n.all.vols$'0.9' + wa.n.all.vols$value)/2
@@ -1677,7 +1712,7 @@ hippocampus \citep{Heckemann2011,Chupin2009}.
 Method & Atlases & DSC \newline {\tiny mean (AD; MCI; CN)} & Reference & Validation & Dataset (Truth)\tabularnewline
 \hline
 %%  
-\mb{}                     &9 & \Sexpr{snt.mb.kappa.best} & \cite{Pipitone2014}
+\mb{}                     &9 & \Sexpr{snt.mb.kappa.best} &
 & 10-fold MCCV on 69 subjects 
 & ADNI (SNT) 
 \tabularnewline 
@@ -1719,7 +1754,7 @@ Multi-atlas (MAPS)        &55&0.890                           &\cite{Leung2010}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%
-\mb{}                      &9 & \Sexpr{mb.kappa.best}       &\cite{Pipitone2014} 
+\mb{}                      &9 & \Sexpr{mb.kappa.best}       &
 & 10-fold MCCV on 60 subjects 
 & ADNI (\prsnr)
 \tabularnewline 
@@ -1960,17 +1995,58 @@ hippocampal subfield atlases \citep{Winterburn2013} our algorithmic framework is
 appropriate for the segmentation of hippocampal subfields in standard
 T1-weighted data. Subfield segmentation is a burgeoning topic in the literature
 although very few automated methods are available for the segmentation of 3T
-data \citep{Yushkevich2009,VanLeemput2009}. While recent work demonstrates that
-subfield segmentations can be used for classification of AD, MCI, and CN, there
-has been no explicit validation of the segmentations being produced other than
-indirectly via classification accuracy (for instance, the semi-automated
-subfield segmentations produced in \citet{Yushkevich2009}).  Our work
-demonstrates that we can reliably reproduce segmentations for the CA1,
-subiculum, and CA4/dentate subregions.  That the CA2/CA3 and molecular
-layers are less well reproduced should not be surprising as these are extremely
-thin and spatially convoluted regions that originally required high-resolution
-MRI for identification and so it is likely that the extents of these regions are
-well below the resolution and contrast offered by standard T1-weighted images. 
+data \citep{Yushkevich2009,Yushkevich2010,VanLeemput2009}.  Table
+\ref{tab:subfield-segmentation-kappa} compares segmentation accuracy from some
+of these methods and \mb{}. The overlap DSC scores for \mb{} subregions are
+notably lower but a direct comparison of overlap values must be done cautiously.
+In the present work, our overlap scores are computed on $0.9mm$-isotropic voxel
+resolution images, whereas \citet{Yushkevich2010} uses focal
+$0.4\times0.5\times2.0mm$ voxel resolution images, and \citet{VanLeemput2009}
+use supersampled $0.380mm$-isotropic voxel resolution images. The larger voxel
+images we use necessarily entail a greater change in DSC for each incorrectly
+labelled voxel.  In addition, our automated segmentations are compared to manual
+segmentations resampled from $0.3mm$-isotropic voxel labels; the resampling
+process inevitably introduces noise which may lower overlap scores.  Lastly, as
+our method is aimed specifically at situations when manually produced atlases
+are scarce, in our cross validation we are forced to use three rather than all
+five of the Winterburn atlases which, based on our findings with whole
+hippocampal segmentation, would lead to improved overlap similarity.
+Nevertheless, the advantage of evaluating \mb{} on standard 3T T1-weighted
+resolution MR images with a publically available atlas library is that our
+results reflect typical usage scenarios of researchers and clinicians. 
+
+Our overlap DSC values demonstrates that we can reliably reproduce segmentations
+for the CA1, subiculum, and CA4/dentate subregions.  That the CA2/CA3 and
+molecular layers are less well reproduced (DSC < 0.5) should not be surprising
+as these are extremely thin and spatially convoluted regions that originally
+required high-resolution MRI for identification and so it is likely that the
+extents of these regions are well below the resolution and contrast offered by
+standard T1-weighted images. 
+
+\begin{table}[!tbp]
+\scriptsize
+\caption{\textbf{A comparison of subfield segmentation overlap similarity with
+manual raters.} \label{tab:subfield-segmentation-kappa}} 
+\begin{center}
+\begin{tabular}{ l c c c }
+\hline\hline
+Subfield             & \mb{}               & \citet{VanLeemput2009} & \citet{Yushkevich2010}  \tabularnewline
+\hline                                   
+CA1                  &\Sexpr{mean(CA1)}    & 0.62 & 0.875                                     \tabularnewline
+CA2/3                &\Sexpr{mean(CA23)}   & 0.74 & $CA2=0.538, CA3=0.618$                    \tabularnewline
+CA4/DG               &\Sexpr{mean(CA4DG)}  & 0.68 & $DG=0.873$                                \tabularnewline
+presubiculum         & ---                 & 0.68 & ---                                       \tabularnewline
+subiculum            &\Sexpr{mean(Sub)}    & 0.74 & 0.770                                     \tabularnewline
+hippocampal fissure  & ---                 & 0.53 & ---                                       \tabularnewline
+SR/SL/SM             &\Sexpr{mean(SRLM)}   & ---  & ---                                       \tabularnewline
+fimbria              & ---                 & 0.51 & ---                                       \tabularnewline
+head                 & ---                 & ---  & 0.902                                     \tabularnewline
+tail                 & ---                 & ---  & 0.863                                     \tabularnewline
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+
 
 This points to a larger issue of how to truly validate subfield segmentations,
 both in high resolution images and in standard T1-weighted images.  There are
