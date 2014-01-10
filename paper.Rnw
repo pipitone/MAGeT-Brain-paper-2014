@@ -9,6 +9,8 @@
 %  - in particular, check that Experiment 5 match Experiment 1
 %  - fix figure 2 schematic language for the experiments (not 2a 2b). 
 %  - ADNI-1 or ADNI1, standardize
+%  - Don't use "Experiment X", instead use some short form description, and then
+%  reference (Experiment X). 
 
 <<setup, include=FALSE, cache=FALSE>>=
 library(knitr)
@@ -796,16 +798,17 @@ latex(tab, file="", size="scriptsize",landscape=FALSE, ctable=FALSE,
 Evaluating the accuracy of hippocampal subfields for T1 images at
 $0.9mm^3$-isotropic voxels is inherently ill-defined since there are no manual
 protocols for segmentation at this resolution to use as a reference. Instead, we
-can evaluate the {\it precision} with which \mb{} produces hippocampal subfields
-that correspond to the segmentation protocol used by the given atlas library
-images.  Specifically, we compute the relative percent error in volume of the
-\mb{}-produced hippocampal subfields with respect to the full-resolution
-Winterburn atlas segmentations. In addtion, by directly resampling the
-Winterburn atlas segmentations to $0.9mm^3$ voxels (using standard
-nearest-neighbour image resampling techniques) we obtain a scaled down version
-of the labels preserving the original segmentation protocol within the limits of
-error from rounding and interpolation. The relative percent error in volume of
-these labels provides a baseline to compare \mb{} segmentations against. 
+can evaluate the reliability, or {\it precision}, with which \mb{} produces
+hippocampal subfields that correspond to the segmentation protocol used by the
+given atlas library images. By directly resampling the Winterburn atlas
+segmentations to $0.9mm^3$ voxels (using standard nearest-neighbour image
+resampling techniques) we obtain a scaled down version of the labels which
+preserve the original segmentation protocol within the limits of error from
+rounding and interpolation. Therefore, using the resampled Winterburn
+segmentations as definitive for the $0.9mm^3$ resolution we evaluate reliability
+of \mb{} segmentations using using DSC overlap scores and evaluate consistency
+across the range of hippocampal sizes using Bland-Altman plots of subfield
+volumes. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%                                                                     %%%%%
@@ -1225,27 +1228,113 @@ SRLM  = subset(wa.n.sim,label=='SR/SL/SM')$k
   separately. \label{fig:WAxval-kappa}}
 \end{figure}
 
+
 In this experiment the \mb{} segmentation of hippocampal subfields is assessed
-through a leave-one-out validation in which resampled images ($0.9mm^3$
-voxels) of each Winterburn atlas subject are segmented using the remaining
-high-resolution Winterburn atlas subjects' images as atlases. 
+through a leave-one-out validation in which resampled images ($0.9mm^3$ voxels)
+of each Winterburn atlas subject are segmented using the remaining
+high-resolution Winterburn atlases. 
 
 Figure \ref{fig:WAval-kappa} shows the overlap similarity scores between the
 \mb{} segmentations and the resampled Winterburn atlases for each hippocampal
 subregion across all subjects and folds of the validation. Mean and standard
-deviation DSC scores of the subregions are: 
-  \Sexpr{mean(CA1)}  $\pm$\Sexpr{sd(CA1)} for the CA1 region,  
-  \Sexpr{mean(CA23)} $\pm$\Sexpr{sd(CA23)} for the CA2/CA3 regions,  
-  \Sexpr{mean(CA4DG)}$\pm$\Sexpr{sd(CA4DG)} for the CA4/DG regions,  
-  \Sexpr{mean(Sub)}  $\pm$\Sexpr{sd(Sub)} for the Subiculum region, and
-  \Sexpr{mean(SRLM)} $\pm$\Sexpr{sd(SRLM)} for the moleculare regions.
+deviation DSC scores of the subregions are shown in Table
+\ref{tab:WAxval-perturb-kappa}, along with DSC scores for the resampled atlas
+segmentations when perturbed slightly and compared to the originals.  We find
+that the CA4/DG subregion shows the highest mean DSC score of
+\Sexpr{mean(CA4DG)} $\pm$\Sexpr{sd(CA4DG)}, followed by the Subiculum and CA1
+subregions having scores of \Sexpr{mean(CA1)} $\pm$\Sexpr{sd(CA1)} and
+\Sexpr{mean(Sub)} $\pm$\Sexpr{sd(Sub)}, respectively.  Both the CA4/DG and
+molecular regions score below 0.5.  These scores may seem low but not when taken
+in context and compared to existing (semi-)automated methods (see Discussion). 
 
-Bland-Altman plots comparing \mb{} to resampled subregion volumes reveal a
-proportional bias towards underestimating volumes in all subregions (Figure
-\ref{fig:WAxval-Bland-Altman}). Prominent fixed biases in the volumes of the
+\begin{figure}
+<<fig:WAxval-Bland-Altman>>=
+wa.n.vol = read.csv('data/winterburn.xval.volumes.csv')
+winterburn = read.csv('data/winterburn.volumes.csv')
+subfield_labels <-list(
+  "CA1"="X1", "CA1"="X101", 
+  "CA2/CA3"="X5","CA2/CA3"="X105", 
+  "CA4/DG"="X4","CA4/DG"="X104",
+  "Subiculum"="X2","Subiculum"="X102",
+  "SR/SL/SM"="X6","SR/SL/SM"="X106")
+hemispheres <- list(
+  "Right"="X1","Left"="X101", 
+  "Right"="X5","Left"="X105", 
+  "Right"="X4","Left"="X104",
+  "Right"="X2","Left"="X102",
+  "Right"="X6","Left"="X106")
+
+wa.n.vol.melt = melt(wa.n.vol, id.vars=c('atlases','subject','res'))
+winterburn.melt = melt(winterburn, id.vars=c('subject','res'))
+winterburn.cast = dcast(winterburn.melt, subject + variable ~ res)
+wa.n.all.vols = merge(wa.n.vol.melt, winterburn.cast, by=c('subject','variable'))
+  
+levels(wa.n.all.vols$subject) <- list(
+  "1"="anusha", 
+  "2"="jon",
+  "3"="mallar",
+  "4"="sofia",
+  "5"="nancy")
+
+
+# mean per subfield/hemisphere across all 4 validation folds
+wa.n.mean.vols = ddply(wa.n.all.vols, c("variable", "subject", "res"), function(df) {
+  data.frame(mb = mean(df$value),
+             high  = mean(df$'0.3'),
+             low   = mean(df$'0.9'))
+})
+wa.n.mean.vols$diff = wa.n.mean.vols$low - wa.n.mean.vols$mb
+wa.n.mean.vols$mean = (wa.n.mean.vols$low + wa.n.mean.vols$mb)/2
+
+wa.n.mean.vols$hemisphere <- wa.n.mean.vols$variable
+levels(wa.n.all.vols$variable)   <- subfield_labels
+levels(wa.n.mean.vols$variable)  <- subfield_labels
+levels(wa.n.all.vols$hemisphere) <- hemispheres
+
+wa.n.xval.bland.limits = ddply(wa.n.mean.vols,c("variable"),function(df) {
+  data.frame(y = mean(df$diff,na.rm=T) + c(-1.96,0,2) * sd(df$diff,na.rm=T))
+})
+
+wa.n.xval.bland.cor = ddply(wa.n.mean.vols,c("variable"),function(df) {
+  cor.t = cor.test(df$low,df$mb)
+  data.frame(
+    pearson = sprintf("r=%0.2f, t=%0.2f, p < %0.2f", 
+                cor.t$estimate, cor.t$statistic, cor.t$p.value)
+  )
+})
+
+
+ggplot(wa.n.mean.vols, aes(x=mean, y=diff)) + 
+  facet_wrap(~variable, ncol=3, scales='free_x') + 
+  geom_smooth(method="lm", formula=y~x, fullrange=T, se=F) + 
+  geom_point(size=2, aes(colour=hemisphere, shape=subject)) +  
+  geom_hline(aes(yintercept = y), linetype="dashed", colour="brown",
+             data=wa.n.xval.bland.limits, size=0.3, alpha=0.5) + 
+  geom_text(aes(y = y, x=Inf, label=round(y,0)), colour="black", 
+             data = wa.n.xval.bland.limits, hjust=1.1,vjust=-0.8, size=2.5) + 
+  geom_text(aes(y = Inf, x=-Inf, label=pearson), colour="black", 
+             data = wa.n.xval.bland.cor, hjust=-0.1,vjust=2.5, size=2.5) + 
+  xlab(expression('Mean of resampled and MAGeT-Brain subregion volume ' (mm^3))) + 
+  ylab(expression('Difference of manual and MAGeT-Brain subregion volume ' (mm^3))) + 
+  #scale_x_continuous(limits=c(0,1000)) + 
+  #scale_color_discrete(name="") + 
+  theme(legend.direction = "horizontal", legend.position = "bottom", 
+        axis.text.y = element_text(angle = 90, hjust=0.5), 
+        axis.text = element_text(size = 8))
+@
+  \caption{\textbf{Bland-Altman plots comparing unilateral hippocampal subregion volume
+across all folds of Winterburn atlas cross validation.} The overall mean
+difference in volume, and limits of agreement ($\pm 1.96SD$) are shown by dashed
+horizontal lines. Linear fit lines are shown. Note, points below the mean
+difference indication overestimation of the volume with respect to the resampled
+volume, and vice versa. \label{fig:WAxval-Bland-Altman}}
+\end{figure}
+
+We find that in each subfield, \mb{} shows a proportional bias towards
+underestimating volumes in all subregions (Figure
+\ref{fig:WAxval-Bland-Altman}).  Prominent fixed biases in the volumes of the
 CA4/DG and SR/SL/SM subregions are congruent with the lower similarity scores
 seen in these regions. 
-
 
 <<tab:WAxval-perturb-kappa, echo=F,results="asis">>=
 wa.perturb = read.csv('data/winterburn.perturb.kappa.csv')
@@ -1270,57 +1359,12 @@ caption="Overlap similarity results for the each of the subfields of the hippoca
 Simulated overlap similarity results are also given for resampled labels that were 
 translated by one voxel (i.e.: $0.9mm$ in all directions), scaled by 0.99, and scaled
 by 1.01 (representing a 1\\% shrinkage or scale in all three cardinal directions).
-Values are given as mean Dice's Kappa coefficient \\pm stddev."
-latex(wa.perturb.table, #file="", size="scriptsize",landscape=FALSE, ctable=FALSE,
+Values are given as mean Dice's Kappa coefficient $\\pm$ stddev."
+latex(wa.perturb.table, file="", size="scriptsize",landscape=FALSE, ctable=F,
       caption=caption, caption.loc = c("top"),
+      col.just=rep('c',5),  
       label="tab:WAxval-perturb-kappa", rowname=NULL)
 @
-
-
-\begin{figure}
-<<fig:WAxval-Bland-Altman>>=
-wa.n.vol = read.csv('data/winterburn.xval.volumes.csv')
-winterburn = read.csv('data/winterburn.volumes.csv')
-
-wa.n.vol.melt = melt(wa.n.vol, id.vars=c('atlases','subject','res'))
-winterburn.melt = melt(winterburn, id.vars=c('subject','res'))
-winterburn.cast = dcast(winterburn.melt, subject + variable ~ res)
-wa.n.all.vols = merge(wa.n.vol.melt, winterburn.cast, by=c('subject','variable'))
-  
-levels(wa.n.all.vols$variable) <-list(
-  "CA1"="X1", "CA1"="X101", "Subiculum"="X2","Subiculum"="X102", 
-  "CA4/DG"="X4","CA4/DG"="X104", "CA2/CA3"="X5","CA2/CA3"="X105", 
-  "SR/SL/SM"="X6","SR/SL/SM"="X106")
-
-
-wa.n.all.vols$diff = wa.n.all.vols$'0.9' - wa.n.all.vols$value
-wa.n.all.vols$mean = (wa.n.all.vols$'0.9' + wa.n.all.vols$value)/2
-
-wa.n.xval.bland.limits = ddply(wa.n.all.vols,c("variable"),function(df) {
-  data.frame(y = mean(df$diff,na.rm=T) + c(-1.96,0,2) * sd(df$diff,na.rm=T))
-})
-ggplot(wa.n.all.vols, aes(x=mean, y=diff)) + 
-  facet_wrap(~variable, ncol=3, scales='free_x') + 
-  geom_smooth(method="lm", formula=y~x, fullrange=T, se=F) + 
-  geom_point(size=1) +  
-  geom_hline(aes(yintercept = y), linetype="dashed", colour="brown",
-             data=wa.n.xval.bland.limits, size=0.3, alpha=0.5) + 
-  geom_text(aes(y = y, x=Inf, label=round(y,0)), colour="black", 
-             data = wa.n.xval.bland.limits, hjust=1.1,vjust=-0.8, size=2.5) + 
-  xlab(expression('Mean of resampled and \\mb subregion volume ' (mm^3))) + 
-  ylab(expression('Difference between manual and \\mb subregion volume ' (mm^3))) + 
-  scale_color_discrete(name="") + 
-  theme(legend.direction = "horizontal", legend.position = "bottom", 
-        axis.text.y = element_text(angle = 90, hjust=0.5), 
-        axis.text = element_text(size = 8))
-@
-  \caption{\textbf{Bland-Altman plots comparing unilateral hippocampal subregion volume
-across all folds of Winterburn atlas cross validation.} The overall mean
-difference in volume, and limits of agreement ($\pm 1.96SD$) are shown by dashed
-horizontal lines. Linear fit lines are shown. Note, points below the mean
-difference indication overestimation of the volume with respect to the resampled
-volume, and vice versa. \label{fig:WAxval-Bland-Altman}}
-\end{figure}
 
 Figure \ref{fig:subfield-montage} shows slices subfield segmentations for a
 single subject for qualitative inspection.  
@@ -2014,6 +2058,9 @@ hippocampal segmentation, would lead to improved overlap similarity.
 Nevertheless, the advantage of evaluating \mb{} on standard 3T T1-weighted
 resolution MR images with a publically available atlas library is that our
 results reflect typical usage scenarios of researchers and clinicians. 
+%TODO: mention that DSC by it's nature penalizes structures with high surface
+%area-to-vol ratios, so necessarily penalise all subfield errors.
+%TODO: discuss perturbed segmentation kappa values in relation to MAGeT error
 
 Our overlap DSC values demonstrates that we can reliably reproduce segmentations
 for the CA1, subiculum, and CA4/dentate subregions.  That the CA2/CA3 and
@@ -2066,14 +2113,13 @@ resolved.  Thus, because of these disagreements and the difficulting discerning
 subregions in standard T1-weighted images, we opted to speak of the precision or
 reliability of \mb{} subfield segmentation rather than speak of accuracy.  
 
-In conclusion, we have presented a flexible \multiatlas{}-based framework that has
-considerable advantages over other methods since only a small number of atlases
-is required to initialize the algorithm. We demonstrate that our method works
-robustly over hippocampal definitions, different disease populations, and
-different acquisition types. Finally, we also demonstrate that accurate
-identification of the hippocampal subfields is possible. 
-% TODO: say that we have shown the viability of template generation, and as such
-% it may also serve as a useful addition to existing segmentation techniques
+In conclusion, we have demonstrated the viability of leveraging a small
+number of input atlases to bootstrap a large template library and thereby
+improve segmentation reliability when using \multiatlas{} methods.  We
+demonstrated that this method works robustly over hippocampal definitions,
+different disease populations, and different acquisition types. Finally, we also
+demonstrate that accurate identification of the hippocampal subfields in
+standard 3T T1-weighted images is possible. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                               Conclusion 
@@ -2319,28 +2365,6 @@ stats.tests = ddply(ants.stats, c("atlases","templates.mb"), function (df) {
     direction = c(diff_mean_var, diff_mean_sd)
   )
 })
-
-ggplot(subset(stats.tests, direction > 0 & stat == "Variance"), 
-  aes(x=templates.mb, y=p.value, colour=as.factor(atlases))) + 
-  #facet_grid( . ~ stat) + 
-  geom_line(size=0.5) +
-  geom_point(size=2) + 
-  geom_hline(aes(yintercept=0.05, alpha=0.5), linetype='dashed') + 
-  geom_hline(aes(yintercept=0.01, alpha=0.5), linetype='dashed') + 
-  scale_x_continuous(breaks=seq(1,20,by=2)) + 
-  #  scale_y_log10(limits=c(0.001,1), breaks=c(0.01,0.05,0.1,1.0)) + 
-  xlab( "Number of Templates" ) + 
-  ylab( "Variability (p)") +
-  scale_colour_hue(name="Atlases") +
-  scale_alpha_continuous(guide='none') + 
-  scale_linetype_discrete(guide='none') + 
-  scale_size_continuous(guide='none') + 
-  theme(legend.direction = "horizontal", legend.position = "bottom")
-@
-  \caption{{\bf Difference in variability of \mb{} vs. \multiatlas{} segmentation 
-  with respect to \snt{} segmentations.}
-  Variance of segmentation accuracy between \mb{} and \multiatlas{} segmentation is
-  computed for each subject across all ten rounds of validation. Shown on the
   y-axis is the p-value from a t-test comparing the distribution of variances at
   each parameter setting (atlas/template library size). 
   Only points where \mb{} mean variability is lower than \multiatlas{} are shown.
