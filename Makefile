@@ -1,6 +1,5 @@
 RSCRIPT:=R
 .PHONY: help cache paper dist clean
-CSVS := 
 
 # help   :: show makefile commands
 help: 
@@ -38,6 +37,13 @@ dist: paper.tex
 # clean  :: remove generated files
 clean:
 	rm -f *.aux *.log *.bbl *.blg paper.pdf *.tex
+
+check:
+	@echo "Unclosed newcommands"
+	@grep -n -o -e '\\\w\+ ' paper.Rnw | \
+		grep -v '\(item\|em\|pm\|it\|tiny\|tabularnewline\)' | \
+		grep -v '\(times\|newline\|tt\|textbf\|textbf\|hline\)' | \
+		grep -v '\(cup\|cap\|choose\)'
 
 .PHONY:letters
 letters: 

@@ -266,9 +266,9 @@ assessment of the hippocampus.  As such, accurate segmentation of the
 hippocampus and its subfields in MRI is a necessary first step to better
 understand the inter-individual variability of subject neuroanatomy. 
 
-THe gold standard for neuroanatomical segmentation is manual delineation by an
+The gold standard for neuroanatomical segmentation is manual delineation by an
 expert human rater.  However, with the availability of increasingly large MRI
-datasets, the time and expertise required for manual segmentation becomes
+datasets the time and expertise required for manual segmentation becomes
 prohibitive \citep{Mazziotta1995,Mazziotta2001,Mazziotta,Pausova2007}. This
 effort is complicated by the fact that there is significant variation between
 segmentation protocols with respect to specific anatomical boundaries of the
@@ -377,7 +377,7 @@ resolution voxels) T2-weighted MR images acquired from five post-mortem medial
 temporal lobe samples. Then, using nonlinear registration guided by shape-based
 models of the subfield segmentations, and manually derived hippocampus masks of
 the target images, the authors demonstrate accurate parcellation of hippocampal
-subfields in clinical 3T T1-weighted MRI volumes.  Using \multiatlas with bias
+subfields in clinical 3T T1-weighted MRI volumes.  Using \multiatlas{} with bias
 correction techniques, \citet{Yushkevich2010} demonstrate a semi-automated
 method of subfield segmentation on in vivo focal T2-weighted MR acquisitions of
 the temporal lobe. Manual input is only needed to mark mark divisions between
@@ -480,7 +480,7 @@ performance for use in subsequent experiments.
 parameter settings on brain images of young, first episode psychosis
 patients. 
 \item Experiment 3 compares \mb{} whole hippocampus segmentations with those of
-well-known automated methods on the entire \adnidataset image dataset consisting
+well-known automated methods on the entire \adnidataset{} image dataset consisting
 of 
 \item Experiment 4 assesses hippocampal subfield segmentation quality in a
 leave-one-out cross-validation design. 
@@ -750,15 +750,6 @@ smaller level of variability between methods.
 %%%%%     RESULTS: Experiment 1: Whole Hippocampus Cross-Validation       %%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Results: \expadnixval}
-
-% In this experiment we conduct 10 rounds of \mb{} and \multiatlas{} segmentation of
-% of 60 subjects using atlas and template library sizes varying from 1-9 and 1-20
-% images respectively, two registration algorithms (\ants{} or \animal{}), and three
-% label fusion techniques (unweighted, cross-correlation, and normalised mutual
-% information weighted majority vote).  Computed segmentations are compared to
-% \psegs using Dice's Similarity Coefficient (DSC).  In the Supplementary
-% Materials we have replicated this experiment using the \snt semi-automated
-% labels included with the ADNI dataset.
 
 We find that for \mb{} segmentations, similarity score increases as atlas and
 template library size is increased, although with diminishing returns and an
@@ -1177,7 +1168,7 @@ produced by \freesurfer{}, \fsl{}, \maper{}, as well as semi-automated
 whole hippocampal segmentations (\snt{}) provided by ADNI.
 
 \subsubsection{Materials and Methods: \expadni}
-\paragraph{\adnidataset dataset} 
+\paragraph{\adnidataset{} dataset} 
 The {\em \adnidataset{}} standardized dataset contains $1919$ images in total.
 \snt{}, \maper, \freesurfer{} hippocampal volumes for a subset of images were
 provided by ADNI, along with quality control data for each \freesurfer{}
@@ -1918,7 +1909,7 @@ a template library from a small set of labelled atlas images -- is validated in
 the cross validation conducted in Experiment 1 (and the replication in
 Experiment 5, Supplementary Materials). We find that both increasing the number
 of atlases and the number of templates used improves \mb{} segmentation over and
-above basic-\multiatlas segmentations using the same number of atlas images.
+above basic-\multiatlas{} segmentations using the same number of atlas images.
 That is, by taking the extra step of generating a template library from a small
 atlas set \mb{} is able to improve the final segmentation similarity. The
 magnitude of this improvement is greatest with a small number of atlases, but
@@ -2304,7 +2295,7 @@ leads to significantly increased similarity scores, and there is no significant
 difference in scores from any of the label fusion methods.  Mean DSC score peaks
 at \Sexpr{snt.mb.kappa.best} when using 9 atlases, 19
 templates, ANTS registration, and majority vote label fusion).  Compared to
-\multiatlas segmentations, we find \mb{} segmentations show increasing
+\multiatlas{} segmentations, we find \mb{} segmentations show increasing
 improvement with larger atlas and template libraries when using more than 9
 templates and 5 or fewer atlases (Figure \ref{fig:ADNI1-SNT-xval-k-diff}). Peak
 improvement (+\Sexpr{round(snt.mb.diff.best, digits=3)} DSC) is found with a
@@ -2430,8 +2421,8 @@ ggplot(subset(stats.tests, direction > 0 & stat == "Variance"),
   scale_size_continuous(guide='none') + 
   theme(legend.direction = "horizontal", legend.position = "bottom")
 @
-  \caption{{\bf Difference in variability of \mb{} vs. \multiatlas{} segmentation
-  with respect to \snt segmentation.}
+  \caption{\textbf{Difference in variability of \mb{} vs. \multiatlas{} segmentation
+  with respect to \snt{} segmentation.}
   Variance of segmentation accuracy between \mb{} and \multiatlas{} segmentation
   is computed for each subject across over 10 folds of Monte Carlo       
   cross validation.  
