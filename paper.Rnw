@@ -1,4 +1,3 @@
-
 <<setup, include=FALSE, cache=FALSE>>=
 library(knitr)
 opts_chunk$set(echo = FALSE, 
@@ -105,7 +104,7 @@ snt.mb.diff.best = mean(subset(snt_xval_mean,
 \setlength{\marginparwidth}{1.2in}
 \usepackage{fancyhdr}
 \pagestyle{fancy}
-\fancyhead[RO,RE]{draft - December, 2013}
+\fancyhead[RO,RE]{draft - January, 2014}
 
 % styling
 \newcommand{\subsubsubsection}[1]{\paragraph{#1}}
@@ -125,7 +124,11 @@ snt.mb.diff.best = mean(subset(snt_xval_mean,
 \newcommand{\pseg}{\prsnr-protocol manual segmentation}
 \newcommand{\psegs}{\prsnr-protocol manual segmentations}
 \newcommand{\snt}{SNT}
-
+\newcommand{\expadnixval}{Whole Hippocampus Segmentation Cross-Validation --- Alzheimer's Disease} 
+\newcommand{\expfepxval}{Whole Hippocampus Segmentation Cross-Validation --- First Episode of Psychosis} 
+\newcommand{\expadni}{Whole Hippocampus Segmentation Comparision --- ADNI1 Complete 1Yr} 
+\newcommand{\expsubfield}{Hippocampal Subfield Segmentation Cross-Validation} 
+\newcommand{\expadnixvalsnt}{Whole Hippocampus Segmentation Cross-Validation --- Alzheimer's Disease, \snt{} Segmentations}
 
 % title and authors
 %\title{Bootstrapping Multi-atlas Hippocampal Subfield Segmentation by using
@@ -237,11 +240,12 @@ jon.pipitone@camh.ca; mallar.chakravarty@camh.ca}
 \item remove 'accuracy' unless specifically talking relative to ground truth (and
     even then, qualify)
 \item change overlap/similarity --> agreement? choose one. 
-\item check that chart labels are sensible 
+\item check that all chart labels are sensible 
 \item check that Experiment 5 matches Experiment 1
+\item check that all Experiment references resolve correctly
 \item fix figure 2 schematic language for the experiments (not 2a 2b). 
 \item ADNI-1 or ADNI1: standardize
-\item experiment references formatted as Experiment 2 (Section 3.2)
+\item check that experiment references are formatted as Experiment 2 (Section 3.2)
 \item subfield or subregion -- choose one
 \end{enumerate}}
 
@@ -385,13 +389,15 @@ address the feasibility of whole hippocampus segmentation with a limited number
 of input atlases \citep{Chakravarty2013} by performing a multi-fold validation
 experiment using a subset of the Alzheimer's Disease Neuroimaging Initiative
 (ADNI) dataset manually segmented using the \prsnr{}-protocol, over a range of
-atlas and template library sizes, registration and label fusion methods. We then
-perform a leave-one-out validation to determine if hippocampal subfields can be
-accurately identified, using the best parameters discovered in the first
-experiment.  To ensure that we have not overfit our parameters to the aging or
-neurodegenerative brain, we also apply \mb{} to a dataset of individuals
-suffering from first episode psychosis.  Finally, we validate our algorithm
-using all of the data available in the \adnidataset{} sample and compare our
+atlas and template library sizes, registration and label fusion methods. This
+experiment is then replicated with a first episode psychosis patient dataset
+to determine how the behaviour of \mb{} changes when segmenting younger and
+differently diseased subjects, and to ensure that we have not overfit our
+parameters to the aging or neurodegenerative brain. A leave-one-out validation
+of subfield segmentation is performed on the \citet{Winterburn2013} manually
+segmented high-resolution MR atlases, using the optimal \mb{} parameters found
+from the previous experiments. Finally, we validate our algorithm using
+all of the data available in the \adnidataset{} sample and compare \mb{}
 segmentations to other popular segmentation algorithms. 
 
 
@@ -471,12 +477,13 @@ parameter settings using a Monte Carlo cross-validation design. The results of
 this experiment enable us to choose the parameter settings offering the best
 performance for use in subsequent experiments.  
 \item Experiment 2 consists of a similar cross-validation design to verify these
-parameter settings on brain images of young, first episode Schizophrenia
+parameter settings on brain images of young, first episode psychosis
 patients. 
-\item Experiment 3 assesses hippocampal subfield segmentation quality in a
+\item Experiment 3 compares \mb{} whole hippocampus segmentations with those of
+well-known automated methods on the entire \adnidataset image dataset consisting
+of 
+\item Experiment 4 assesses hippocampal subfield segmentation quality in a
 leave-one-out cross-validation design. 
-\item Experiment 4 compares \mb{} segmentations with those of well-known
-automated methods on the entire \adnidataset image dataset consisting of 
 \Sexpr{length(means.complete$RID)} brain images of subjects diagnosed as
 cognitively normal, having mild cognitive impairment, or Alzheimer's disease.
 \end{itemize}
@@ -486,8 +493,7 @@ cognitively normal, having mild cognitive impairment, or Alzheimer's disease.
 %%%%%         Experiment 1: Whole Hippocampus Cross-Validation            %%%%%
 %%%%%                                                                     %%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Experiment 1: Whole Hippocampus Segmentation --- Cross-Validation on 
-Alzheimer's Diseased Subjects}
+\subsection{Experiment 1: \expadnixval}
 \label{exp:adni-xval}
 
 \textbf{[TODO: cut, re-introduce as above]}
@@ -503,7 +509,7 @@ subsequent experiments.
 Note, in the Supplementary Materials we have replicated this experiment using the
 \snt{} semi-automated labels included with the ADNI dataset.
 
-\subsubsection{Materials and Methods}
+\subsubsection{Materials and Methods: \expadnixval}
 \paragraph{\adnidataset{} dataset} 
 Data used in the preparation of this article were obtained from the Alzheimer's
 Disease Neuroimaging Initiative (ADNI) database (adni.loni.usc.edu). The ADNI
@@ -743,7 +749,7 @@ smaller level of variability between methods.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%     RESULTS: Experiment 1: Whole Hippocampus Cross-Validation       %%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsubsection{Results}
+\subsubsection{Results: \expadnixval}
 
 % In this experiment we conduct 10 rounds of \mb{} and \multiatlas{} segmentation of
 % of 60 subjects using atlas and template library sizes varying from 1-9 and 1-20
@@ -944,21 +950,20 @@ ggplot(subset(stats.tests, direction > 0 & stat == "Variance"),
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%                                                                     %%%%%
 %%%%%         Experiment 2: Application of \mb{} to the segmentation      %%%%%
-%%%%%                       of schizophrenia patients                     %%%%%
+%%%%%                       of Psychosis patients                         %%%%%
 %%%%%                                                                     %%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Experiment 2: Whole Hippocampus Segmentation --- Cross-validation
-on First Episode Schizophrenia Subjects}
+\subsection{Experiment 2: \expfepxval}
 \label{exp:fep-xval}
 \textbf{[TODO: tie with exp 1]}
 To validate that the \mb{} works effectively in the context of other neurological
 disorders, in this experiment we use the Winterburn atlases to derive 
-whole hippocampal segmentations of a dataset of patients with schizophrenia. The
-resulting segmentations are assessed for quality by comparison with expert
-manual segmentations.
+whole hippocampal segmentations of a dataset of patients having had a single
+episode of psychosis. The resulting segmentations are assessed for quality by
+comparison with expert manual segmentations.
 
-\subsubsection{Materials and Methods}
-\paragraph{First Episode Schizophrenia Dataset}
+\subsubsection{Materials and Methods: \expfepxval}
+\paragraph{First Episode Psychosis Dataset}
 All patients were recruited and treated through the Prevention and Early
 Intervention Program for Psychoses (PEPP-Montreal), a specialized early
 intervention service at the Douglas Mental Health University Institute in
@@ -1002,11 +1007,11 @@ subjects produced by each method.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-% First Episode SZ Demographics Table
+% First Episode Psychosis Demographics Table
 %
 <<tab:FEP-SZ-demographics, echo=F, results="asis",cache=FALSE>>=
 caption = 
-  "\\textbf{Schizophrenia First Episode Patient Demographics.}
+  "\\textbf{First Episode Psychosis Subject Demographics.}
   ambi - ambidextrous. 
   SES  - Socioeconomic Status score. 
   FSIQ - Full Scale IQ.
@@ -1024,13 +1029,13 @@ latex(tab, file="", size="scriptsize",landscape=FALSE, ctable=FALSE,
 \FloatBarrier
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%    RESULTS: Experiment 2, Application of \mb{} to the segmentation  %%%%%
-%%%%%                       of schizophrenia patients                     %%%%%
+%%%%%                       of psychosis patients                         %%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsubsection{Results}
+\subsubsection{Results: \expfepxval}
 \textbf{[TODO: move up results to here.]}
  
 % In this experiment \mb{} is applied to a dataset of images of first episode
-% schizophrenia patients, using the Winterburn atlases and a template library of
+% psychosis patients, using the Winterburn atlases and a template library of
 % 21 subject images selected at random.  Expert manual whole hippocampal
 % segmentations are used as a gold standard. 
 
@@ -1157,21 +1162,323 @@ fusion.
 
 
 \FloatBarrier
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%                                                                     %%%%%
+%%%%%         EXPERIMENT 3: Application of \mb{} to the segmentation      %%%%%
+%%%%%                       of ADNI subjects                              %%%%%
+%%%%%                                                                     %%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Experiment 3: \expadni}
+\label{exp:adni}
+To validate \mb{} segmentation quality with respect to other established
+automated hippocampal segmentation methods, \mb{} was applied to large dataset
+from the ADNI project and the resulting segmentations were compared to those
+produced by \freesurfer{}, \fsl{}, \maper{}, as well as semi-automated
+whole hippocampal segmentations (\snt{}) provided by ADNI.
+
+\subsubsection{Materials and Methods: \expadni}
+\paragraph{\adnidataset dataset} 
+The {\em \adnidataset{}} standardized dataset contains $1919$ images in total.
+\snt{}, \maper, \freesurfer{} hippocampal volumes for a subset of images were
+provided by ADNI, along with quality control data for each \freesurfer{}
+segmentation (guidelines described in \citep{Hartig2010}).  
+
+Clinical, demographic and pre-processed T1-weighted MRI were downloaded by the
+authors from the ADNI database (adni.loni.ucla.edu) between March 2012 and
+August 2012. The image dataset used was the "\adnidataset{}" standardized dataset
+available from ADNI \footnote{
+\url{http://adni.loni.ucla.edu/methods/mri-analysis/adni-standardized-data/}}
+\citep{Wyman2012}. This image collection contains uniformly pre-processed images
+which have been designated to be the "best" after quality control.  All images
+were acquired using 1.5T scanners (General Electric Healthcare, Philips Medical
+Systems or Siemens Medical Solutions) at multiple sites using the protocol
+described in \citep{Jack2008}.  Representative 1.5T imaging parameters were TR =
+2400ms, TI = 1000ms, TE = 3.5ms, flip angle = $8^{\circ}$, field of view = 240 x
+240mm, a $192 \times 192 \times 166$ matrix ($x$, $y$, and $z$ directions)
+yielding a voxel dimensions of $1.25mm \times 1.25mm \times 1.2mm$.  Clinical
+and demographic data for the entire \adnidataset{} dataset are shown in Table
+\ref{tab:ADNI1-Dataset-Demographics}.
+
+Semi-automated segmentations of the left and right whole hippocampi are made
+available with a subset of ADNI images \citep{Hsu2002}. These labels have been
+generated using the \snt{} tool from Medtronic Surgical Navigation Technologies,
+Louisville, CO (see Supplementary Materials for detailed discussion of the
+segmentation process).
+
+\paragraph{Experiment details} 
+\mb{} was configured with an atlas library composed of the five Winterburn T1
+atlases (described in Experiment 4, section \ref{exp:winterburn-xval}), and size of template library,
+registration method, and label fusion method were determined by the optimal
+settings found in Experiment 1 (Section \ref{exp:adni-xval}).  The \fsl{} segmentation method was used via
+the \verb+run_first_all+ script according to the FIRST user guide
+\footnote{http://fsl.fmrib.ox.ac.uk/fsl/fslwiki/FIRST/UserGuide}.  All images
+in the \adnidataset{} dataset were segmented by both methods. 
+
+One author (MP) performed visual quality inspection for \mb{} and \fsl{} 
+segmentations using similar quality control guidelines (if either hippocampus
+was under or over segmented by $10mm$ or greater in three or more slices then
+the segmentation did not pass).  Only images meeting the conditions of having
+segmentations from all methods (\snt{}, \maper{}, \freesurfer{}, \fsl{}, and \mb{}) and also
+passing quality control inspection were included in the analysis.  
+
+\paragraph{Evaluation method}
+As in previous experiments, the \snt{} and Winterburn hippocampal segmentation protocols
+differ in the neuroanatomical features delineated, and so we assess \mb{} by
+the degree of (Pearson) correlation of average hippocampal volume across
+subjects. We also computed the correlation in hippocampal volume between
+existing, established automated segmentation methods -- \fsl{}, \freesurfer{},
+and \maper{}, and \snt{} semi-automated segmentations. Additionally, we evaluate
+the volume-related fixed and proportional biases in all segmentation methods
+using Bland-Altman plots \citep{Bland1986}.  
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                             
+% ADNI1 Complete 1Yr Dataset Demographics Table 
+%                                                                             
+<<tab:ADNI1-Dataset-Demographics, echo=F, results="asis",cache=FALSE>>=
+# RID < 2000 ensures only ADNI1 patients
+yr1 = read.csv("data/ADNI_baseline_volumes/ADNI1_Complete_1Yr_1.5T_11_15_2012.csv")
+yr1$VISCODE <- factor(yr1$Visit, levels = c(1,2,3,4), labels=c("bl","m03","m06","m12"))
+yr1 = subset(yr1, !grepl("Scaled_2", Description))
+yr1 = yr1[,c("RID","VISCODE")]
+yr1 = 
+adnimerge.yr1 = merge(adnimerge, yr1) 
+tab <- summary(DX.bl ~ AGE + PTGENDER + PTEDUCAT + CDRSB + ADAS13 +
+               MMSE, data = adnimerge.yr1, 
+               #subset = RID %in% yr1$RID & VISCODE %in% c('bl','m06','m12'),   
+               method = "reverse", test=FALSE, overall=TRUE)
+caption = 
+  "\\textbf{ADNI1 1.5T Complete 1Yr dataset demographics.} 
+  CN     - Cognitively Normal. 
+  LMCI   - Late-onset Mild Cognitive Impairment. 
+  AD     - Alzheimer's Disease.  
+  Hisp   - Hispanic. 
+  CDR-SB - Clinical Dementia Rating-Sum of Boxes.  
+  ADAS   - Alzheimer's Disease Assessment Scale.  
+  MMSE   - Mini-Mental State Examination."
+latex(tab, file="", size="scriptsize",landscape=FALSE, ctable=FALSE,
+    caption=caption, caption.loc = c("top"),
+    title="tab:ADNI1-Dataset-Demographics",
+    label="tab:ADNI1-Dataset-Demographics")
+@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\FloatBarrier
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%                           RESULTS                                   %%%%%
+%%%%%         EXPERIMENT 3: Application of \mb{} to the segmentation      %%%%%
+%%%%%                       of ADNI subjects                              %%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Results: \expadni}
+
+Based on the results from Experiment 1 (Section \ref{exp:adni-xval}), in this
+experiment \mb{} was configured with a template library of 21 randomly chosen
+subject images (7 from each disease class) and majority vote label fusion.  The
+entire \adnidataset{} dataset was segmented by \mb{}, and the resulting volumes
+compared with those obtained by expert semi-automated segmentation (\snt{}), and
+three other automated segmentation techniques: \maper{}, \freesurfer{}, and
+\fsl{}. Table \ref{tab:ADNI1-1.5T-Complete-1Yr-Dataset-Method-Totals} shows the
+total count of segmentations available, including a count of those which have
+failed a quality control inspection.  A total of
+\Sexpr{length(means.complete$RID)} images are included in the following
+analysis, having met quality criteria and having segmentations from every
+method. 
+ 
+We found a close relationship in total bilateral hippocampal volume between all
+methods and the \snt{} semi-automated label volumes (Figure
+\ref{fig:ADNI-volumes-plot}).  Volumes are correlated with Pearson $r > 0.78$
+for all methods across disease categories.  Within disease categories (Figure
+\ref{fig:ADNI-volumes-boxplot}), \mb{} is consistently well correlated to manual
+volumes (Pearson $r > 0.85$), but appears to slightly over-estimate the volume
+of the AD hippocampus. 
+
+Bland-Altman plots illustrate the level of agreement of each method with \snt{}
+segmentation hippocampal volumes (Figure \ref{fig:ADNI-Bland-Altman}).  As
+\citet{Bland1986} noted, high correlation amongst measures of the same quantity
+does not necessarily imply agreement (as correlation can be driven by a large
+range in true values, for instance).  All methods show an obvious proportional
+bias: \freesurfer{} and \fsl{} markedly under-estimate smaller hippocampi and
+over-estimate large hippocampi, whereas \maper{} and \mb{} show a reverse,
+conservative bias (Figure \ref{fig:ADNI-Bland-Altman}).  Additionally, all
+methods show a fixed volume bias, with \freesurfer{} and \fsl{} most
+dramatically over-estimating hippocampal volume by $2600 mm^3$ and $2800 mm^3$
+on average, respectively, and \maper{} and \mb{} within $250 mm^3$ on average. 
+
+Figure \ref{fig:ADNI-segmentations} shows a qualitative comparison of \mb{} and
+\snt{} hippocampal segmentations for 10 randomly selected subjects in each disease
+category, and illustrates some of the common errors found during visual
+inspection. Mostly frequently, we found \mb{} improperly includes the vestigial
+hippocampal sulcus and, although not anatomically incorrect, \mb{}
+under-estimates the hippocampal body in comparison to the \snt{} segmentation.  
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% ADNI1 1yr Complete Dataset Package Totals & Failures
+%                        
+<<tab:ADNI-seg-package-totals, echo=F, results="asis",cache=FALSE>>=
+package_totals$Total <- NULL
+latex(package_totals, file="", size="scriptsize",landscape=FALSE, ctable=TRUE,
+    caption="\\textbf{Number of segmented images and quality control failures of 
+             \\adnidataset{} dataset by method.}", 
+    caption.loc = c("top"), rowname=NULL, 
+    label="tab:ADNI1-1.5T-Complete-1Yr-Dataset-Method-Totals")
+@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\textbf{[TODO: combine volume plot/box-plot into a single figure]}
+
+\begin{figure}[h]
+<<fig:ADNI-volumes-plot,dependson='ADNI-volumes-prep',cache=T,fig.width=6,fig.height=4>>=
+melted=melt(means.complete, measure.vars=c("FS", "FSL", "MAPER","MAGeT"), 
+            variable.name = "Method", value.name = "volume")
+
+df = means.complete
+
+levels(melted$Method) = c("FS"    = "FreeSurfer", 
+                          "FSL"   = "FSL", 
+                          "MAPER" = "MAPER", 
+                          "MAGeT" = "MAGeT")
+
+adni.volumes.lm = ddply(melted,c("Method"), function (df) {
+  data.frame(eqn=lm_eqn(lm(volume ~ SNT, df)))})
+adni.volumes.lm$y = 6450-0:3*300
+
+ggplot(data=melted, aes(x=SNT, y=volume, colour=Method)) + 
+    geom_point(size=1) + 
+    geom_smooth(method="lm") + 
+    xlab(expression("SNT mean hippocampus volume " (mm^3))) + 
+    ylab(expression("Automated mean hippocampal volume " (mm^3))) +
+    geom_text(aes(x=850,y=y,label=eqn),parse=T,data=adni.volumes.lm,
+      size=2.5,hjust=0) +
+    theme(legend.direction = "horizontal", legend.position = "bottom")
+
+#    annotate("text", y = c(2000,1500,1000,500), x=Inf-100, size=2.5,
+#              label = c(paste("FS r =", round(cor(df$SNT, df$FS),2)),
+#                        paste("FSL r =", round(cor(df$SNT, df$FSL),2)),
+#                        paste("MAPER r =", round(cor(df$SNT, df$MAPER),2)),
+#                        paste("MAGeT r =", round(cor(df$SNT, df$MAGeT),2))),
+#              hjust=1.1,vjust=1.5) +
+@
+  \caption{Subject mean hippocampal volume as measured in the \adnidataset{}
+dataset by each of the four automated methods investigated (\freesurfer{} (FS), \fsl{},
+\maper{}, \mb{}) vs. \snt{}. Linear fit lines and Pearson correlations are shown
+for each method.}
+  \label{fig:ADNI-volumes-plot}
+\end{figure}
+
+
+\begin{figure}[h]
+<<fig:ADNI-volumes-boxplot,dependson='ADNI-volumes-prep',cache=T,fig.width=7,fig.height=4>>=
+melted = melt(means.complete,measure.vars=c("FS", "FSL", "MAPER","MAGeT"),
+              variable.name="Method", value.name="Volume")
+correlations = ddply(melted, c("DX","Method"), function (df) {
+  data.frame(
+    pearson = cor(df$SNT, df$Volume)
+  )
+})
+m2 = melt(means.complete,measure.vars=c("FS", "FSL", "MAPER","MAGeT","SNT"), variable.name="Method")
+levels(m2$Method) = c("FS"    = "FreeSurfer", 
+                      "FSL"   = "FSL", 
+                      "MAPER" = "MAPER", 
+                      "MAGeT" = "MAGeT", 
+                      "SNT"   = "SNT")
+m2$DX = factor(m2$DX, levels(m2$DX)[c(2,3,1)])
+
+qplot(DX,value,data=m2,
+      colour=Method,geom="boxplot") + 
+      #geom_text(aes(y=-Inf,x=c(.7,.85,1,1.15, 1.7,1.85,2,2.15, 2.7,2.85,3,3.15), vjust=-5, label=round(pearson,2)), 
+      #          colour = 'black', size=3, data=correlations) +
+      xlab("Diagnosis") + 
+      ylab(expression(paste("Hippocampal volume (", mm^3, ")"))) + 
+      theme(legend.direction = "horizontal", legend.position = "bottom")
+@
+  \caption{Subject mean hippocampal volume as measured in the \adnidataset{}
+dataset by \freesurfer{}, \fsl{}, \maper{}, \mb{}, and \snt{} vs. disease
+category.}
+  \label{fig:ADNI-volumes-boxplot}
+\end{figure}
+
+ 
+\begin{figure}
+<<fig:ADNI-Bland-Altman, cache=TRUE, dependson='ADNI-volumes-prep', fig.width=7, fig.height=7>>=
+names(means.complete)[8] = "FreeSurfer"
+melted=melt(means.complete, measure.vars=c("FreeSurfer", "FSL", "MAPER","MAGeT"), 
+            variable.name = "method", value.name = "volume")
+
+melted$diff = melted$SNT - melted$volume
+melted = subset(melted, (method == "FreeSurfer") | 
+                        (method == "FSL"  ) | # & diff > -5000 & diff < 900) | 
+                        (method == "MAPER") | # & diff > -500 & diff < 1000) | 
+                        (method == "MAGeT"))  # & diff > -1100))
+#melted = subset(melted, method == "MAGeT")
+melted$DX = factor(melted$DX, levels(melted$DX)[c(2,3,1)])
+melted$mean = ( melted$SNT + melted$volume ) / 2
+limits = ddply(melted, c("method"), function (df) { 
+  data.frame(
+    y = mean(df$diff) + c(-1.96,0,2) * sd(df$diff) 
+)}) 
+
+names(melted)[4] = "Diagnosis"
+ggplot(melted, aes(x= mean, y = diff, colour=Diagnosis)) + 
+  facet_wrap( ~ method, nrow=2, scales="fixed") + 
+  geom_smooth(method="lm", formula=y~x, fullrange=T, se=F) + 
+  geom_point(size=1) +  
+  geom_hline(aes(yintercept = y), linetype="dashed", colour="brown",
+             data=limits, size=0.3, alpha=0.5) + 
+  geom_text(aes(y = y, x=Inf, label=round(y,0)), colour="black", data = limits,
+            hjust=1.1,vjust=-0.8, size=2.5) + 
+  xlab(expression('Mean of SNT and automated hippocampal volume ' (mm^3))) + 
+  ylab(expression('Difference in manual and automated hippocampal volume ' (mm^3))) + 
+  scale_y_continuous(breaks=seq(-10000,4000, 1000)) + 
+  scale_x_continuous(breaks=seq(0,10000, 1000)) + 
+  theme(legend.direction = "horizontal", legend.position = "bottom", 
+        axis.text.y = element_text(angle = 90, hjust=0.5), 
+        axis.text = element_text(size = 8))
+@
+  \caption{Bland-Altman plots comparing subject mean hippocampal volume as
+measured in the \adnidataset{} dataset by \snt{} segmentation and each of the
+four automated methods investigated (\freesurfer{}, \fsl{}, \maper{}, \mb{}). The overall
+mean difference in volume, and limits of agreement ($\pm 1.96SD$) are shown by
+dashed horizontal lines. Linear fit lines are shown for each diagnosis group.
+Note, points below the mean difference indicate overestimation of the volume
+with respect to the \snt{} volume, and vice versa. }
+
+  \label{fig:ADNI-Bland-Altman}
+\end{figure}
+
+
+
+
+\begin{figure}
+  \centering
+  \includegraphics[width=6in]{figure/ADNI1_SNT_MB_montage/montage.pdf}
+  \caption{\snt{} and \mb{} segmentations for 30 ADNI subjects --- 10
+  subjects randomly selected from each disease category in the subject pool used
+  in Experiment 1 (Section \ref{exp:adni-xval}. Sagittal slices are shown for each unlabelled T1-weighted
+  anatomical image. \snt{} labels appear in green, and \mb{} labels appear in
+  blue. Noted are examples of common segmentation idiosyncrasies: 
+  {\em (a)} over-estimation of hippocampal head and  
+  {\em (b)} translated segmentation (seen in \snt{} segmentations only); 
+  {\em (c)} under-estimation of hippocampal body and
+  {\em (d)} improper inclusion of the vestigial hippocampal sulcus by \mb{}.}
+  \label{fig:ADNI-segmentations}
+\end{figure}
+
+\FloatBarrier
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%                                                                     %%%%%
-%%%%%        Experiment 3: Hippocampal Subfield Cross-Validation          %%%%%
+%%%%%        Experiment 4: Hippocampal Subfield Cross-Validation          %%%%%
 %%%%%                                                                     %%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Experiment 3: Hippocampal Subfield Segmentation --- Cross-Validation
-on the Winterburn Atlases}
+\subsection{Experiment 4: \expsubfield}
 \label{exp:winterburn-xval}
 The previous experiment assesses \mb{} peformance on whole hippocampus
 segmentation. In this experiment, we evaluate \mb{} hippocampal subfield
 segmentation of standard 3T T1-weighted images at $0.9m^3$-isotropic voxels.  We
 use a modified leave-one-out cross-validation (LOOCV) design. 
 
-\subsubsection{Materials and Methods}
+\subsubsection{Materials and Methods: \expsubfield}
 \paragraph{Winterburn Atlases} 
 The Winterburn atlases \citep{Winterburn2013} are digital hippocampal
 segmentations of five in-vivo $0.3mm$-isotropic T1-weighted MR images. The
@@ -1247,9 +1554,9 @@ volumes.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%    RESULTS: Experiment 3: Hippocampal Subfield Cross-Validation     %%%%%
+%%%%%    RESULTS: Experiment 4: Hippocampal Subfield Cross-Validation     %%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsubsection{Results}
+\subsubsection{Results: \expsubfield}
 
 \begin{figure}
 <<fig:WAxval-kappa>>=
@@ -1457,309 +1764,6 @@ single subject for qualitative inspection.
 
 
 
-\FloatBarrier
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%                                                                     %%%%%
-%%%%%         EXPERIMENT 4: Application of \mb{} to the segmentation      %%%%%
-%%%%%                       of ADNI subjects                              %%%%%
-%%%%%                                                                     %%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Experiment 4: Application to the segmentation of Alzheimer's
-disease patients}
-\label{exp:adni}
-To validate \mb{} segmentation quality with respect to other established
-automated hippocampal segmentation methods, \mb{} was applied to large dataset
-from the ADNI project and the resulting segmentations were compared to those
-produced by \freesurfer{}, \fsl{}, \maper{}, as well as semi-automated
-whole hippocampal segmentations (\snt{}) provided by ADNI.
-
-\subsubsection{Materials and Methods}
-\paragraph{\adnidataset dataset} 
-The {\em \adnidataset{}} standardized dataset contains $1919$ images in total.
-\snt{}, \maper, \freesurfer{} hippocampal volumes for a subset of images were
-provided by ADNI, along with quality control data for each \freesurfer{}
-segmentation (guidelines described in \citep{Hartig2010}).  
-
-Clinical, demographic and pre-processed T1-weighted MRI were downloaded by the
-authors from the ADNI database (adni.loni.ucla.edu) between March 2012 and
-August 2012. The image dataset used was the "\adnidataset{}" standardized dataset
-available from ADNI \footnote{
-\url{http://adni.loni.ucla.edu/methods/mri-analysis/adni-standardized-data/}}
-\citep{Wyman2012}. This image collection contains uniformly pre-processed images
-which have been designated to be the "best" after quality control.  All images
-were acquired using 1.5T scanners (General Electric Healthcare, Philips Medical
-Systems or Siemens Medical Solutions) at multiple sites using the protocol
-described in \citep{Jack2008}.  Representative 1.5T imaging parameters were TR =
-2400ms, TI = 1000ms, TE = 3.5ms, flip angle = $8^{\circ}$, field of view = 240 x
-240mm, a $192 \times 192 \times 166$ matrix ($x$, $y$, and $z$ directions)
-yielding a voxel dimensions of $1.25mm \times 1.25mm \times 1.2mm$.  Clinical
-and demographic data for the entire \adnidataset{} dataset are shown in Table
-\ref{tab:ADNI1-Dataset-Demographics}.
-
-Semi-automated segmentations of the left and right whole hippocampi are made
-available with a subset of ADNI images \citep{Hsu2002}. These labels have been
-generated using the \snt{} tool from Medtronic Surgical Navigation Technologies,
-Louisville, CO (see Supplementary Materials for detailed discussion of the
-segmentation process).
-
-\paragraph{Experiment details} 
-\mb{} was configured with an atlas library composed of the five Winterburn T1
-atlases (described in Experiment 3, section \ref{exp:winterburn-xval}), and size of template library,
-registration method, and label fusion method were determined by the optimal
-settings found in Experiment 1 (Section \ref{exp:adni-xval}).  The \fsl{} segmentation method was used via
-the \verb+run_first_all+ script according to the FIRST user guide
-\footnote{http://fsl.fmrib.ox.ac.uk/fsl/fslwiki/FIRST/UserGuide}.  All images
-in the \adnidataset{} dataset were segmented by both methods. 
-
-One author (MP) performed visual quality inspection for \mb{} and \fsl{} 
-segmentations using similar quality control guidelines (if either hippocampus
-was under or over segmented by $10mm$ or greater in three or more slices then
-the segmentation did not pass).  Only images meeting the conditions of having
-segmentations from all methods (\snt{}, \maper{}, \freesurfer{}, \fsl{}, and \mb{}) and also
-passing quality control inspection were included in the analysis.  
-
-\paragraph{Evaluation method}
-As in previous experiments, the \snt{} and Winterburn hippocampal segmentation protocols
-differ in the neuroanatomical features delineated, and so we assess \mb{} by
-the degree of (Pearson) correlation of average hippocampal volume across
-subjects. We also computed the correlation in hippocampal volume between
-existing, established automated segmentation methods -- \fsl{}, \freesurfer{},
-and \maper{}, and \snt{} semi-automated segmentations. Additionally, we evaluate
-the volume-related fixed and proportional biases in all segmentation methods
-using Bland-Altman plots \citep{Bland1986}.  
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%                                                                             
-% ADNI1 Complete 1Yr Dataset Demographics Table 
-%                                                                             
-<<tab:ADNI1-Dataset-Demographics, echo=F, results="asis",cache=FALSE>>=
-# RID < 2000 ensures only ADNI1 patients
-yr1 = read.csv("data/ADNI_baseline_volumes/ADNI1_Complete_1Yr_1.5T_11_15_2012.csv")
-yr1$VISCODE <- factor(yr1$Visit, levels = c(1,2,3,4), labels=c("bl","m03","m06","m12"))
-yr1 = subset(yr1, !grepl("Scaled_2", Description))
-yr1 = yr1[,c("RID","VISCODE")]
-yr1 = 
-adnimerge.yr1 = merge(adnimerge, yr1) 
-tab <- summary(DX.bl ~ AGE + PTGENDER + PTEDUCAT + CDRSB + ADAS13 +
-               MMSE, data = adnimerge.yr1, 
-               #subset = RID %in% yr1$RID & VISCODE %in% c('bl','m06','m12'),   
-               method = "reverse", test=FALSE, overall=TRUE)
-caption = 
-  "\\textbf{ADNI1 1.5T Complete 1Yr dataset demographics.} 
-  CN     - Cognitively Normal. 
-  LMCI   - Late-onset Mild Cognitive Impairment. 
-  AD     - Alzheimer's Disease.  
-  Hisp   - Hispanic. 
-  CDR-SB - Clinical Dementia Rating-Sum of Boxes.  
-  ADAS   - Alzheimer's Disease Assessment Scale.  
-  MMSE   - Mini-Mental State Examination."
-latex(tab, file="", size="scriptsize",landscape=FALSE, ctable=FALSE,
-    caption=caption, caption.loc = c("top"),
-    title="tab:ADNI1-Dataset-Demographics",
-    label="tab:ADNI1-Dataset-Demographics")
-@
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\FloatBarrier
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%                           RESULTS                                   %%%%%
-%%%%%         EXPERIMENT 4: Application of \mb{} to the segmentation      %%%%%
-%%%%%                       of ADNI subjects                              %%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsubsection{Results}
-
-Based on the results from Experiment 1 (Section \ref{exp:adni-xval}), in this
-experiment \mb{} was configured with a template library of 21 randomly chosen
-subject images (7 from each disease class) and majority vote label fusion.  The
-entire \adnidataset{} dataset was segmented by \mb{}, and the resulting volumes
-compared with those obtained by expert semi-automated segmentation (\snt{}), and
-three other automated segmentation techniques: \maper{}, \freesurfer{}, and
-\fsl{}. Table \ref{tab:ADNI1-1.5T-Complete-1Yr-Dataset-Method-Totals} shows the
-total count of segmentations available, including a count of those which have
-failed a quality control inspection.  A total of
-\Sexpr{length(means.complete$RID)} images are included in the following
-analysis, having met quality criteria and having segmentations from every
-method. 
- 
-We found a close relationship in total bilateral hippocampal volume between all
-methods and the \snt{} semi-automated label volumes (Figure
-\ref{fig:ADNI-volumes-plot}).  Volumes are correlated with Pearson $r > 0.78$
-for all methods across disease categories.  Within disease categories (Figure
-\ref{fig:ADNI-volumes-boxplot}), \mb{} is consistently well correlated to manual
-volumes (Pearson $r > 0.85$), but appears to slightly over-estimate the volume
-of the AD hippocampus. 
-
-Bland-Altman plots illustrate the level of agreement of each method with \snt{}
-segmentation hippocampal volumes (Figure \ref{fig:ADNI-Bland-Altman}).  As
-\citet{Bland1986} noted, high correlation amongst measures of the same quantity
-does not necessarily imply agreement (as correlation can be driven by a large
-range in true values, for instance).  All methods show an obvious proportional
-bias: \freesurfer{} and \fsl{} markedly under-estimate smaller hippocampi and
-over-estimate large hippocampi, whereas \maper{} and \mb{} show a reverse,
-conservative bias (Figure \ref{fig:ADNI-Bland-Altman}).  Additionally, all
-methods show a fixed volume bias, with \freesurfer{} and \fsl{} most
-dramatically over-estimating hippocampal volume by $2600 mm^3$ and $2800 mm^3$
-on average, respectively, and \maper{} and \mb{} within $250 mm^3$ on average. 
-
-Figure \ref{fig:ADNI-segmentations} shows a qualitative comparison of \mb{} and
-\snt{} hippocampal segmentations for 10 randomly selected subjects in each disease
-category, and illustrates some of the common errors found during visual
-inspection. Mostly frequently, we found \mb{} improperly includes the vestigial
-hippocampal sulcus and, although not anatomically incorrect, \mb{}
-under-estimates the hippocampal body in comparison to the \snt{} segmentation.  
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% ADNI1 1yr Complete Dataset Package Totals & Failures
-%                        
-<<tab:ADNI-seg-package-totals, echo=F, results="asis",cache=FALSE>>=
-package_totals$Total <- NULL
-latex(package_totals, file="", size="scriptsize",landscape=FALSE, ctable=TRUE,
-    caption="\\textbf{Number of segmented images and quality control failures of 
-             \\adnidataset{} dataset by method.}", 
-    caption.loc = c("top"), rowname=NULL, 
-    label="tab:ADNI1-1.5T-Complete-1Yr-Dataset-Method-Totals")
-@
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\textbf{[TODO: combine volume plot/box-plot into a single figure]}
-
-\begin{figure}[h]
-<<fig:ADNI-volumes-plot,dependson='ADNI-volumes-prep',cache=T,fig.width=6,fig.height=4>>=
-melted=melt(means.complete, measure.vars=c("FS", "FSL", "MAPER","MAGeT"), 
-            variable.name = "Method", value.name = "volume")
-
-df = means.complete
-
-levels(melted$Method) = c("FS"    = "FreeSurfer", 
-                          "FSL"   = "FSL", 
-                          "MAPER" = "MAPER", 
-                          "MAGeT" = "MAGeT")
-
-adni.volumes.lm = ddply(melted,c("Method"), function (df) {
-  data.frame(eqn=lm_eqn(lm(volume ~ SNT, df)))})
-adni.volumes.lm$y = 6450-0:3*300
-
-ggplot(data=melted, aes(x=SNT, y=volume, colour=Method)) + 
-    geom_point(size=1) + 
-    geom_smooth(method="lm") + 
-    xlab(expression("SNT mean hippocampus volume " (mm^3))) + 
-    ylab(expression("Automated mean hippocampal volume " (mm^3))) +
-    geom_text(aes(x=850,y=y,label=eqn),parse=T,data=adni.volumes.lm,
-      size=2.5,hjust=0) +
-    theme(legend.direction = "horizontal", legend.position = "bottom")
-
-#    annotate("text", y = c(2000,1500,1000,500), x=Inf-100, size=2.5,
-#              label = c(paste("FS r =", round(cor(df$SNT, df$FS),2)),
-#                        paste("FSL r =", round(cor(df$SNT, df$FSL),2)),
-#                        paste("MAPER r =", round(cor(df$SNT, df$MAPER),2)),
-#                        paste("MAGeT r =", round(cor(df$SNT, df$MAGeT),2))),
-#              hjust=1.1,vjust=1.5) +
-@
-  \caption{Subject mean hippocampal volume as measured in the \adnidataset{}
-dataset by each of the four automated methods investigated (\freesurfer{} (FS), \fsl{},
-\maper{}, \mb{}) vs. \snt{}. Linear fit lines and Pearson correlations are shown
-for each method.}
-  \label{fig:ADNI-volumes-plot}
-\end{figure}
-
-
-\begin{figure}[h]
-<<fig:ADNI-volumes-boxplot,dependson='ADNI-volumes-prep',cache=T,fig.width=7,fig.height=4>>=
-melted = melt(means.complete,measure.vars=c("FS", "FSL", "MAPER","MAGeT"),
-              variable.name="Method", value.name="Volume")
-correlations = ddply(melted, c("DX","Method"), function (df) {
-  data.frame(
-    pearson = cor(df$SNT, df$Volume)
-  )
-})
-m2 = melt(means.complete,measure.vars=c("FS", "FSL", "MAPER","MAGeT","SNT"), variable.name="Method")
-levels(m2$Method) = c("FS"    = "FreeSurfer", 
-                      "FSL"   = "FSL", 
-                      "MAPER" = "MAPER", 
-                      "MAGeT" = "MAGeT", 
-                      "SNT"   = "SNT")
-m2$DX = factor(m2$DX, levels(m2$DX)[c(2,3,1)])
-
-qplot(DX,value,data=m2,
-      colour=Method,geom="boxplot") + 
-      #geom_text(aes(y=-Inf,x=c(.7,.85,1,1.15, 1.7,1.85,2,2.15, 2.7,2.85,3,3.15), vjust=-5, label=round(pearson,2)), 
-      #          colour = 'black', size=3, data=correlations) +
-      xlab("Diagnosis") + 
-      ylab(expression(paste("Hippocampal volume (", mm^3, ")"))) + 
-      theme(legend.direction = "horizontal", legend.position = "bottom")
-@
-  \caption{Subject mean hippocampal volume as measured in the \adnidataset{}
-dataset by \freesurfer{}, \fsl{}, \maper{}, \mb{}, and \snt{} vs. disease
-category.}
-  \label{fig:ADNI-volumes-boxplot}
-\end{figure}
-
- 
-\begin{figure}
-<<fig:ADNI-Bland-Altman, cache=TRUE, dependson='ADNI-volumes-prep', fig.width=7, fig.height=7>>=
-names(means.complete)[8] = "FreeSurfer"
-melted=melt(means.complete, measure.vars=c("FreeSurfer", "FSL", "MAPER","MAGeT"), 
-            variable.name = "method", value.name = "volume")
-
-melted$diff = melted$SNT - melted$volume
-melted = subset(melted, (method == "FreeSurfer") | 
-                        (method == "FSL"  ) | # & diff > -5000 & diff < 900) | 
-                        (method == "MAPER") | # & diff > -500 & diff < 1000) | 
-                        (method == "MAGeT"))  # & diff > -1100))
-#melted = subset(melted, method == "MAGeT")
-melted$DX = factor(melted$DX, levels(melted$DX)[c(2,3,1)])
-melted$mean = ( melted$SNT + melted$volume ) / 2
-limits = ddply(melted, c("method"), function (df) { 
-  data.frame(
-    y = mean(df$diff) + c(-1.96,0,2) * sd(df$diff) 
-)}) 
-
-names(melted)[4] = "Diagnosis"
-ggplot(melted, aes(x= mean, y = diff, colour=Diagnosis)) + 
-  facet_wrap( ~ method, nrow=2, scales="fixed") + 
-  geom_smooth(method="lm", formula=y~x, fullrange=T, se=F) + 
-  geom_point(size=1) +  
-  geom_hline(aes(yintercept = y), linetype="dashed", colour="brown",
-             data=limits, size=0.3, alpha=0.5) + 
-  geom_text(aes(y = y, x=Inf, label=round(y,0)), colour="black", data = limits,
-            hjust=1.1,vjust=-0.8, size=2.5) + 
-  xlab(expression('Mean of SNT and automated hippocampal volume ' (mm^3))) + 
-  ylab(expression('Difference in manual and automated hippocampal volume ' (mm^3))) + 
-  scale_y_continuous(breaks=seq(-10000,4000, 1000)) + 
-  scale_x_continuous(breaks=seq(0,10000, 1000)) + 
-  theme(legend.direction = "horizontal", legend.position = "bottom", 
-        axis.text.y = element_text(angle = 90, hjust=0.5), 
-        axis.text = element_text(size = 8))
-@
-  \caption{Bland-Altman plots comparing subject mean hippocampal volume as
-measured in the \adnidataset{} dataset by \snt{} segmentation and each of the
-four automated methods investigated (\freesurfer{}, \fsl{}, \maper{}, \mb{}). The overall
-mean difference in volume, and limits of agreement ($\pm 1.96SD$) are shown by
-dashed horizontal lines. Linear fit lines are shown for each diagnosis group.
-Note, points below the mean difference indicate overestimation of the volume
-with respect to the \snt{} volume, and vice versa. }
-
-  \label{fig:ADNI-Bland-Altman}
-\end{figure}
-
-
-
-
-\begin{figure}
-  \centering
-  \includegraphics[width=6in]{figure/ADNI1_SNT_MB_montage/montage.pdf}
-  \caption{\snt{} and \mb{} segmentations for 30 ADNI subjects --- 10
-  subjects randomly selected from each disease category in the subject pool used
-  in Experiment 1 (Section \ref{exp:adni-xval}. Sagittal slices are shown for each unlabelled T1-weighted
-  anatomical image. \snt{} labels appear in green, and \mb{} labels appear in
-  blue. Noted are examples of common segmentation idiosyncrasies: 
-  {\em (a)} over-estimation of hippocampal head and  
-  {\em (b)} translated segmentation (seen in \snt{} segmentations only); 
-  {\em (c)} under-estimation of hippocampal body and
-  {\em (d)} improper inclusion of the vestigial hippocampal sulcus by \mb{}.}
-  \label{fig:ADNI-segmentations}
-\end{figure}
 
 \FloatBarrier
 
@@ -1780,8 +1784,8 @@ ground truth segmentations. Unless otherwise specified,
 validation datasets are composed equally of cases and control subjects, and use
 manual segmenation labels as ground truth in computing DSC scores. AD =
 Alzheimer's Disease; MCI = Mild Cognitive Impairment; CN = Cognitively Normal
-(CN); SZ = Schizophrenia; LOOCV = Leave-one-out cross-validation; MCCV = Monte Carlo
-cross-validation; SNT = Surgical Medtronic Navigation Technologies
+(CN); FEP = First Episode of Psychosis; LOOCV = Leave-one-out cross-validation; MCCV
+= Monte Carlo cross-validation; SNT = Surgical Medtronic Navigation Technologies
 semi-automated labels.  Some studies of automated segmentation of ADNI images
 are excluded because they do not not provide overlap measures for the
 hippocampus \citep{Heckemann2011,Chupin2009}.
@@ -1840,7 +1844,7 @@ Multi-atlas (MAPS)        &55&0.890                           &\cite{Leung2010}
 \tabularnewline 
 \mb{}                      &9 & \Sexpr{fep.mb.kappa.best}   &
 & 5-fold MCCV on 81 subjects 
-& first episode SZ
+& FEP subjects 
 \tabularnewline 
 %%
 Neural nets                &10&0.740   &\cite{Powell2008} % {\tiny (0.72, 0.75)} 
@@ -2232,14 +2236,13 @@ documented reliability of an intraclass coefficient better than .94
 
 
 \FloatBarrier
-\subsection{Experiment 5: Whole Hippocampus Segmentation Cross-Validation with \snt{} 
-Segmentations}
+\subsection{Experiment 5: \expadnixvalsnt}
 
 This experiment is a replication of Experiment 1 using a pool of 69 images and
 \snt{} semi-automated segmentations from the ADNI dataset \citep{Hsu2002}. See
 Experiment 1 for full details on the ADNI dataset, and validation process. 
 
-\subsubsection{Methods}
+\subsubsection{Materials and Methods: \expadnixvalsnt}
 \paragraph{Dataset} 
 69 1.5T images were arbitrarily selected from the baseline scans in the {\em
 \adnidataset{}} standardized dataset. 23 subjects were chosen from each disease
@@ -2290,7 +2293,7 @@ are conducted.  The computed segmentations for a subject are compared to the
 is averaged over the validation rounds.
 
 % ######################
-\subsubsection{Results}
+\subsubsection{Results: \expadnixvalsnt}
 
 As when comparing against manual labels in Experiment 1, we find similar
 behaviour when comparing \mb{} segmentations to \snt{} labels: similarity scores
