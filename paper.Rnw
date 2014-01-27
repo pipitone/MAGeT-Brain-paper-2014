@@ -380,7 +380,7 @@ the target images, the authors demonstrate accurate parcellation of hippocampal
 subfields in clinical 3T T1-weighted MRI volumes.  Using \multiatlas{} with bias
 correction techniques, \citet{Yushkevich2010} demonstrate a semi-automated
 method of subfield segmentation on in vivo focal T2-weighted MR acquisitions of
-the temporal lobe. Manual input is only needed to mark mark divisions between
+the temporal lobe. Manual input is only needed to mark divisions between
 the head, body and tail of the hippocampus on target images. 
 
 In this paper we describe a thorough validation of the \mb{} algorithm for the
@@ -391,14 +391,13 @@ experiment using a subset of the Alzheimer's Disease Neuroimaging Initiative
 (ADNI) dataset manually segmented using the \prsnr{}-protocol, over a range of
 atlas and template library sizes, registration and label fusion methods. This
 experiment is then replicated with a first episode psychosis patient dataset
-to determine how the behaviour of \mb{} changes when segmenting younger and
-differently diseased subjects, and to ensure that we have not overfit our
-parameters to the aging or neurodegenerative brain. A leave-one-out validation
-of subfield segmentation is performed on the \citet{Winterburn2013} manually
-segmented high-resolution MR atlases, using the optimal \mb{} parameters found
-from the previous experiments. Finally, we validate our algorithm using
-all of the data available in the \adnidataset{} sample and compare \mb{}
-segmentations to other popular segmentation algorithms. 
+to determine the behaviour of \mb{} when segmenting younger and differently
+diseased subjects, and to ensure that we have not also overfit our parameters to
+the aging or neurodegenerative brain. Next, we consider all of the images
+available in the \adnidataset{} sample, and compare \mb{} segmentations to other
+popular segmentation algorithms.  Finally, we conduct a leave-one-out validation
+of subfield segmentation using the \citet{Winterburn2013} manually segmented
+high-resolution MR atlases. 
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
