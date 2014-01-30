@@ -525,7 +525,7 @@ Note, in the Supplementary Materials we have replicated this experiment using
 the \snt{} semi-automated segmentations included as part of the the ADNI
 dataset.
 
-\subsubsection{Materials and Methods: \expadnixval{}}
+\subsubsection{\expadnixval{}: Materials and Methods}
 
 \paragraph{\adnidataset{} dataset} 
 Data used in the preparation of this article were obtained from the Alzheimer's
@@ -766,7 +766,7 @@ smaller level of variability between methods.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%     RESULTS: Experiment 1: Whole Hippocampus Cross-Validation       %%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsubsection{Results: \expadnixval{}}
+\subsubsection{\expadnixval{}: Results}
 
 We find that for \mb{} segmentations, similarity score increases as atlas and
 template library size is increased, although with diminishing returns and an
@@ -777,7 +777,7 @@ registration method consistently out-performs \animal{} registration over all
 variable settings we tested. Additionally, by itself, using a weighted voting
 strategy did not significantly improve segmentation accuracy, contrary to the
 findings of \citet{Aljabar2009} using basic \multiatlas{} segmentation.  Given
-these findings, in the remainder of this section only results using the \ants{}
+these findings, in the remainder of our experiments only results using the \ants{}
 registration algorithm and majority vote fusion will be shown.  
 
 With at least five templates, \mb{} shows a mean improvement in similarity score
@@ -796,10 +796,10 @@ template library of at least 13 images is sufficient to show significant ($p <
 
 We find similar behaviour with respect to optimal parameter settings and
 increased consistency of \mb{} segmentations in the replication of this
-experiment (\expadnixvalsnt{}, Supplementary Materials) where atlases use a different
-hippocampal definition is used. This strongly suggests that these results are
-independant of the segmentation protocol used and are, instead, features of the
-\mb{} algorithm.  
+experiment (\expadnixvalsnt{}, Supplementary Materials) where a different
+hippocampal definition is used (\snt labels available with the ADNI datasets).
+This strongly suggests that these results are independant of the segmentation
+protocol used and are, instead, features of the \mb{} algorithm.  
 
 We have omitted results obtained when using an even number of atlases or
 templates since with these configurations we found significantly decreased
@@ -965,12 +965,12 @@ ggplot(subset(stats.tests, direction > 0 & stat == "Variance"),
 \label{exp:fep-xval}
 \textbf{[TODO: tie with exp 1]}
 To validate that the \mb{} works effectively in the context of other neurological
-disorders, in this experiment we use the Winterburn atlases to derive 
-whole hippocampal segmentations of a dataset of patients having had a single
-episode of psychosis. The resulting segmentations are assessed for quality by
-comparison with expert manual segmentations.
+disorders, in this experiment we use the Winterburn atlases
+\citep{Winterburn2013} to derive whole hippocampal segmentations of a dataset of
+patients having had a single episode of psychosis. The resulting segmentations
+are assessed for quality by comparison with expert manual segmentations.
 
-\subsubsection{Materials and Methods: \expfepxval{}}
+\subsubsection{\expfepxval{}: Materials and Methods}
 \paragraph{First Episode Psychosis Dataset}
 All patients were recruited and treated through the Prevention and Early
 Intervention Program for Psychoses (PEPP-Montreal), a specialized early
@@ -996,22 +996,58 @@ demographics are shown in Table \ref{tab:SZFEP-Demographics}.
 Manual segmentation of each subject whole hippocampus is produced following a
 validated segmentation protocol \citep{Pruessner2000}. 
 
+\paragraph{Winterburn Atlases} 
+The Winterburn atlases \citep{Winterburn2013} are digital hippocampal
+segmentations of five in-vivo $0.3mm$-isotropic T1-weighted MR images. The
+segmentations include subfield segmentations for the cornu ammonis (CA) 1; CA2
+and CA3; CA4 and dentate gyrus; subiculum; and strata radiatum (SR), strata
+lacunosum (SL), and strata moleculare (SM). Subjects in the Winterburn atlases
+range in age from 29-57 years (mean age of 37), and include two males and three
+females.  
+
 \paragraph{Experiment details} 
-\mb{} is configured with an atlas library composed of the Winterburn T1 atlases
-(see \expfepxval{}) ignoring subfield delineations.  All images from the
-first episode dataset are segmented by \mb{}.  The optimal size of template
-library, registration method, and label fusion method found in \expadnixval{} are
-used. 
+The same overall design as \expadnixval{} is followed in this experiment: a
+Monte Carlo cross-validation (MCCV) is conducted using the pool of 81 first
+episode psychosis subject brain images and corresponding \prsnr-protocol manual
+segmentations. Five rounds of validation are conducted for each subject, and
+each atlas and template library size combination (1-9 atlases, 1-19 templates).
+In each round, images and their manual labels are randomly selected from the
+pool, and the remaining images are segmented using \mb{} with a random subset of
+the unlabelled images also serve as template images. Majority vote fusion, and
+the \ants{} registration algorithm are used, as these have shown to behave
+favourably in previous experiments.
+
+In addition to the MCCV, we segment the entire first episode psychosis dataset
+using \mb{} and two other popular segmentation packages, \fsl{} and
+\freesurfer{}. Firstly, \mb{} is used with the five Winterburn atlas images and labels as atlases, and a
+randomly selected subset of 19 psychosis dataset images as templates. Secondly,
+\mb{} is run using the same template images, but instead as atlases we use five
+additional five first episode psychosis subjects and corresponding manual
+segmentations (not included above). Finally, \fsl{} and \freesurfer{} are run
+with their default settings to segment the entire dataset. The \fsl
+\verb+run_first_all+ script was used according to the FIRST user guide
+\footnote{http://fsl.fmrib.ox.ac.uk/fsl/fslwiki/FIRST/UserGuide}, and
+\freesurfer was run using \verb+recon-all+. \textbf{
 
 \paragraph{Evaluation method}
-The Pruessner and Winterburn hippocampal segmentation protocols differ slightly in
-the neuroanatomical features that are delineated \citep{Winterburn2013}. This
-difference poses a problem for evaluation by measuring overlap.  That is, since
-different protocols will necessarily produce segmentations that do not perfectly
-overlap, the degree of overlap cannot be solely used to compare segmentation
-methods using different protocols. In place of an overlap metric, we can assess
-the degree of (Pearson) correlation in average bilateral hippocampal volume of the
-subjects produced by each method. 
+Manual and automated segmentations are directly compared using Dice's similarity
+coefficent (DSC). In the MCCV, the per-subject DSC value is computed as the
+average value over the five rounds of validation for a given atlas and template
+library size. The reported average DSC value per given atlas and template
+library size is the average DSC value over all subjects segmented. 
+
+The Pruessner segmentation protocol differs slightly from the Winterburn
+protocol those used by \freesurfer and \fsl in the neuroanatomical features that
+are delineated (see \citet{Winterburn2013}, and Table
+\label{tab:subfield-segmentation-protocols} in the Discussion below).  This
+variation in protocol poses a problem if an overlap measure is used for
+evaluation: since different protocols will necessarily produce segmentations
+that do not perfectly overlap, the degree of overlap cannot be solely used to
+compare segmentation methods using different protocols. In place of an overlap
+metric, we assess the degree of (Pearson) correlation in average bilateral
+hippocampal volume produced by each method. Additionally, we evaluate the
+volume-related fixed and proportional biases in all segmentation methods using
+Bland-Altman plots \citep{Bland1986}.  
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
@@ -1039,7 +1075,7 @@ latex(tab, file="", size="scriptsize",landscape=FALSE, ctable=FALSE,
 %%%%%    RESULTS: Experiment 2, Application of \mb{} to the segmentation  %%%%%
 %%%%%                       of psychosis patients                         %%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsubsection{Results: \expfepxval{}}
+\subsubsection{\expfepxval{}: Results}
 \textbf{[TODO: move up results to here.]}
  
 % In this experiment \mb{} is applied to a dataset of images of first episode
@@ -1184,7 +1220,7 @@ from the ADNI project and the resulting segmentations were compared to those
 produced by \freesurfer{}, \fsl{}, \maper{}, as well as semi-automated
 whole hippocampal segmentations (\snt{}) provided by ADNI.
 
-\subsubsection{Materials and Methods: \expadni{}}
+\subsubsection{\expadni{}: Materials and Methods}
 \paragraph{\adnidataset{} dataset} 
 The {\em \adnidataset{}} standardized dataset contains $1919$ images in total.
 \snt{}, \maper, \freesurfer{} hippocampal volumes for a subset of images were
@@ -1278,7 +1314,7 @@ latex(tab, file="", size="scriptsize",landscape=FALSE, ctable=FALSE,
 %%%%%         EXPERIMENT 3: Application of \mb{} to the segmentation      %%%%%
 %%%%%                       of ADNI subjects                              %%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsubsection{Results: \expadni{}}
+\subsubsection{\expadni{}: Results}
 
 Based on the results from \expadnixval{} (Section \ref{exp:adni-xval}), in this
 experiment \mb{} was configured with a template library of 21 randomly chosen
@@ -1487,16 +1523,8 @@ segmentation. In this experiment, we evaluate \mb{} hippocampal subfield
 segmentation of standard 3T T1-weighted images at $0.9m^3$-isotropic voxels.  We
 use a modified leave-one-out cross-validation (LOOCV) design. 
 
-\subsubsection{Materials and Methods: \expsubfield{}}
-\paragraph{Winterburn Atlases} 
-The Winterburn atlases \citep{Winterburn2013} are digital hippocampal
-segmentations of five in-vivo $0.3mm$-isotropic T1-weighted MR images. The
-segmentations include subfield segmentations for the cornu ammonis (CA) 1; CA2
-and CA3; CA4 and dentate gyrus; subiculum; and strata radiatum (SR), strata
-lacunosum (SL), and strata moleculare (SM). Subjects in the Winterburn atlases
-range in age from 29-57 years (mean age of 37), and include two males and three
-females.  
-
+\subsubsection{\expsubfield{}: Materials and Methods}
+%^ TODO: winterburn atlases described in expfepxval
 \paragraph{Experiment details} 
 Leave-one-out cross-validation (LOOCV) is a validation approach in which an
 algorithm is given all but one item in a dataset as training data (in our case,
@@ -1557,7 +1585,7 @@ resampling techniques) we obtain a scaled down version of the labels which
 preserve the original segmentation protocol within the limits of error from
 rounding and interpolation. Therefore, using the resampled Winterburn
 segmentations as definitive for the $0.9mm^3$ resolution we evaluate reliability
-of \mb{} segmentations using using DSC overlap scores and evaluate consistency
+of \mb{} segmentations using DSC overlap scores and evaluate consistency
 across the range of hippocampal sizes using Bland-Altman plots of subfield
 volumes. 
 
@@ -1565,7 +1593,7 @@ volumes.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%    RESULTS: Experiment 4: Hippocampal Subfield Cross-Validation     %%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsubsection{Results: \expsubfield{}}
+\subsubsection{\expsubfield{}: Results}
 
 \begin{figure}
 <<fig:WAxval-kappa>>=
@@ -2254,7 +2282,7 @@ This experiment is a replication of \expadnixval{} using a pool of 69 images and
 \expadnixval{} for full details on the ADNI dataset, and validation process. 
 \textbf{[TODO: use reference here]}
 
-\subsubsection{Materials and Methods: \expadnixvalsnt{}}
+\subsubsection{\expadnixvalsnt{}: Materials and Methods}
 \paragraph{Dataset} 
 69 1.5T images were arbitrarily selected from the baseline scans in the {\em
 \adnidataset{}} standardized dataset. 23 subjects were chosen from each disease
@@ -2305,7 +2333,7 @@ are conducted.  The computed segmentations for a subject are compared to the
 is averaged over the validation rounds.
 
 % ######################
-\subsubsection{Results: \expadnixvalsnt{}}
+\subsubsection{\expadnixvalsnt{}: Results}
 
 As when comparing against manual labels in \expadnixval{}, we find similar
 behaviour when comparing \mb{} segmentations to \snt{} labels: similarity scores
