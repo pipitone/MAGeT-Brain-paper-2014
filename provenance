@@ -1,8 +1,0 @@
-=== adni_data.mnc
-- basic demographics and hippocampal volumes from ADNI SNR labellings
-- volumes extracted via: 
-for i in atlases/labels/*.mnc; 
-  do volume_stats -binvalue 1,101 -volume $i |
-    grep "File\|Volume"| sed -e 's/^.*: *//' | tr '\n' ',' | sed -e 's/,$/\n/g';
-  done > volumes.mnc
-- demographics pulled from downloads directly from ADNI website
