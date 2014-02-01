@@ -241,23 +241,6 @@ Centre for Addiction and Mental Health \\
 Toronto, Canada   M5T 1R8 \\
 jon.pipitone@camh.ca; mallar.chakravarty@camh.ca}
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%                                 TODO 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\parbox{7in}{
-\subsection{TODO:}
-\begin{enumerate}
-\itemsep-0.5em
-\item check tense: we are is have has use/used find/found
-\item remove 'accuracy' unless specifically talking relative to ground truth (and
-    even then, qualify)
-\item change overlap/similarity --> agreement? choose one. 
-\item fix figure 2 schematic language for the experiments (not 2a 2b). 
-\item check that experiment references are formatted as Experiment 2 (Section 3.2)
-\end{enumerate}}
-
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                               INTRODUCTION
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -819,7 +802,6 @@ ggplot(subset(jens_xval_mean, (templates.mb*atlases) %% 2 == 1 & templates.mb < 
                fun.ymax=function (x) mean(x) + stderr(x), 
                geom='errorbar',
                aes(y=k.mb, weight=1, group=interaction(reg_method, as.factor(atlases))), linetype='solid', width=0.5) + 
-  #stat_smooth(method='lm', formula=y~log(x)) + 
   scale_y_continuous(breaks=seq(0,1,0.01)) + 
   scale_colour_hue(name="Number of Atlases") +
   scale_linetype(name="Registration Method") +
@@ -927,11 +909,11 @@ ggplot(subset(stats.tests, direction > 0 & stat == "Variance"),
   \hfill
   \begin{subfigure}[b]{0.48\textwidth}
     \includegraphics[width=\textwidth]{figure/fig:ADNI1-xval-variability}
-    \caption{Difference in variability} 
+    \caption{Difference in variability with \multiatlas} 
     \label{fig:ADNI1-xval-variability}
   \end{subfigure}
   \caption{\textbf{Whole hippocampus segmentation cross-validation on
-  Alzheimer's diseased subjects with \psegs{}.}
+  ADNI subjects with \psegs{}.}
 (\ref{fig:ADNI1-xval-k-mean}) Average DSC score of \mb{} with manual
   segmentations for 60 ADNI subjects taken over 10 folds of
   cross-validation at each parameter setting. Error bars indicate standard
@@ -1642,8 +1624,10 @@ Bland-Altman plots of subfield volumes.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{\expsubfield{}: Results}
 
-\begin{figure}
-<<fig:WAxval-kappa>>=
+%%%%%%%%%%
+% Winterburn xValidation Kappas
+%%%%%%%%%%
+<<fig:WAxval-kappa,fig.show='hide'>>=
 wa.n.sim = read.csv('data/winterburn.xval.similarity.csv')
 wa.n.sim.whole = read.csv('data/winterburn.xval.similarity.whole.csv')
 wa.n.sim.whole$label = as.factor(wa.n.sim.whole$label)
@@ -1677,11 +1661,6 @@ Sub   = subset(wa.n.sim,label=='Subiculum')$k
 SRLM  = subset(wa.n.sim,label=='SR/SL/SM')$k
 Whole = subset(wa.n.sim,label=='Whole')$k
 @
-  \caption{Similarity of \mb{} segmentation of subfields and the resampled
-  Winterburn atlas segmentations at $0.9mm^3$ voxel resolution, over all folds of a
-  leave-one-out cross validation. Overlap score for each hemisphere is measured
-  separately. \label{fig:WAxval-kappa}}
-\end{figure}
 
 Figure \ref{fig:WAxval-kappa} shows the overlap similarity scores between the
 \mb{} segmentations and the resampled Winterburn atlases for each hippocampal
@@ -1690,16 +1669,18 @@ deviation DSC scores of the subfields are shown in Table
 \ref{tab:WAxval-perturb-kappa}, along with DSC scores for the resampled atlas
 segmentations when perturbed slightly and compared to the originals. We find
 that the CA4/DG subfield shows the highest mean DSC score of
-\Sexpr{mean(CA4DG)} $\pm$\Sexpr{sd(CA4DG)}, followed by the Subiculum and CA1
-subfields having scores of \Sexpr{mean(CA1)} $\pm$\Sexpr{sd(CA1)} and
-\Sexpr{mean(Sub)} $\pm$\Sexpr{sd(Sub)}, respectively. Both the CA4/DG and
+\Sexpr{mean(CA4DG)}$\pm$\Sexpr{sd(CA4DG)}, followed by the Subiculum and CA1
+subfields having scores of \Sexpr{mean(CA1)}$\pm$\Sexpr{sd(CA1)} and
+\Sexpr{mean(Sub)}$\pm$\Sexpr{sd(Sub)}, respectively. Both the CA4/DG and
 molecular regions score below 0.5. These scores may seem low but not when taken
 in context and compared to existing (semi-)automated methods (see Discussion).
-The whole hippocampus is segmented with a mean DSC score of\Sexpr{mean(Whole)}
-$\pm$\Sexpr{sd(Whole)}.
+The whole hippocampus is segmented with a mean DSC score
+of\Sexpr{mean(Whole)}$\pm$\Sexpr{sd(Whole)}.
 
-\begin{figure}
-<<fig:WAxval-Bland-Altman,fig.height=5,fig.width=7>>=
+%%%%%%%%%%
+% Winterburn Bland-Altman
+%%%%%%%%%%
+<<fig:WAxval-Bland-Altman,fig.width=10,fig.show='hide'>>=
 wa.n.vol = read.csv('data/winterburn.xval.volumes.csv') # xval volumes
 winterburn = read.csv('data/winterburn.volumes.csv')    # resampled volumes
 subfield_labels <-list(
@@ -1779,12 +1760,30 @@ ggplot(wa.n.all.vols, aes(x=mean, y=diff)) +
         axis.text.y = element_text(angle = 90, hjust=0.5), 
         axis.text = element_text(size = 8))
 @
-  \caption{\textbf{Bland-Altman plots comparing unilateral hippocampal subfield volume
-across all folds of Winterburn atlas cross validation.} The overall mean
-difference in volume, and limits of agreement ($\pm 1.96SD$) are shown by dashed
-horizontal lines. Linear fit lines are shown. Note, points below the mean
-difference indication overestimation of the volume with respect to the resampled
-volume, and vice versa. \label{fig:WAxval-Bland-Altman}}
+
+\begin{figure}
+  \centering
+  \begin{subfigure}[t]{\textwidth}
+    \centering
+    \includegraphics[height=3in]{figure/fig:WAxval-kappa}
+    \caption{DSC score by subfield}
+    \label{fig:WAxval-kappa}
+  \end{subfigure}\hfill
+  \begin{subfigure}[b]{\textwidth}
+    \includegraphics[width=\textwidth]{figure/fig:WAxval-Bland-Altman}
+    \caption{Bland-Altman plots of computed vs. manual subfield volumes}
+    \label{fig:WAxval-Bland-Altman}
+  \end{subfigure}
+  \caption{\textbf{Hippocampal subfield cross-validation.}
+(\ref{fig:WAxval-kappa}) Similarity of \mb{} segmentation of subfields and the
+  resampled Winterburn atlas segmentations at $0.9mm^3$ voxel resolution, over all
+  validaiton folds. Overlap score for each hemisphere is measured separately.
+(\ref{fig:WAxval-Bland-Altman}) shows the agreement, by subfield, of computed
+  and manual volumes across all validation folds. The overall mean difference in
+  volume, and limits of agreement ($\pm 1.96SD$) are shown by dashed horizontal
+  lines. Linear fit lines are shown. Note, points below the mean difference
+  indication overestimation of the volume with respect to the resampled volume,
+  and vice versa.}
 \end{figure}
 
 Figure \ref{fig:WAxval-Bland-Altman} contains Bland-Altman plots comparing \mb{}
@@ -2197,20 +2196,25 @@ Although having more atlases would be ideal in this context, these atlases are
 incredibly time consuming to generate \citep{Winterburn2013}. Nevertheless, the
 advantage of evaluating \mb{} on standard 3T T1-weighted resolution MR images
 with a publically available atlas library is that our results reflect typical
-usage scenarios of researchers and clinicians. \textbf{[TODO: mention that DSC
-by it's nature penalizes structures with high surface area-to-vol ratios, so
-necessarily penalise all subfield errors.]} \textbf{[TODO: discuss perturbed
-segmentation kappa values in relation to MAGeT error]}
+usage scenarios of researchers and clinicians. 
+
+One further complication common to all subfield segmentation evaluation is that,
+by its nature, the Dice's Similarity Coefficient score penalizes structures with
+high surface area to volume ratios. Therefore subfield DSC scores will generally
+be lower than whole hippocampal segmentations. We attempted to put this
+effect into perspective by comparing \mb{} subfield segmentation agreement with
+the agreement of voxel-shifted manual segmentations (Table
+\ref{tab:WAxval-perturb-kappa}). The results of this exercise show conclusively,
+despite the very limited number of atlases we had to work with, that \mb{}
+subfield segmentations are well within the bounds of error of a $0.3mm$ shift. 
 
 Our overlap DSC values demonstrates that we can reliably reproduce segmentations
-for the CA1, subiculum, and CA4/dentate subfields. %TODO: fix?
-That the CA2/CA3 and
-molecular layers are less well reproduced (DSC < 0.5) %TODO: fix!
-should not be surprising as these are extremely thin and spatially convoluted
-regions that originally required high-resolution MRI for identification and so
-it is likely that the extents of these regions are well below the resolution and
-contrast offered by
-standard T1-weighted images. 
+for the CA1, subiculum, and CA4/dentate subfields (DSC > 0.5). That the CA2/CA3
+and molecular layers are less well reproduced (DSC < 0.5) should not be
+surprising as these are extremely thin and spatially convoluted regions that
+originally required high-resolution MRI for identification and so it is likely
+that the extents of these regions are well below the resolution and contrast
+offered by standard T1-weighted images. 
 
 \begin{table}[!tbp]
 \scriptsize
@@ -2272,10 +2276,9 @@ funded by the Canadian Institutes of Health Research, Ontario Mental Health
 Foundation, NARSAD, and the National Institute of Mental Health (R01MH099167).
 
 Computations were performed on the gpc supercomputer at the SciNet HPC
-Consortium. SciNet is funded by: the Canada Foundation for Innovation under the
-auspices of Compute Canada; the Government of Ontario; Ontario Research Fund -
-Research Excellence; and the University of Toronto.
-\textbf{[TODO: cite scinet paper]}
+Consortium \cite{Loken2010}. SciNet is funded by: the Canada Foundation for
+Innovation under the auspices of Compute Canada; the Government of Ontario;
+Ontario Research Fund - Research Excellence; and the University of Toronto.
 
 In addition, computations were performed on the CAMH Specialized Computing 
 Cluster. The SCC is funded by: The Canada Foundation for Innovation, Research 
@@ -2341,7 +2344,6 @@ documented reliability of an intraclass coefficient better than .94
 This experiment is a replication of \expadnixval{} using a pool of 69 images and
 \snt{} semi-automated segmentations from the ADNI dataset \citep{Hsu2002}. See
 \expadnixval{} for full details on the ADNI dataset, and validation process. 
-\textbf{[TODO: use reference here]}
 
 \subsubsection{\expadnixvalsnt{}: Materials and Methods}
 \paragraph{Dataset} 
@@ -2414,14 +2416,14 @@ in similarity score over \multiatlas{}-based segmentation, \mb{} also shows more
 consistency in similarity scores across all subjects and validation folds
 (Figure \ref{ADNI1-SNT-xval-variability}) with a large enough template library. 
 
-\textbf{[TODO: Merge figures]}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% ADNI1-XVAL: mean Kappa plot by atlases, templates, reg and voting method. 
-\begin{figure}
-<<fig:ADNI1-SNT-xval-k-mean, cache=TRUE, dependson='ADNI1-xval-load', fig.width=5, fig.height=5>>=
+%%%%%%%%%%%%%
+% ADNI1-SNT-XVAL: mean Kappa plot by settings 
+%%%%%%%%%%%%%
+<<fig:ADNI1-SNT-xval-k-mean,dependson='ADNI1-xval-load',fig.width=10,fig.show='hide'>>=
 stderr <- function(x) sqrt(var(x)/length(x))
 ggplot(subset(snt_xval_mean, (templates.mb*atlases) %% 2 == 1),
-       aes(x=templates.mb,y=k.mb, colour=as.factor(atlases), linetype=reg_method)) + #as.factor((atlases*templates.mb) %% 2 ))) + 
+       aes(x=templates.mb,y=k.mb, colour=as.factor(atlases), linetype=reg_method)) + 
+      #as.factor((atlases*templates.mb) %% 2 ))) + 
   facet_grid(.~method.mb) + 
   stat_summary(fun.y=mean,geom='line',
                aes(y=k.mb, weight=1, group=interaction(reg_method,atlases))) + 
@@ -2429,27 +2431,24 @@ ggplot(subset(snt_xval_mean, (templates.mb*atlases) %% 2 == 1),
                fun.ymin=function (x) mean(x) - stderr(x),
                fun.ymax=function (x) mean(x) + stderr(x), 
                geom='errorbar',
-               aes(y=k.mb, weight=1, group=interaction(reg_method,atlases)), width=0.5) + 
-  #stat_smooth(method='lm', formula=y~log(x)) + 
-  scale_y_continuous(breaks=seq(0,1,0.05)) + 
+               aes(y=k.mb, weight=1, 
+                 group=interaction(reg_method,atlases)), width=0.5) + 
+  scale_y_continuous(breaks=seq(0,1,0.01)) + 
   scale_colour_hue(name="Number of Atlases") +
+  scale_linetype(name="Registration Method") +
   xlab( "Number of Templates" ) + 
   ylab( "Mean similarity (DSC)" ) + 
-  theme(legend.direction = "horizontal", legend.position = "bottom", 
+  theme(legend.key.size = unit(0.7, 'lines'),
+        legend.position = "bottom", 
+        legend.box = "horizontal", 
+        legend.text = element_text(size=rel(0.7)),
         axis.text = element_text(size = 8))
 @
-  \caption{Mean Dice's Similarity Coefficient of \mb{} segmentations relative to
-  \snt{} segmentations for 69 ADNI subjects vs. atlas and template library
-  size, registration algorithm, and label fusion method. 
-  Error bars indicate standard error.
-  \label{fig:ADNI1-SNT-xval-k-mean}}
-\end{figure}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% ADNI1-XVAL: "increase" in mean kappa over \multiatlas
-\begin{figure}
-<<fig:ADN11-SNT-xval-k-diff,cache=TRUE,dependson='ADNI1-xval-load', fig.width=5, fig.height=5>>=
+%%%%%%%%%%%%%
+% ADNI1-SNT-XVAL: "increase" in mean kappa over \multiatla
+s%%%%%%%%%%%%%
+<<fig:ADNI1-SNT-xval-k-diff,dependson='ADNI1-xval-load',fig.show='hide'>>=
 ggplot(subset(snt_xval_mean, reg_method=="ANTS" & 
                 method.mb=="Majority Vote" & (templates.mb*atlases) %% 2 == 1), 
        aes(x=templates.mb, y=k_diff, colour=as.factor(atlases))) + 
@@ -2470,19 +2469,11 @@ ggplot(subset(snt_xval_mean, reg_method=="ANTS" &
   ylab( "Increase in mean similarity (DSC)" ) +
   theme(legend.direction = "horizontal", legend.position = "bottom")
 @
-  \caption{Increase in mean Dice's Similarity Coefficient of \mb{} over
-  \multiatlas{} segmentations vs. atlas and template library size when using the
-  \ants{} registration method, and majority-vote label fusion. 
-  Segmentation similarity is computed against \snt{} segmentations. 
-  Error bars indicate standard error.
-  \label{fig:ADNI1-SNT-xval-k-diff}}
-\end{figure}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% ADNI1-SNT-XVAL: show variability of MAGeT over parameters
-\begin{figure}
-<<fig:ADN1-SNT-Xval-variability, cache=TRUE, dependson='ADNI1-Xval-prep', fig.width=5, fig.width=5>>=
+%%%%%%%%%%%%%
+% ADNI1-SNT-XVAL: variability
+%%%%%%%%%%%%%
+<<fig:ADNI1-SNT-xval-variability,dependson='ADNI1-Xval-prep',fig.show='hide'>>=
 ants = subset(snt_xval_data, 
                      reg_method=="ANTS" & 
                      method.mb=="Majority Vote" &
@@ -2531,19 +2522,38 @@ ggplot(subset(stats.tests, direction > 0 & stat == "Variance"),
   scale_size_continuous(guide='none') + 
   theme(legend.direction = "horizontal", legend.position = "bottom")
 @
-  \caption{\textbf{Difference in variability of \mb{} vs. \multiatlas{} segmentation
-  with respect to \snt{} segmentation.}
-  Variance of segmentation agreement between \mb{} and \multiatlas{} segmentation
-  is computed for each subject across over 10 folds of Monte Carlo       
-  cross validation. 
-  Shown on the y-axis is the p-value from a t-test comparing the distribution of
-  variances at each parameter setting (atlas/template library size). Only points
-  where \mb{} mean variability is lower than \multiatlas{} are shown. Dashed
-  lines indicate a p-value of 0.05 and 0.01.}
-  \label{ADNI1-SNT-xval-variability}
-\end{figure}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\begin{figure}
+  \centering
+  \begin{subfigure}[t]{\textwidth}
+    \includegraphics[width=\textwidth]{figure/fig:ADNI1-SNT-xval-k-mean}
+    \caption{DSC vs. atlas and template library size} 
+    \label{fig:ADNI1-SNT-xval-k-mean}
+  \end{subfigure}%
+  \hfill
+  \begin{subfigure}[b]{0.48\textwidth}
+    \includegraphics[width=\textwidth]{figure/fig:ADNI1-SNT-xval-k-diff}
+    \caption{Increase in similarity score over \multiatlas} 
+    \label{fig:ADNI1-SNT-xval-k-diff}
+  \end{subfigure}%
+  \hfill
+  \begin{subfigure}[b]{0.48\textwidth}
+    \includegraphics[width=\textwidth]{figure/fig:ADNI1-SNT-xval-variability}
+    \caption{Difference in variability with \multiatlas} 
+    \label{fig:ADNI1-SNT-xval-variability}
+  \end{subfigure}
+  \caption{\textbf{Whole hippocampus segmentation cross-validation on
+  ADNI subjects with \snt{} segmentations.}
+(\ref{fig:ADNI1-SNT-xval-k-mean}) Average DSC score of \mb{} with \snt{} 
+  segmentations for 69 ADNI subjects taken over 10 folds of cross-validation at
+  each parameter setting. Error bars indicate standard error. 
+(\ref{fig:ADNI1-SNT-xval-k-diff}) Increase in DSC of \mb{} over \multiatlas{}
+  segmentations. 
+(\ref{fig:ADNI1-SNT-xval-variability}) shows the significance of t-tests comparing
+  the variability in DSC scores of \mb{} and \multiatlas{} across validation
+  folds. Only points where \mb{} mean variability is lower than \multiatlas{} are
+  shown. Dashed lines indicate p-values of 0.05 and 0.01.}
+\end{figure}
 
 \bibliographystyle{abbrvnat}
 \bibliography{references}
