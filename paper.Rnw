@@ -16,6 +16,8 @@ library(ADNIMERGE)
 library(plyr)
 options(digits=3)
 theme_set(theme_bw(base_size = 12))
+theme_update(
+  legend.key = element_rect(fill='white',colour='white'))
 lm_eqn = function(m) {
   l <- list(a = format(coef(m)[1], digits = 2),
       b = format(abs(coef(m)[2]), digits = 2),
@@ -803,7 +805,7 @@ vote fusion method used (see Discussion).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ADNI1-XVAL: mean Kappa plot by atlases, templates, reg and voting method. 
-<<fig:ADNI1-xval-k-mean,dependson='ADNI1-xval-load',fig.show='hide'>>=
+<<fig:ADNI1-xval-k-mean,dependson='ADNI1-xval-load',fig.show='hide',fig.width=10>>=
 stderr <- function(x) sqrt(var(x)/length(x))
 ggplot(subset(jens_xval_mean, (templates.mb*atlases) %% 2 == 1 & templates.mb < 21),
        aes(x=templates.mb,y=k.mb, colour=as.factor(atlases), linetype=reg_method)) + #as.factor((atlases*templates.mb) %% 2 ))) + 
@@ -823,7 +825,10 @@ ggplot(subset(jens_xval_mean, (templates.mb*atlases) %% 2 == 1 & templates.mb < 
   scale_linetype(name="Registration Method") +
   xlab( "Number of Templates" ) + 
   ylab( "Mean similarity (DSC)" ) + 
-  theme(legend.direction = "horizontal", legend.position = "bottom", 
+  theme(legend.key.size = unit(0.7, 'lines'),
+        legend.position = "bottom", 
+        legend.box = "horizontal", 
+        legend.text = element_text(size=rel(0.7)),
         axis.text = element_text(size = 8))
 @
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -906,45 +911,37 @@ ggplot(subset(stats.tests, direction > 0 & stat == "Variance"),
 @
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
-\begin{figure}
-  \includegraphics[width=\textwidth]{figure/fig:ADNI1-xval-k-mean}
-  \caption{Dice's similarity score vs. atlas and template library size. Dice's
-  similarity score of \mb{} segmentations and \psegs{} for 60 ADNI subjects over a
-  range of atlas and template library size, registration algorithm, and label
-  fusion method on 10 folds of Monte Carlo cross validation. Error bars indicate
-  standard error.} 
-  \label{fig:ADNI1-xval-k-mean}
-\end{figure}
-
 \begin{figure}
   \centering
-  \begin{subfigure}[t]{0.48\textwidth}
+  \begin{subfigure}[t]{\textwidth}
+    \includegraphics[width=\textwidth]{figure/fig:ADNI1-xval-k-mean}
+    \caption{DSC vs. atlas and template library size} 
+    \label{fig:ADNI1-xval-k-mean}
+  \end{subfigure}%
+  \hfill
+  \begin{subfigure}[b]{0.48\textwidth}
     \includegraphics[width=\textwidth]{figure/fig:ADNI1-xval-k-diff}
     \caption{Increase in similarity score over \multiatlas} 
     \label{fig:ADNI1-xval-k-diff}
-  \end{subfigure}
+  \end{subfigure}%
   \hfill
-  \begin{subfigure}[t]{0.48\textwidth}
+  \begin{subfigure}[b]{0.48\textwidth}
     \includegraphics[width=\textwidth]{figure/fig:ADNI1-xval-variability}
     \caption{Difference in variability} 
     \label{fig:ADNI1-xval-variability}
   \end{subfigure}
   \caption{\textbf{Whole hippocampus segmentation cross-validation on
-  Alzheimer's diseased subjects.}
-(\ref{fig:ADNI1-xval-k-diff}) shows increase in mean Dice's Similarity Coefficient of \mb{} over
-  \multiatlas{} segmentations vs. atlas and template library size when using the
-  \ants{} registration method, and majority-vote label fusion over 10 folds of
-  Monte Carlo cross validation. Segmentation similarity is computed against
-  \psegs{}. Error bars indicate standard error.
-(\ref{fig:ADNI1-xval-variability}) compares the variability in Dice scores of \mb{} vs.
-  \multiatlas{} segmentations in the validation. Variance of segmentation
-  agreement between \mb{} and \multiatlas{} segmentation is computed for each
-  subject across over 10 folds of Monte Carlo cross validation. Shown on
-  the y-axis is the p-value resulting from a t-test comparing the distribution of
-  variances at each parameter setting (atlas/template library size). Only points
-  where \mb{} mean variability is lower than \multiatlas{} are shown. Dashed
-  lines indicate a p-value of 0.05 and 0.01.}
+  Alzheimer's diseased subjects with \psegs{}.}
+(\ref{fig:ADNI1-xval-k-mean}) Average DSC score of \mb{} with manual
+  segmentations for 60 ADNI subjects taken over 10 folds of
+  cross-validation at each parameter setting. Error bars indicate standard
+  error. 
+(\ref{fig:ADNI1-xval-k-diff}) Increase in DSC of \mb{} over \multiatlas{}
+  segmentations. 
+(\ref{fig:ADNI1-xval-variability}) shows the significance of t-tests comparing
+  the variability in DSC scores of \mb{} and \multiatlas{} across validation
+  folds. Only points where \mb{} mean variability is lower than \multiatlas{} are
+  shown. Dashed lines indicate p-values of 0.05 and 0.01.}
 \end{figure}
 
 %
