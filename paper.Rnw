@@ -135,7 +135,7 @@ snt.mb.diff.best = mean(subset(snt_xval_mean,
 % experiment descriptions (suitable for titles)
 \newcommand{\expadnixvaldesc}{Whole Hippocampus Segmentation Cross-Validation --- Alzheimer's Disease} 
 \newcommand{\expfepxvaldesc}{Whole Hippocampus Segmentation Cross-Validation --- First Episode of Psychosis} 
-\newcommand{\expadnidesc}{Whole Hippocampus Segmentation Comparision --- ADNI1 Complete 1Yr} 
+\newcommand{\expadnidesc}{Whole Hippocampus Segmentation Comparison --- ADNI1 Complete 1Yr} 
 \newcommand{\expsubfielddesc}{Hippocampal Subfield Segmentation Cross-Validation} 
 \newcommand{\expadnixvalsntdesc}{Whole Hippocampus Segmentation Cross-Validation --- Alzheimer's Disease, \snt{} Segmentations}
 
@@ -283,7 +283,7 @@ accuracy due to error in the estimated nonlinear transformation itself, partial
 volume effects in label resampling, and irreconcilable differences between the
 neuroanatomy represented within the atlas and target images.
  
-One methodology that can be used to mitigate these sources of errors involves
+One methodology that can be used to mitigate these sources of error involves
 the use of multiple manually segmented atlases and probabilistic segmentation
 techniques, such as those found in the \freesurfer{} package \citep{Fischl2002}.
 \freesurfer{} uses a probabilistic atlas of anatomical and tissue classes along
@@ -307,13 +307,13 @@ nonlinear registrations. For example \citet{Collins2010} demonstrated that only
 14 atlases, selected based on highest similarity between medial temporal lobe
 neuroanatomy as evaluated by normalized mutual information \citep{Studholme1999}
 from a library of 80 atlases, were required to achieve accurate segmentations of
-the hippocampus. Additionally, several methods have been explored for label
-fusion, including the STAPLE algorithm (Simultaneous Truth And Performance Level
-Estimation; \citet{Warfield2004}) that computes a probabilistic segmentation
-using an expectation-maximization framework from an set of competing
-segmentations, or others where a subset of segmentations can be estimated using
-metrics such as the sum of squared differences in the regions of interest to be
-segmented \citep{Coupe2011}.
+the hippocampus. Also, several methods have been explored for label
+fusion. For example, the STAPLE algorithm (Simultaneous Truth And Performance
+Level Estimation; \citet{Warfield2004}) uses an expectation-maximization
+framework to compute a probabilistic segmentation from a set of competing
+regmentations, or the work of \citet{Coupe2011} who show that a subset of
+segmentations can be estimated using metrics, such as the sum of squared
+differences in the regions of interest to be segmented.
 
 However, many of these methods require significant investment of time and
 resources for the creation of the atlas library ranging between 30
@@ -334,10 +334,12 @@ through use of an intermediary automated segmentation stage, robust and accurate
 segmentation of the striatum, pallidum, and thalamus using a single atlas
 derived from serial histological data is possible \citep{Chakravarty2013}.
 The novelty of this manuscript is the extension of our \multiatlas{} methodology
-to the hippocampus using more than a single input atlas, while simultaneously
-limiting the number of inputs used during segmentation, and so demonstrating that
-reliable application of the atlases' subfield segmentation to an unlabelled
-target image is indeed possible using this methodology.
+to the segmentation of hippocampus. Additionally, in this paper we rigorously explore the
+effects of using multiple input atlases, of varying the size of the template
+library constructed, and registration and label fusion methods. As a result, we
+aim to demonstrate that it is indeed possible to reliably apply the segmentation
+represented in a very small set of segmented input atlases to an unlabelled
+target image set.
 
 Of particular relevance to the present work is the LEAP algorithm (Learning
 Embeddings for Atlas Propagation; \citet{Wolz2010}) because of its focus on
@@ -420,7 +422,7 @@ are propagated from the atlas to a target, and no label fusion is needed.
 
 \mb{} ({\textbf M}ultiple {\textbf A}utomatically {\textbf Ge}nerated {\textbf
 T}emplates) bootstraps the creation of a large template library given a limited
-input atlas library, and then uses the template library in basic \multiatlas
+input atlas library, and then uses the template library in basic \multiatlas{}
 segmentation. Images for the template library are selected from a set of input
 target images, either arbitrarily or so as to reflect the neuroanatomy or
 demographics of the target set as a whole (for instance, by sampling equally
@@ -446,7 +448,7 @@ from all atlas images are then fused to create a final segmentation. In \mb{}
 segmentation, a template library is created by sampling (either randomly or
 representatively) from the subject images. Atlas labels are propagated to all
 template images and then to each subject image (including those used in the template
-library). The candidate the labels for a subject are then fused into a final
+library). The candidate labels for a subject are then fused into a final
 segmentation. \label{fig:MAGeT}}
 \end{figure}
 
@@ -463,7 +465,7 @@ segmentation quality of the \mb{} algorithm:
 
 \begin{itemize}
   \item \expadnixval{} investigates \mb{} whole hippocampus
-  segmentation of aging and Alzhiemer's diseased subjects over a wide range of
+  segmentation of aging and Alzheimer's diseased subjects over a wide range of
   parameter settings using a Monte Carlo cross-validation design. The results of
   this experiment enable us to choose the parameter settings offering the best
   performance for use in subsequent experiments. 
@@ -475,13 +477,13 @@ segmentation quality of the \mb{} algorithm:
   \item \expadni{} bridges \mb{} with the existing segmentation literature by
   comparing \mb{} whole hippocampus segmentations with those of well-known
   automated methods (\freesurfer, \fsl, \maper, \snt) on the entire
-  \adnidataset{} image dataset consistening of
-  \Sexpr{length(means.complete$RID)} brain images of subjects diagnosed as
-  cognitively normal, having mild cognitive impairment, or Alzheimer's disease.
+  \adnidataset{} image dataset consisting of \Sexpr{length(means.complete$RID)}
+  brain images of subjects diagnosed as cognitively normal, having mild cognitive
+  impairment, or Alzheimer's disease.
 
   \item \expsubfield{} assesses hippocampal subfield segmentation quality in a
   leave-one-out cross-validation on the five high-resolution manually segmented
-  Winterburn MR atlases \citep(Winterburn2013).
+  Winterburn MR atlases \citep{Winterburn2013}.
 \end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -498,16 +500,17 @@ so, we conduct repeated cross-validations of \mb{} whilst varying the
 composition and sizes of the atlas and template libraries used, as well as
 varying the registration algorithm and label fusion method. The dataset used in
 this experiment is images from the ADNI dataset \citep{Jack2008} along with
-whole hippocampus labels manually segmented following the \citep{Pruessner2000}
-protocol. 
+whole hippocampus labels manually segmented following the \prsnr-protocol
+\citep{Pruessner2000}. 
 
 Note, in the Supplementary Materials we have replicated this experiment using
-the \snt{} semi-automated segmentations included as part of the the ADNI
+the \snt{} semi-automated segmentations included as part of the ADNI
 dataset.
 
 \subsubsection{\expadnixval{}: Materials and Methods}
 
 \paragraph{\adnidataset{} dataset} 
+\label{adnidataset}
 Data used in the preparation of this article were obtained from the Alzheimer's
 Disease Neuroimaging Initiative (ADNI) database (adni.loni.usc.edu). The ADNI
 was launched in 2003 by the National Institute on Aging (NIA), the National
@@ -535,8 +538,8 @@ specified in the protocols for ADNI-1, ADNI-2 and ADNI-GO. Subjects originally
 recruited for ADNI-1 and ADNI-GO had the option to be followed in ADNI-2. For
 up-to-date information, see www.adni-info.org.
 
-60 1.5T images were arbitrarily selected from the baseline scans in the {\em
-\adnidataset{}} standardized dataset. 20 subjects were chosen from each disease
+Sixty 1.5T images were arbitrarily selected from the baseline scans in the {\em
+\adnidataset{}} standardized dataset. Twenty subjects were chosen from each disease
 category: cognitively normal (CN), mild cognitive impairment (MCI) and
 Alzheimer's disease (AD). Demographics for this subset are shown in Table
 \ref{tab:ADNI1-xvalidation-demographics}. Fully manual segmentations of the
@@ -545,17 +548,17 @@ left and right whole hippocampi in these images were provided by one author
 
 Clinical, demographic and pre-processed T1-weighted MRI were downloaded by the
 authors from the ADNI database (adni.loni.ucla.edu) between March 2012 and
-August 2012. The image dataset used was the "\adnidataset{}" standardized dataset
+August 2012. The image dataset used was the \adnidataset{} standardized dataset
 available from ADNI \footnote{
 \url{http://adni.loni.usc.edu/methods/mri-analysis/adni-standardized-data/}}
 \citep{Wyman2012}. This image collection contains uniformly pre-processed images
-which have been designated to be the "best" after quality control. All images
+which have been designated to be the ``best'' after quality control. All images
 were acquired using 1.5T scanners (General Electric Healthcare, Philips Medical
 Systems or Siemens Medical Solutions) at multiple sites using the protocol
-described in \citep{Jack2008}. Representative 1.5T imaging parameters were TR =
+described in \citet{Jack2008}. Representative 1.5T imaging parameters were TR =
 2400ms, TI = 1000ms, TE = 3.5ms, flip angle = $8^{\circ}$, field of view = 240 x
 240mm, a $192 \times 192 \times 166$ matrix ($x$, $y$, and $z$ directions)
-yielding a voxel dimensions of $1.25mm \times 1.25mm \times 1.2mm$.
+yielding voxel dimensions of $1.25mm \times 1.25mm \times 1.2mm$.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -571,7 +574,6 @@ caption =
   CN     - Cognitively Normal. 
   LMCI   - Late-onset Mild Cognitive Impairment. 
   AD     - Alzheimer's Disease. 
-  Hisp   - Hispanic. 
   CDR-SB - Clinical Dementia Rating-Sum of Boxes. 
   ADAS   - Alzheimer's Disease Assessment Scale. 
   MMSE   - Mini-Mental State Examination."
@@ -710,7 +712,7 @@ experiment we explore three fusion methods:
   \item[Normalised Mutual Information Weighted Majority Vote]
   This method is similar to cross-correlation weighted voting except that image
   similarity is calculated by the normalised mutual information score over the
-  region of interest\citep{Studholme2001}. The {\tt itk\_similarity} utility
+  region of interest \citep{Studholme2001}. The {\tt itk\_similarity} utility
   from the EZMinc toolkit\footnote{\url{https://github.com/vfonov/EZminc}} is
   used to calculate the normalised mutual information measure between two images.
 \end{description}
@@ -752,7 +754,7 @@ We find that for \mb{} segmentations, similarity score increases as atlas and
 template library size is increased, although with diminishing returns and an
 eventual trend towards a plateau (Figure \ref{fig:ADNI1-xval-k-mean}). A
 maximum similarity score of \Sexpr{mb.kappa.best} is found when using 9 atlases,
-19 templates, ANTS registration, and majority vote label fusion). The \ants{}
+19 templates, ANTS registration, and majority vote label fusion. The \ants{}
 registration method consistently out-performs \animal{} registration over all
 variable settings we tested. Additionally, by itself, using a weighted voting
 strategy did not significantly improve segmentation agreement, contrary to the
@@ -778,13 +780,13 @@ We find similar behaviour with respect to optimal parameter settings and
 increased consistency of \mb{} segmentations in the replication of this
 experiment (\expadnixvalsnt{}, Supplementary Materials) where a different
 hippocampal definition is used (\snt{} labels available with the ADNI datasets).
-This strongly suggests that these results are independant of the segmentation
+This strongly suggests that these results are independent of the segmentation
 protocol used and are, instead, features of the \mb{} algorithm. 
 
 We have omitted results obtained when using an even number of atlases or
 templates since with these configurations we found significantly decreased
-performance. We believe this is results from an inherent bias in the majority
-vote fusion method used (see Discussion). 
+performance. We believe this results from an inherent bias in the majority vote
+fusion method used (see Discussion). 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ADNI1-XVAL: mean Kappa plot by atlases, templates, reg and voting method. 
@@ -939,11 +941,11 @@ ggplot(subset(stats.tests, direction > 0 & stat == "Variance"),
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\expfepxval{}: \expfepxvaldesc{}}
 \label{exp:fep-xval}
-To validate that the \mb{} works effectively in the context of other neurological
-disorders, in this experiment we replicate the cross-validation done in
-\expadnixval{} a dataset of patients having had a single episode of psychosis. We
-also compare \mb{} segmentations with those of two well-known automated
-segmentation methods, \fsl{} and \freesurfer{}. 
+To validate that the \mb{} works effectively in the context of other
+neurological disorders, in this experiment we replicate the cross-validation
+done in \expadnixval{} with a dataset of patients having had a single episode of
+psychosis. We also compare \mb{} segmentations with those of two well-known
+automated segmentation methods, \fsl{} and \freesurfer{}. 
 
 \subsubsection{\expfepxval{}: Materials and Methods}
 \paragraph{First Episode Psychosis (FEP) Dataset}
@@ -968,7 +970,7 @@ angle=$30^{\circ}$, 180 1mm contiguous sagittal slices). The rectangular
 field-of-view for the images was 256mm (SI)$\times$204mm (AP). Subject
 demographics are shown in Table \ref{tab:SZFEP-Demographics}. 
 
-Export whole hippocampal manual segmentation of each subject is produced
+Expert whole hippocampal manual segmentation of each subject is produced
 following a validated segmentation protocol \citep{Pruessner2000}. 
 
 \paragraph{Winterburn Atlases} 
@@ -988,7 +990,7 @@ segmentations. Five rounds of validation are conducted for each subject, and
 each atlas and template library size combination (1-9 atlases, 1-19 templates).
 In each round, images and their manual labels are randomly selected from the
 pool, and the remaining images are segmented using \mb{} with a random subset of
-the unlabelled images also serve as template images. Majority vote fusion, and
+the unlabelled images also serving as template images. Majority vote fusion, and
 the \ants{} registration algorithm are used, as these have shown to behave
 favourably in previous experiments.
 
@@ -997,7 +999,7 @@ using \mb{} and two other popular segmentation packages, \fsl{} and
 \freesurfer{}. Firstly, \mb{} is used with the five Winterburn atlas images and
 labels as atlases, and a randomly selected subset of 19 psychosis dataset images
 as templates. Secondly, \mb{} is run using the same template images, but instead
-as atlases we use five additional five first episode psychosis subjects and
+as atlases we use five additional first episode psychosis subjects and
 corresponding manual segmentations (not included above). Finally, \fsl{} and
 \freesurfer{} are run with their default settings to segment the entire dataset.
 The \fsl{} \verb+run_first_all+ script was used according to the FIRST user guide
@@ -1011,18 +1013,18 @@ average value over the five rounds of validation for a given atlas and template
 library size. The reported average DSC value per given atlas and template
 library size is the average DSC value over all subjects segmented. 
 
-The Pruessner segmentation protocol differs slightly from the Winterburn
-protocol those used by \freesurfer{} and \fsl{} in the neuroanatomical features
-that are delineated (see \citet{Winterburn2013}, and Table
-\ref{tab:subfield-segmentation-protocols} in the Discussion below). This
-variation in protocol poses a problem if an overlap measure is used for
-evaluation: since different protocols will necessarily produce segmentations
-that do not perfectly overlap, the degree of overlap cannot be solely used to
-compare segmentation methods using different protocols. In place of an overlap
-metric, we assess the degree of (Pearson) correlation in average bilateral
-hippocampal volume produced by each method. Additionally, we evaluate the
-volume-related fixed and proportional biases in all segmentation methods using
-Bland-Altman plots \citep{Bland1986}. 
+The \prsnr{} segmentation protocol differs slightly from the Winterburn
+protocol, and those used by \freesurfer{} and \fsl{}, in the inclusion of
+neuroanatomical features and the manner they are delineated (see
+\citet{Winterburn2013}, and Table \ref{tab:subfield-segmentation-protocols} in
+the Discussion below). This variation in protocol poses a problem if an overlap
+measure is used for evaluation: since different protocols will necessarily
+produce segmentations that do not perfectly overlap, the degree of overlap
+cannot be solely used to compare segmentation methods using different protocols.
+In place of an overlap metric, we assess the degree of (Pearson) correlation in
+average bilateral hippocampal volume produced by each method. Additionally, we
+evaluate the volume-related fixed and proportional biases in all segmentation
+methods using Bland-Altman plots \citep{Bland1986}. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
@@ -1057,20 +1059,19 @@ latex(tab, file="", size="scriptsize",landscape=FALSE, ctable=FALSE,
 \subsubsection{\expfepxval{}: Results}
 
 As in \expadnixval, we find that similarity score increases with a greater
-number of atlases or templates but quickly plateaus (Figure
-\label{fig:FEP-xval}). A maximum similarity score of \Sexpr{snt.mb.kappa.best}
-is found when using 9 atlases, 19 templates, ANTS registration, and majority
-vote label fusion. 
+number of atlases or templates but quickly plateaus (Figure \ref{fig:FEP-xval}).
+A maximum similarity score of \Sexpr{snt.mb.kappa.best} is found when using 9
+atlases, 19 templates, ANTS registration, and majority vote label fusion. 
 
 We found a close relationship in average hippocampal volume between the manual
 label volumes and \mb{} when using the Winterburn atlases, or manually segmented
-FEP subjects as atlases (Figure \label{fig:FEP-vols}). Both sets of volumes are
+FEP subjects as atlases (Figure \ref{fig:FEP-vols}). Both sets of volumes are
 correlated with Pearson $r > 0.88$. \freesurfer{} and \fsl{} volumes are both
 correlated with manual volumes at Pearson $r > 0.7$.
 
 As \citet{Bland1986} noted, high correlation amongst measures of the same
 quantity does not necessarily imply agreement (as correlation can be driven by a
-large range in true values, for instance). Figure \label{fig:FEP-Bland-Altman}
+large range in true values, for instance). Figure \ref{fig:FEP-Bland-Altman}
 shows Bland-Altman plots illustrating the level of agreement of each method with
 manual volumes. All methods show an obvious proportional bias: \freesurfer{}
 and \fsl{} markedly underestimate smaller hippocampi and over-estimate large
@@ -1225,25 +1226,12 @@ hippocampal segmentations (\snt{}) provided by ADNI.
 
 \paragraph{\adnidataset{} dataset}  %%%%%%%%%%%
 The {\em \adnidataset{}} standardized dataset contains $1919$ images in total.
-\snt{}, \maper{}, \freesurfer{} hippocampal volumes for a subset of images were
+\snt{}, \maper{}, and \freesurfer{} hippocampal volumes for a subset of images were
 provided by ADNI, along with quality control data for each \freesurfer{}
 segmentation (guidelines described in \citep{Hartig2010}). 
 
-Clinical, demographic and pre-processed T1-weighted MRI were downloaded by the
-authors from the ADNI database (adni.loni.ucla.edu) between March 2012 and
-August 2012. The image dataset used was the "\adnidataset{}" standardized dataset
-available from ADNI \footnote{
-\url{http://adni.loni.ucla.edu/methods/mri-analysis/adni-standardized-data/}}
-\citep{Wyman2012}. This image collection contains uniformly pre-processed images
-which have been designated to be the "best" after quality control. All images
-were acquired using 1.5T scanners (General Electric Healthcare, Philips Medical
-Systems or Siemens Medical Solutions) at multiple sites using the protocol
-described in \citep{Jack2008}. Representative 1.5T imaging parameters were TR =
-2400ms, TI = 1000ms, TE = 3.5ms, flip angle = $8^{\circ}$, field of view = 240 x
-240mm, a $192 \times 192 \times 166$ matrix ($x$, $y$, and $z$ directions)
-yielding a voxel dimensions of $1.25mm \times 1.25mm \times 1.2mm$. Clinical
-and demographic data for the entire \adnidataset{} dataset are shown in Table
-\ref{tab:ADNI1-Dataset-Demographics}.
+See Section \ref{adnidataset} for study details, inclusion criteria and imaging
+characteristics. 
 
 Semi-automated segmentations of the left and right whole hippocampi are made
 available with a subset of ADNI images \citep{Hsu2002}. These labels have been
@@ -1257,10 +1245,11 @@ segmentations of five in-vivo $0.3mm$-isotropic T1-weighted MR images, described
 more fully in \expfepxval, section \ref{exp:fep-xval}. 
 
 \paragraph{Experiment details} %%%%%%%%%%
-\mb{} was configured with an atlas library composed of the five Winterburn and
-segmentations. A template library of 19 images were randomly selected from the target
-dataset of ADNI subjects, and \ants{} registration and majority vote label fusion
-were used as these were found to perform favourably in earlier experiments. 
+\mb{} was configured with an atlas library composed of the five Winterburn atlas
+images and segmentations. A template library of 19 images were randomly selected
+from the target dataset of ADNI subjects, and \ants{} registration and majority
+vote label fusion were used as these were found to perform favourably in earlier
+experiments. 
 
 \fsl{} segmentation was performed using the \verb+run_first_all+ script
 according to the FIRST user guide
@@ -1272,7 +1261,7 @@ segmentations using similar quality control guidelines (if either hippocampus
 was under or over segmented by $10mm$ or greater in three or more slices then
 the segmentation did not pass). Only images meeting the conditions of having
 segmentations from all methods (\snt{}, \maper{}, \freesurfer{}, \fsl{}, and
-\mb{}) and also passing similary quality control inspection were included in the
+\mb{}) and also passing similar quality control inspection were included in the
 analysis. 
 
 \paragraph{Evaluation method} %%%%%%%%%%
@@ -1308,7 +1297,6 @@ caption =
   CN     - Cognitively Normal. 
   LMCI   - Late-onset Mild Cognitive Impairment. 
   AD     - Alzheimer's Disease. 
-  Hisp   - Hispanic. 
   CDR-SB - Clinical Dementia Rating-Sum of Boxes. 
   ADAS   - Alzheimer's Disease Assessment Scale. 
   MMSE   - Mini-Mental State Examination."
@@ -1533,7 +1521,7 @@ ggplot(melted, aes(x= mean, y = diff, colour=Diagnosis)) +
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{\expsubfield{}: \expsubfielddesc{}}
 \label{exp:winterburn-xval}
-The previous experiment assesses \mb{} peformance on whole hippocampus
+The previous experiment assesses \mb{} performance on whole hippocampus
 segmentation. In this experiment, we evaluate \mb{} hippocampal subfield
 segmentation of standard 3T T1-weighted images at $0.9m^3$-isotropic voxels. We
 use a modified leave-one-out cross-validation (LOOCV) design. 
@@ -1602,7 +1590,7 @@ latex(tab, file="", size="scriptsize",landscape=FALSE, ctable=FALSE,
 
 \paragraph{Evaluation method}  
 Evaluating the agreement of automated hippocampal subfield segmentations with
-manual segmetnations for T1 images at $0.9mm^3$-isotropic voxels is inherently
+manual segmentations for T1 images at $0.9mm^3$-isotropic voxels is inherently
 ill-defined since there are no manual protocols for segmentation at this
 resolution. Instead, we must evaluate the reliability, or {\it precision}, with
 which \mb{} produces hippocampal subfields segmentations at this resolution that
@@ -1863,7 +1851,7 @@ single subject for qualitative inspection.
 This table shows the best published Dice's overlap measure between automated and
 ground truth segmentations. Unless otherwise specified,
 validation datasets are composed equally of cases and control subjects, and use
-manual segmenation labels as ground truth in computing DSC scores. AD =
+manual segmentation labels as ground truth in computing DSC scores. AD =
 Alzheimer's Disease; MCI = Mild Cognitive Impairment; CN = Cognitively Normal
 (CN); FEP = First Episode of Psychosis; LOOCV = Leave-one-out cross-validation; MCCV
 = Monte Carlo cross-validation; SNT = Surgical Medtronic Navigation Technologies
@@ -1979,20 +1967,24 @@ Multi-atlas               &275&0.835   &\cite{Aljabar2009}% {\tiny (0.832, 0.837
 
 In this manuscript we have presented the implementation and validation of the
 \mb{} framework -- a methodology that requires very few input atlases in order
-to provide accurate and reliable segmentations. \expadnixval{} (Section
-\ref{exp:adni-xval}) compares \mb{} to basic-\multiatlas{} segmentation by
-characterising the behaviour of each approach with varying parameter settings,
-and allows us to choose optimal settings for subsequent experiments.
-\expfepxval{} (Section \ref{exp:winterburn-xval}) demonstrates the reliability of
-\mb{} in producing subfield segmentations which match the segmentation protocol
-of the input atlases despite contrast and resolution limitations in standard
-T1-weighted image volumes. \expadnixval{} and \expfepxval{} validate whole hippocampal
-segmentation precision and consistency on populations with different ageing and
-neuropsychiatric characteristics. All of these experiments together demonstrate
-that \mb{} algorithmic performance is not dependent on a single definition of
-the hippocampus but is effective with differing hippocampal definitions
-\citep{Winterburn2013,Pruessner2000,Hsu2002}. 
-\textbf{[TOOD: are all experiments referred to here?]}
+to provide accurate and reliable segmentations. Both \expadnixval{} (Section
+\ref{exp:adni-xval}) and \expfepxval (Section \ref{exp:fepi-xval}) compare \mb{}
+to basic-\multiatlas{} segmentation by characterising the change in segmentation
+quality with varying parameter settings (atlas and template library sizes,
+registration method, and label fusion method) and differing age and
+neuropsychiatric populations. Together, these experiments allow us to choose
+optimal \mb{} parameter settings for use in subsequent experiments. \expadni{}
+(Section \ref{exp:adni}) demonstrates that across
+\Sexpr{length(means.complete$RID)} images from the \adnidataset{} dataset, \mb{}
+performs as well as, or better, than other established and popular methods.
+Finally, \expsubfield{} (Section \ref{exp:winterburn-xval}) demonstrates the
+reliability of \mb{} in producing subfield segmentations which match the
+segmentation protocol of the input atlases despite contrast and resolution
+limitations in standard T1-weighted image volumes.  All of these experiments
+together demonstrate that \mb's algorithmic performance is not dependent on a
+single definition of the hippocampus but is effective with differing hippocampal
+definitions \citep{Winterburn2013,Pruessner2000,Hsu2002}, across image types,
+and subject populations. 
 
 The core claim the \mb{} method is based on -- that we can meaningfully bootstrap
 a template library from a small set of labelled atlas images -- is validated in
