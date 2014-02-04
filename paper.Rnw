@@ -199,18 +199,24 @@ approach when using special, hard-to-define atlases that are laborious to
 construct. \\
 \textbf{Method:} \mb{} works by propagating atlas segmentations to a template
 library, formed from a subset of target images, via transformations estimated by
-nonlinear image registration. The resultant segmentations are then propagated
-to each target image and fused using a label fusion method. To explore the
-effect of atlases and templates library size, registation and label
-fusion method, we conduct a 10-fold Monte Carlo cross-validation of \mb{} of whole
-hippocampal segmentation on 60 ADNI subjects, manually segmented using the
-\prsnr{}-protocol, over a range of parameter settings. Using the best settings
-found, we then conduct a leave-one-out cross-validation (LOOCV) of hippocampal
-subfield segmentation using five high-resolution manually segmented atlases.
-Two final experiments assess \mb{} when applied to first episode psychosis and
-Alzheimer's disease populations, and \mb{} segmentations are compared with
-existing automated methods (\fsl{}, \freesurfer{}, \maper{}, and \snt) and
-biases are explored.\\
+nonlinear image registration. The resulting segmentations are then propagated
+to each target image and fused using a label fusion method. 
+
+We conduct two separate Monte Carlo cross-validation experiments comparing \mb{}
+and \multiatlas{} whole hippocampal segmentation using differing atlas and
+template library sizes, and registation and label fusion methods. The first
+experiment is a 10-fold validation (per parameter setting) over 60 subjects
+taken from the ADNI Alzheimer's disease imaging database, and the second is a
+5-fold validation over 81 subjects having had a first episode of psychosis. In
+both cases, automated segmentations are compared with manual segmentions
+following the \prsnr{}-protocol. Using the best settings found from these
+experiments, we segment \Sexpr{length(means.complete$RID)} images of the
+\adnidataset{} dataset and compare these with segmentations from existing
+automated methods: \fsl{}, \freesurfer{}, \maper{}, and \snt.  Finally, we
+conduct a leave-one-out cross-validation (LOOCV) of hippocampal subfield
+segmentation using five high-resolution manually segmented atlases
+\citep{Winterburn2013}.
+
 \textbf{Results:} \textbf{[TODO: update with FEP-XVAL and subfield XVAL results.]} 
 Using 9 atlases and 19 template images, \mb{} achieves a
 mean Dice's Similarity Coefficient (DSC) of \Sexpr{mb.kappa.best} 
