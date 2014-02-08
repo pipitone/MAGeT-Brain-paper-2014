@@ -35,10 +35,11 @@ lm_eqn = function(m) {
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% ADNI1-XVAL: prep
-% Prepares the data in a the form needed for plotting.
-<<ADNI1-xval-load,include=FALSE,cache=TRUE>>=
+<<load,include=FALSE,cache=TRUE>>=
+
+########################################
+# ADNI1-XVAL: prep
+# Prepares the data in a the form needed for plotting.
 jens_atlases = read.csv('data/jens_atlases.csv')
 jens_xval_data  <- read.csv(gzfile('data/cache/ADNI-JENS-XVAL:all_data.csv.gz'))
 jens_xval_mean  <- read.csv(gzfile('data/cache/ADNI-JENS-XVAL:all_data_mean.csv.gz'))
@@ -54,23 +55,18 @@ mb.diff.best = mean(subset(jens_xval_mean,
                                  method.mb    == "Majority Vote" &
                                  templates.mb == 19 & 
                                  atlases      == 1)$k_diff)
-@
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% ADNI1-COMPLETE
-% Prepares the data in the form needed for plotting.
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-<<ADNI-volumes-prep,echo=F,cache=T>>=
+########################################
+# ADNI1-COMPLETE
+# Prepares the data in the form needed for plotting.
+########################################
 means.complete   <- read.csv('data/cache/ADNI1:qc.csv')
 package_totals   <- read.csv('data/cache/ADNI1:package_totals.csv')
-@
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% ADNI1-XVAL: prep
-% Prepares the data in a the form needed for plotting.
-<<ADNI1-SNT-xval-prep,include=FALSE,cache=TRUE>>=
+########################################
+# ADNI1-SNT-XVAL: prep
+# Prepares the data in a the form needed for plotting.
 snt_xval_data  <- read.csv(gzfile('data/cache/ADNI-SNT-XVAL:all_data.csv.gz'))
 snt_xval_mean  <- read.csv(gzfile('data/cache/ADNI-SNT-XVAL:all_data_mean.csv.gz'))
 snt_xval_mean$reg_method = factor(snt_xval_mean$reg_method, c("ANTS", "ANIMAL"))
@@ -86,6 +82,19 @@ snt.mb.diff.best = mean(subset(snt_xval_mean,
                                  method.mb    == "Majority Vote" &
                                  templates.mb == 19 & 
                                  atlases      == 1)$k_diff)
+
+########################################
+# ADNI1-FEP-XVAL: prep
+# Prepares the data in a the form needed for plotting.
+fep.xval <-read.csv('data/results-fep-xval-ants-2013-12-29-191914.csv')
+fep.xval$atlases <- as.factor(fep.xval$atlases)
+fep.xval.mean <- ddply(fep.xval, .(subject,atlases,templates,label), function (df) {
+  data.frame(k=mean(df$k),volume=mean(df$volume))
+})
+
+fep.mb.kappa.best = round(mean(subset(fep.xval.mean, 
+                               templates == 19 & 
+                               atlases   == 9)$k), digits=3)
 @
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -98,20 +107,20 @@ snt.mb.diff.best = mean(subset(snt_xval_mean,
 \usepackage{authblk}             % Listing Author affiliations
 \usepackage{rotating}            % rotating figures
 \usepackage[hypcap]{caption}
-\usepackage{subcaption}
-\newcommand{\subfloat}[2][need a sub-caption]{\subcaptionbox{#1}{#2}}
+\usepackage{setspace}            % line spacing control
+\usepackage{subcaption}          % subfigures
+%\newcommand{\subfloat}[2][need a sub-caption]{\subcaptionbox{#1}{#2}}
 \usepackage{lineno}              % line numbers
 \usepackage{multirow,rotating}   % vertical text in tables
-\usepackage[displaymath, tightpage]{preview} %draft mode
-\setlength{\marginparwidth}{1.2in}
+%\usepackage[displaymath, tightpage]{preview} %draft mode
 \usepackage{fancyhdr}
 \pagestyle{fancy}
-\fancyhead[RO,RE]{draft - January, 2014}
+\fancyhead[RO,RE]{}
 
 % styling
 \newcommand{\subsubsubsection}[1]{\paragraph{#1}}
 \renewcommand\Affilfont{\itshape\small}  %authblk
-\linespread{1.3} % one and a half line spacing
+\onehalfspacing
 
 % shortcuts 
 \newcommand{\mb}{MAGeT-Brain}
@@ -156,11 +165,11 @@ Subfields}
 \author[1,6,7,8]{M. Mallar Chakravarty}
 \author[ ]{the Alzheimer's Disease Neuroimaging Initiative\footnote{Data
 used in preparation of this article were obtained from the Alzheimer's Disease
-Neuroimaging Initiative (ADNI) database (adni.loni.ucla.edu). As such, the
+Neuroimaging Initiative (ADNI) database (adni.loni.usc.edu). As such, the
 investigators within the ADNI contributed to the design and implementation of
 ADNI and/or provided data but did not participate in analysis or writing of this
 report. A complete listing of ADNI investigators can be found at:
-http://adni.loni.ucla.edu/wp-content/uploads/how\_to\_apply/ADNI\_Acknowledgement\_List.pdf}}
+http://adni.loni.usc.edu/wp-content/uploads/how\_to\_apply/ADNI\_Acknowledgement\_List.pdf}}
 \affil[1]{Kimel Family Translational Imaging-Genetics Lab, Centre for Addiction and
 Mental Health, Toronto, ON, Canada}
 \affil[2]{Neurosciences and Mental Health Laboratory, Hospital for Sick
@@ -206,9 +215,9 @@ We conduct two separate Monte Carlo cross-validation experiments comparing \mb{}
 and \multiatlas{} whole hippocampal segmentation using differing atlas and
 template library sizes, and registation and label fusion methods. The first
 experiment is a 10-fold validation (per parameter setting) over 60 subjects
-taken from the ADNI Alzheimer's disease imaging database, and the second is a
-5-fold validation over 81 subjects having had a first episode of psychosis. In
-both cases, automated segmentations are compared with manual segmentions
+taken from the Alzheimer's Disease Neuroimaging Database (ADNI), and the second
+is a five-fold validation over 81 subjects having had a first episode of psychosis.
+In both cases, automated segmentations are compared with manual segmentions
 following the \prsnr{}-protocol. Using the best settings found from these
 experiments, we segment \Sexpr{length(means.complete$RID)} images of the
 \adnidataset{} dataset and compare these with segmentations from existing
@@ -476,12 +485,16 @@ segmentation quality of the \mb{} algorithm:
   this experiment enable us to choose the parameter settings offering the best
   performance for use in subsequent experiments. 
 
-  \item \expfepxval{} consists of a similar cross-validation to explore \mb{}
-  segmentations on the brain images of young, first episode psychosis patients,
-  and to establish parameter settings that do not overfit on a single dataset. 
+  \item \expfepxval{} is a similar cross-validation to explore \mb{}
+  segmentations on the brain images of young, first episode psychosis patients. 
+  In addition, \mb{} segmentations with two different atlas segmentation
+  protocols are compared to automated segmentations by the \fsl and
+  \freesurfer algorithms.  The results of this experiment combined with the
+  previous experiment establishes parameter settings that do not overfit to the
+  neuroanatomical features of a specific patient cohort.
 
   \item \expadni{} bridges \mb{} with the existing segmentation literature by
-  comparing \mb{} whole hippocampus segmentations with those of well-known
+  comparing \mb{} whole hippocampus segmentations with those of several well-known
   automated methods (\freesurfer, \fsl, \maper, \snt) on the entire
   \adnidataset{} image dataset consisting of \Sexpr{length(means.complete$RID)}
   brain images of subjects diagnosed as cognitively normal, having mild cognitive
@@ -553,7 +566,7 @@ left and right whole hippocampi in these images were provided by one author
 (JCP) according to the segmentation protocol specified in \citet{Pruessner2000}. 
 
 Clinical, demographic and pre-processed T1-weighted MRI were downloaded by the
-authors from the ADNI database (adni.loni.ucla.edu) between March 2012 and
+authors from the ADNI database (adni.loni.usc.edu) between March 2012 and
 August 2012. The image dataset used was the \adnidataset{} standardized dataset
 available from ADNI \footnote{
 \url{http://adni.loni.usc.edu/methods/mri-analysis/adni-standardized-data/}}
@@ -850,7 +863,7 @@ ggplot(subset(jens_xval_mean, reg_method=="ANTS" &
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ADNI1-XVAL: show variability of MAGeT over parameters
-<<fig:ADNI1-xval-variability,dependson='ADNI1-Xval-prep',fig.show='hide'>>=
+<<fig:ADNI1-xval-variability,dependson='load',fig.show='hide'>>=
 ants = subset(jens_xval_data, 
                      reg_method=="ANTS" & 
                      method.mb=="Majority Vote" &
@@ -1001,16 +1014,16 @@ the \ants{} registration algorithm are used, as these have shown to behave
 favourably in previous experiments.
 
 In addition to the MCCV, we segment the entire first episode psychosis dataset
-using \mb{} and two other popular segmentation packages, \fsl{} and
-\freesurfer{}. Firstly, \mb{} is used with the five Winterburn atlas images and
-labels as atlases, and a randomly selected subset of 19 psychosis dataset images
-as templates. Secondly, \mb{} is run using the same template images, but instead
-as atlases we use five additional first episode psychosis subjects and
-corresponding manual segmentations (not included above). Finally, \fsl{} and
-\freesurfer{} are run with their default settings to segment the entire dataset.
-The \fsl{} \verb+run_first_all+ script was used according to the FIRST user guide
+using \mb{} using two different atlases, as well as two popular automated
+segmentation packages, \fsl{} and \freesurfer{}. Specifically, \mb{} is run once
+with the five Winterburn atlas images and labels as atlases and a randomly selected
+subset of 19 target images as templates. \mb{} is run a second time using
+the same template images, but we using five additional first
+episode psychosis subjects and corresponding manual segmentations (not included
+above) as atlases. \fsl{} and \freesurfer{} are run with the default settings:
+\fsl{} \verb+run_first_all+ script was used according to the FIRST user guide
 \footnote{http://fsl.fmrib.ox.ac.uk/fsl/fslwiki/FIRST/UserGuide}, and
-\freesurfer{} was run using \verb+recon-all -all+. 
+\freesurfer{} was run with the command \verb+recon-all -all+. 
 
 \paragraph{Evaluation method}
 Manual and automated segmentations are directly compared using Dice's similarity
@@ -1066,7 +1079,7 @@ latex(tab, file="", size="scriptsize",landscape=FALSE, ctable=FALSE,
 
 As in \expadnixval, we find that similarity score increases with a greater
 number of atlases or templates but quickly plateaus (Figure \ref{fig:FEP-xval}).
-A maximum similarity score of \Sexpr{snt.mb.kappa.best} is found when using 9
+A maximum similarity score of \Sexpr{fep.mb.kappa.best} is found when using 9
 atlases, 19 templates, ANTS registration, and majority vote label fusion. 
 
 We found a close relationship in average hippocampal volume between the manual
@@ -1081,28 +1094,19 @@ large range in true values, for instance). Figure \ref{fig:FEP-Bland-Altman}
 shows Bland-Altman plots illustrating the level of agreement of each method with
 manual volumes. All methods show an obvious proportional bias: \freesurfer{}
 and \fsl{} markedly underestimate smaller hippocampi and over-estimate large
-hippocampi (the limits of agreement are between $-2482^3mm$ and $-784^3mm$, and
-between $-1653^3mm$ and $79^3mm$, respectively), whereas both \mb{} methods show
+hippocampi (the limits of agreement are between $-2482mm^3$ and $-784mm^3$, and
+between $-1653mm^3$ and $79mm^3$, respectively), whereas both \mb{} methods show
 a much less exaggerated, but conservative bias (limits of agreement between
-$-67^3mm$ and $766^3mm$ when using FEP atlases, and between $-333^3mm$ and
-$504^3mm$ when using Winterburn atlases). On average, \freesurfer{} and \fsl{}
+$-67mm^3$ and $766mm^3$ when using FEP atlases, and between $-333mm^3$ and
+$504mm^3$ when using Winterburn atlases). On average, \freesurfer{} and \fsl{}
 overestimate hippocampal volume by about $1600 mm^3$ and $800 mm^3$,
-respectively. In contrast, on average \mb{} underestimates volumes by about $300
-mm^3$ when using FEP atlases, and by about $80mm^3$ when using Winterburn
-atlases. 
+respectively. In contrast, on average \mb{} underestimates volumes by about
+$300mm^3$ when using FEP atlases and by about $80mm^3$ when using Winterburn
+atlases (compared to the \psegs).
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % FEP-XVAL: mean Kappa plot by atlases, templates, reg and voting method. 
-<<fig:FEP-xval,fig.show='hide'>>=
-  fep.xval <-read.csv('data/results-fep-xval-ants-2013-12-29-191914.csv')
-  fep.xval$atlases <- as.factor(fep.xval$atlases)
-  fep.xval.mean <- ddply(fep.xval, .(subject,atlases,templates,label), function (df) {
-    data.frame(k=mean(df$k),volume=mean(df$volume))
-  })
-
-  fep.mb.kappa.best = round(mean(subset(fep.xval.mean, 
-                                 templates == 19 & 
-                                 atlases      == 9)$k), digits=3)
+<<fig:FEP-xval,fig.show='hide',dependson='load'>>=
   stderr <- function(x) sqrt(var(x)/length(x))
   ggplot(fep.xval.mean, aes(x=templates,y=k, colour=atlases)) + 
     stat_summary(fun.y=mean,geom='line', aes(y=k,weight=1,group=atlases)) + 
@@ -1144,7 +1148,7 @@ atlases.
     theme(legend.direction = "horizontal", legend.position = "bottom")
 @
 
-<<fig:FEP-Bland-Altman,dependson='fig:FEP-vols',fig.width=10,fig.height=3,fig.show='hide'>>=
+<<fig:FEP-Bland-Altman,dependson='fig:FEP-vols',fig.width=10,fig.height=6,fig.show='hide'>>=
 fep.volumes$diff = fep.volumes$manual - fep.volumes$volume
 fep.volumes$mean = (fep.volumes$manual + fep.volumes$volume)/2
 limits = ddply(fep.volumes, c("Method"), function (df) { 
@@ -1153,9 +1157,10 @@ limits = ddply(fep.volumes, c("Method"), function (df) {
 )}) 
 
 ggplot(fep.volumes, aes(x= mean, y = diff)) + 
-  facet_wrap( ~ Method, nrow=1, scales="fixed") + 
+  facet_wrap( ~ Method, nrow=2, scales="fixed") + 
   geom_smooth(method="lm", formula=y~x, fullrange=T, se=F) + 
-  geom_point(size=1) +  
+  scale_shape_discrete(solid=F,legend=F) + 
+  geom_point(size=2,mapping=aes(shape=1)) +  
   geom_hline(aes(yintercept = y), linetype="dashed", colour="brown",
              data=limits, size=0.3, alpha=0.5) + 
   geom_text(aes(y = y, x=Inf, label=round(y,0)), colour="black", data = limits,
@@ -1189,19 +1194,17 @@ ggplot(fep.volumes, aes(x= mean, y = diff)) +
     \label{fig:FEP-Bland-Altman}
   \end{subfigure}
   \caption{\textbf{First Episode Patient dataset validation.}
-Manual segmentation of all 81 subjects is completed using the \prsnr-protocol.
-\mb{} is configured using \ants{} registration algorithm and majority vote label
-fusion. 
-(\ref{fig:FEP-xval}) shows mean DSC overlap similarity score of \mb{}
-  segmentations as they vary with atlas and template library size over 5-fold
-  validation. Error bars indicate standard error. 
-(\ref{fig:FEP-vols}) shows the volumes of the 81 subjects as determined by \fsl,
-  \freesurfer, and \mb{} configured in two ways: with an atlas library
-  of the five Winterburn atlases (MAGeT-Winterburn), or with an atlas
-  library of five manually segmented FEP subjects as atlases (MAGeT-FEP). Linear
+  All manual segmentation of the 81 subjects is done with the \prsnr-protocol.
+  \mb{} uses \ants{} registration and majority vote label fusion. 
+(\ref{fig:FEP-xval}) shows mean DSC score of \mb{} segmentations, as atlas and
+  template library size is varied over a 5-fold validation. Error bars indicate
+  standard error. 
+(\ref{fig:FEP-vols}) shows segmentation volumes from \fsl,
+  \freesurfer, \mb{} using the five Winterburn atlases (MAGeT-Winterburn), and
+  \mb{} using five manually segmented FEP subjects as atlases (MAGeT-FEP). Linear
   fit lines are shown, with the shaded region showing standard error.
-(\ref{fig:FEP-Bland-Altman}) shows the agreement between computed volumes and
-  manually segmented volume. The overall mean difference in volume, and limits of
+(\ref{fig:FEP-Bland-Altman}) shows the agreement between computed and
+  manually volumes. The overall mean difference in volume, and limits of
   agreement ($\pm 1.96SD$) are shown by dashed horizontal lines. Linear fit lines
   are shown for each diagnosis group. Note, points below the mean difference
   indicate overestimation of the volume with respect to the manual volume, and
@@ -1231,31 +1234,28 @@ hippocampal segmentations (\snt{}) provided by ADNI.
 \subsubsection{\expadni{}: Materials and Methods}
 
 \paragraph{\adnidataset{} dataset}  %%%%%%%%%%%
-The {\em \adnidataset{}} standardized dataset contains $1919$ images in total.
-\snt{}, \maper{}, and \freesurfer{} hippocampal volumes for a subset of images were
-provided by ADNI, along with quality control data for each \freesurfer{}
-segmentation (guidelines described in \citep{Hartig2010}). 
-
-See Section \ref{adnidataset} for study details, inclusion criteria and imaging
+The {\em \adnidataset{}} standardized dataset contains $1919$ images of subjects
+diagnosed with Alzheimer's disease (AD), late-onset mild cognitive impairment
+(LMCI), or who are identified as cognitively normal (CN). See Section
+\ref{adnidataset} for study details, inclusion criteria and imaging
 characteristics. 
 
 Semi-automated segmentations of the left and right whole hippocampi are made
 available with a subset of ADNI images \citep{Hsu2002}. These labels have been
 generated using the \snt{} tool from Medtronic Surgical Navigation Technologies,
 Louisville, CO (see Supplementary Materials for detailed discussion of the
-segmentation process).
+segmentation process).  
 
-\paragraph{Winterburn Atlases}  %%%%%%%%%%
-The Winterburn atlases \citep{Winterburn2013} are digital hippocampal
-segmentations of five in-vivo $0.3mm$-isotropic T1-weighted MR images, described
-more fully in \expfepxval, section \ref{exp:fep-xval}. 
+\maper{} -- a \multiatlas segmentation tool , and \freesurfer{} hippocampal volumes for a subset of images were also
+provided by ADNI, along with quality control data for each \freesurfer{}
+segmentation (guidelines described in \citep{Hartig2010}). 
 
 \paragraph{Experiment details} %%%%%%%%%%
 \mb{} was configured with an atlas library composed of the five Winterburn atlas
-images and segmentations. A template library of 19 images were randomly selected
-from the target dataset of ADNI subjects, and \ants{} registration and majority
-vote label fusion were used as these were found to perform favourably in earlier
-experiments. 
+images (\expfepxval, section \ref{exp:fep-xval}) and segmentations. A template
+library of 19 images were randomly selected from the target dataset of ADNI
+subjects, and \ants{} registration and majority vote label fusion were used as
+these were found to perform favourably in earlier experiments. 
 
 \fsl{} segmentation was performed using the \verb+run_first_all+ script
 according to the FIRST user guide
@@ -1365,7 +1365,7 @@ latex(package_totals, file="", size="scriptsize",landscape=FALSE, ctable=TRUE,
 %%%%%%%%%
 % ADNI volumes by automated method
 %%%%%%%%%
-<<fig:ADNI-volumes-plot,dependson='ADNI-volumes-prep',fig.show='hide'>>=
+<<fig:ADNI-volumes-plot,dependson='load',fig.show='hide'>>=
 melted=melt(means.complete, measure.vars=c("FS", "FSL", "MAPER","MAGeT"), 
             variable.name = "Method", value.name = "volume")
 
@@ -1394,7 +1394,7 @@ ggplot(data=melted, aes(x=SNT, y=volume, colour=Method)) +
 %%%%%%%%%
 % ADNI volumes by disease group and method
 %%%%%%%%%
-<<fig:ADNI-volumes-boxplot,dependson='ADNI-volumes-prep',fig.show='hide'>>=
+<<fig:ADNI-volumes-boxplot,dependson='load',fig.show='hide'>>=
 melted = melt(means.complete,measure.vars=c("FS", "FSL", "MAPER","MAGeT"),
               variable.name="Method", value.name="Volume")
 correlations = ddply(melted, c("DX","Method"), function (df) {
@@ -1422,7 +1422,7 @@ qplot(DX,value,data=m2,
 %%%%%%%%%
 % ADNI Bland-Altman plots
 %%%%%%%%%
-<<fig:ADNI-Bland-Altman,dependson='ADNI-volumes-prep',fig.show='hide',fig.height=4,fig.width=10>>=
+<<fig:ADNI-Bland-Altman,dependson='load',fig.show='hide',fig.height=4,fig.width=10>>=
 names(means.complete)[8] = "FreeSurfer"
 melted=melt(means.complete, measure.vars=c("FreeSurfer", "FSL", "MAPER","MAGeT"), 
             variable.name = "method", value.name = "volume")
@@ -2041,7 +2041,7 @@ Alzhiemer disease, mild cognitive impairment, and cognitively normal data from
 the ADNI database (Table \ref{tab:other-methods}. In addition, our validation
 in \expfepxval{} (with the first episode psychosis subjects) yields DSC's that
 are amongst the highest reported. Thus, more work is required to determine the
-extent to which label-fusion will improve the accuracy of our algorithm.
+extent to which label fusion will improve the accuracy of our algorithm.
 
 More work is required to determine the source of the slight decrease in
 segmentation performance when the number of templates are set to an even number.
@@ -2204,7 +2204,7 @@ effect into perspective by comparing \mb{} subfield segmentation agreement with
 the agreement of voxel-shifted manual segmentations (Table
 \ref{tab:WAxval-perturb-kappa}). The results of this exercise show conclusively,
 despite the very limited number of atlases we had to work with, that \mb{}
-subfield segmentations are well within the bounds of error of a $0.3mm$ shift. 
+subfield segmentations are well within the bounds of error of a $0.3mm$ voxel shift. 
 
 Our overlap DSC values demonstrates that we can reliably reproduce segmentations
 for the CA1, subiculum, and CA4/dentate subfields (DSC > 0.5). That the CA2/CA3
@@ -2471,7 +2471,7 @@ ggplot(subset(snt_xval_mean, reg_method=="ANTS" &
 %%%%%%%%%%%%%
 % ADNI1-SNT-XVAL: variability
 %%%%%%%%%%%%%
-<<fig:ADNI1-SNT-xval-variability,dependson='ADNI1-Xval-prep',fig.show='hide'>>=
+<<fig:ADNI1-SNT-xval-variability,dependson='load',fig.show='hide'>>=
 ants = subset(snt_xval_data, 
                      reg_method=="ANTS" & 
                      method.mb=="Majority Vote" &
