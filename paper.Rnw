@@ -219,10 +219,11 @@ the number of atlases needed while still achieving similar aggreement to
 \multiatlas{} approaches. Thus, our method acts as an accurate \multiatlas{}
 approach when using special, hard-to-define atlases that are laborious to
 construct. \\
+
 \textbf{Method:} \mb{} works by propagating atlas segmentations to a template
 library, formed from a subset of target images, via transformations estimated by
 nonlinear image registration. The resulting segmentations are then propagated
-to each target image and fused using a label fusion method. 
+to each target image and fused using a label fusion method.  
 
 We conduct two separate Monte Carlo cross-validation experiments comparing \mb{}
 and \multiatlas{} whole hippocampal segmentation using differing atlas and
@@ -236,39 +237,30 @@ experiments, we segment \Sexpr{length(means.complete$RID)} images of the
 \adnidataset{} dataset and compare these with segmentations from existing
 automated methods: \fsl{}, \freesurfer{}, \maper{}, and \snt.  Finally, we
 conduct a leave-one-out cross-validation (LOOCV) of hippocampal subfield
-segmentation using five high-resolution manually segmented atlases
-\citep{Winterburn2013}.
+segmentation in standard 3T T1 images, using five high-resolution manually
+segmented atlases \citep{Winterburn2013}.
 
-\textbf{Results:} 
-ADNI-XVAL
-In the ADNI cross-validation, using 9 atlases \mb{} achieves a mean Dice's
-Similarity Coefficient (DSC) score of \Sexpr{mb.kappa.best} with respect to
-manual whole hippocampus segmentations, and also exhibits significantly lower
-variability in DSC scores than \multiatlas{} segmentation.  In the younger,
-psychosis dataset, \mb{} achieves a mean DSC score of \Sexpr{fep.mb.kappa.best}
-and produces volumes which agree with manual segmentation volumes better than
-those produced by the \freesurfer and \fsl methods (mean difference in volume:
-$80mm^3$, $1600mm^3$, and $800mm^3$, respectively). Across the \adnidataset
-dataset,
+\textbf{Results:} In the ADNI cross-validation, using 9 atlases \mb{} achieves a
+mean Dice's Similarity Coefficient (DSC) score of \Sexpr{mb.kappa.best} with
+respect to manual whole hippocampus segmentations, and also exhibits
+significantly lower variability in DSC scores than \multiatlas{} segmentation.
+In the younger, psychosis dataset, \mb{} achieves a mean DSC score of
+\Sexpr{fep.mb.kappa.best} and produces volumes which agree with manual
+segmentation volumes better than those produced by the \freesurfer{} and \fsl{}
+methods (mean difference in volume: $80mm^3$, $1600mm^3$, and $800mm^3$,
+respectively). Similarily, in the \adnidataset{} dataset, \mb{} produces
+hippocampal segmentations well correlated ($r > 0.85$) with \snt{} semi-automated
+reference volumes within disease categories, and shows a conservative bias and a
+mean difference in volume of $250 mm^3$ across the entire dataset, compared with
+\freesurfer{} and \fsl{} which both overesimate volume differences by $2600
+mm^3$ and $2800 mm^3$ on average, respectively. Finally, \mb{} segments the CA1,
+CA4/DG and subiculum subfields with an DSC overlap scores of 0.56, 0.65, 0.58,
+respectively. 
 
-ADNI-1YR
-Subfields
-
-
-In a LOOCV, \mb{} accurately reproduces the subfields... . 
-
-\mb{} produces hippocampal
-volumes in a first episode psychosis patient population that are highly
-correlated with expert manual segmentation volumes (Pearson $r = 0.877, t =
-16.244, p < 0.001$). Compared to \fsl{} and \freesurfer{}, \mb{} shows much smaller
-fixed volume bias (within $250 mm^3$ on average) to semi-automated (\snt{})
-segmentations available from ADNI, as well as a conservative, rather than
-exaggerated, proportional volume bias.
-
-\textbf{Conclusion:} We demonstrate that \mb{} produces accurate hippocampal
-segmentations using only 5 atlases over different hippocampal definitions,
-disease populations, and acquisition types, as well as showing that accurate
-identification of the hippocampal subfields is possible.
+\textbf{Conclusion:} We demonstrate that \mb{} produces accurate whole
+hippocampal segmentations using at most only 9 atlases with various hippocampal
+definitions, disease populations, and image acquisition types, as well we show
+that accurate identification of the hippocampal subfields is possible.
 \end{abstract}
 
 \parbox{4in}{
@@ -841,7 +833,7 @@ ants.stats = ddply(ants, c("atlases", "templates.mb"),
 We find that for \mb{} segmentations, similarity score increases as atlas and
 template library size is increased, although with diminishing returns and an
 eventual trend towards a plateau (Figure \ref{fig:ADNI1-xval-k-mean}). For
-instance, with 9 atlases and using \ants for registration and majority vote
+instance, with 9 atlases and using \ants{} for registration and majority vote
 fusion, the mean DSC scores for 1, 5, 9 and 17 templates are \Sexpr{k.1t},
 \Sexpr{k.5t}, \Sexpr{k.9t}, \Sexpr{k.17t}, respectively.  A maximum
 similarity score of \Sexpr{mb.kappa.best} is found when using 9 atlases, 19
@@ -1410,11 +1402,11 @@ latex(tab, file="", size="scriptsize",landscape=FALSE, ctable=FALSE,
 
 We found a close relationship in total bilateral hippocampal volume between all
 methods and the \snt{} semi-automated label volumes (Figure
-\ref{fig:ADNI-volumes-plot}). Volumes are correlated with Pearson $r > 0.78$
-for all methods across disease categories. Within disease categories (Figure
-\ref{fig:ADNI-volumes-boxplot}), \mb{} is consistently well correlated to manual
-volumes (Pearson $r > 0.85$), but appears to slightly over-estimate the volume
-of the AD hippocampus compared to the \snt{} segmentations. 
+\ref{fig:ADNI-volumes-plot}). Volumes are well correlated ($r > 0.78$)c for all
+methods, and across disease categories. Within disease categories (Figure
+\ref{fig:ADNI-volumes-boxplot}), \mb{} is consistently well correlated to \snt{}
+volumes ($r > 0.85$), but appears to slightly over-estimate the volume of the AD
+hippocampus compared to the \snt{} segmentations. 
 
 Bland-Altman plots illustrate the level of agreement of each method with \snt{}
 segmentation hippocampal volumes (Figure \ref{fig:ADNI-Bland-Altman}). All
@@ -2361,7 +2353,7 @@ funded by the Canadian Institutes of Health Research, Ontario Mental Health
 Foundation, NARSAD, and the National Institute of Mental Health (R01MH099167).
 
 Computations were performed on the gpc supercomputer at the SciNet HPC
-Consortium \cite{Loken2010}. SciNet is funded by: the Canada Foundation for
+Consortium \citep{Loken2010}. SciNet is funded by: the Canada Foundation for
 Innovation under the auspices of Compute Canada; the Government of Ontario;
 Ontario Research Fund - Research Excellence; and the University of Toronto.
 
