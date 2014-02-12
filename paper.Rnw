@@ -31,6 +31,19 @@ lm_eqn = function(m) {
   as.character(as.expression(eq))
 }
 
+# http://druedin.com/2013/02/16/p-level-in-sweave/
+plevel <- function (x, strict=FALSE) {
+  # levels of p-values, for Sweave
+  # strict cuts at 0.05, otherwise cuts at 0.1
+  if (x>0.1 & strict==FALSE) p <- "p>0.1"  # not significant
+  if (x>0.1 & strict==TRUE)  p <- "p>0.05" # not significant
+  if (x<=0.1 & strict==FALSE) p <- "p<0.1"  # significant
+  if (x<=0.1 & strict==TRUE)  p <- "p>0.05" # not significant
+  if (x<=0.01)  p <- "p<0.01"  # significant
+  if (x<=0.05)  p <- "p<0.05"  # significant
+  if (x<=0.001) p <- "p<0.001" # significant
+  return(p)
+  }
 @
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -226,11 +239,22 @@ conduct a leave-one-out cross-validation (LOOCV) of hippocampal subfield
 segmentation using five high-resolution manually segmented atlases
 \citep{Winterburn2013}.
 
-\textbf{Results:} \textbf{[TODO: update with FEP-XVAL and subfield XVAL results.]} 
-Using 9 atlases and 19 template images, \mb{} achieves a
-mean Dice's Similarity Coefficient (DSC) of \Sexpr{mb.kappa.best} 
-(to \psegs{}) over 10-folds of Monte Carlo 
-significantly lower variability in DSC than \multiatlas{} segmentation.
+\textbf{Results:} 
+ADNI-XVAL
+In the ADNI cross-validation, using 9 atlases \mb{} achieves a mean Dice's
+Similarity Coefficient (DSC) score of \Sexpr{mb.kappa.best} with respect to
+manual whole hippocampus segmentations, and also exhibits significantly lower
+variability in DSC scores than \multiatlas{} segmentation.  In the younger,
+psychosis dataset, \mb{} achieves a mean DSC score of \Sexpr{fep.mb.kappa.best}
+and produces volumes which agree with manual segmentation volumes better than
+those produced by the \freesurfer and \fsl methods (mean difference in volume:
+$80mm^3$, $1600mm^3$, and $800mm^3$, respectively). Across the \adnidataset
+dataset,
+
+ADNI-1YR
+Subfields
+
+
 In a LOOCV, \mb{} accurately reproduces the subfields... . 
 
 \mb{} produces hippocampal
@@ -239,11 +263,12 @@ correlated with expert manual segmentation volumes (Pearson $r = 0.877, t =
 16.244, p < 0.001$). Compared to \fsl{} and \freesurfer{}, \mb{} shows much smaller
 fixed volume bias (within $250 mm^3$ on average) to semi-automated (\snt{})
 segmentations available from ADNI, as well as a conservative, rather than
-exaggerated, proportional volume bias.\\ \textbf{Conclusion:} We demonstrate
-that \mb{} produces accurate hippocampal segmentations using only 5 atlases over
-different hippocampal definitions, disease populations, and acquisition types,
-as well as showing that accurate identification of the hippocampal subfields is
-possible.
+exaggerated, proportional volume bias.
+
+\textbf{Conclusion:} We demonstrate that \mb{} produces accurate hippocampal
+segmentations using only 5 atlases over different hippocampal definitions,
+disease populations, and acquisition types, as well as showing that accurate
+identification of the hippocampal subfields is possible.
 \end{abstract}
 
 \parbox{4in}{
@@ -769,25 +794,82 @@ smaller level of variability between methods.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{\expadnixval{}: Results}
 
+<<ADNI1-xval-scores,include=FALSE>>=
+k.1t = round(mean(subset(jens_xval_mean, 
+                           reg_method   == "ANTS" & 
+                           method.mb    == "Majority Vote" &
+                           templates.mb == 1 & 
+                           atlases      == 9)$k.mb), digits=3)
+k.5t = round(mean(subset(jens_xval_mean, 
+                           reg_method   == "ANTS" & 
+                           method.mb    == "Majority Vote" &
+                           templates.mb == 5 & 
+                           atlases      == 9)$k.mb), digits=3)
+k.9t = round(mean(subset(jens_xval_mean, 
+                           reg_method   == "ANTS" & 
+                           method.mb    == "Majority Vote" &
+                           templates.mb == 9 & 
+                           atlases      == 9)$k.mb), digits=3)
+k.17t = round(mean(subset(jens_xval_mean, 
+                           reg_method   == "ANTS" & 
+                           method.mb    == "Majority Vote" &
+                           templates.mb == 17 & 
+                           atlases      == 9)$k.mb), digits=3)
+k.9t.animal = round(mean(subset(jens_xval_mean, 
+                                 reg_method   == "ANIMAL" & 
+                                 method.mb    == "Majority Vote" &
+                                 templates.mb == 9 & 
+                                 atlases      == 9)$k.mb), digits=3)
+
+# Does weighted voting significantly improve scores? 
+# Let's correlate DSC scores at (a, t) = (1, 5) and (1, 15), (9, 5) and (9, 15) 
+ants   = subset(jens_xval_mean, reg_method=='ANTS')
+animal = subset(jens_xval_mean, reg_method=='ANIMAL')
+mavote = subset(ants, method.mb == 'Majority Vote')
+mivote = subset(ants, method.mb == 'NMI Vote')
+ants.stats = ddply(ants, c("atlases", "templates.mb"), 
+                   function (df) {
+                     test = cor.test(subset(df, method.mb == 'Majority Vote')$k.mb, 
+                                     subset(df, method.mb == 'NMI Vote')$k.mb)
+                     data.frame(
+                       estimate = test$estimate, 
+                       p.value  = test$p.value
+                       )
+                   })
+@
+
 We find that for \mb{} segmentations, similarity score increases as atlas and
 template library size is increased, although with diminishing returns and an
-eventual trend towards a plateau (Figure \ref{fig:ADNI1-xval-k-mean}). A
-maximum similarity score of \Sexpr{mb.kappa.best} is found when using 9 atlases,
-19 templates, ANTS registration, and majority vote label fusion. The \ants{}
-registration method consistently out-performs \animal{} registration over all
-variable settings we tested. Additionally, by itself, using a weighted voting
-strategy did not significantly improve segmentation agreement, contrary to the
-findings of \citet{Aljabar2009} using basic \multiatlas{} segmentation. Given
-these findings, in the remainder of our experiments only results using the \ants{}
-registration algorithm and majority vote fusion will be shown. 
+eventual trend towards a plateau (Figure \ref{fig:ADNI1-xval-k-mean}). For
+instance, with 9 atlases and using \ants for registration and majority vote
+fusion, the mean DSC scores for 1, 5, 9 and 17 templates are \Sexpr{k.1t},
+\Sexpr{k.5t}, \Sexpr{k.9t}, \Sexpr{k.17t}, respectively.  A maximum
+similarity score of \Sexpr{mb.kappa.best} is found when using 9 atlases, 19
+templates, ANTS registration, and majority vote label fusion. 
 
-With at least five templates, \mb{} shows a mean improvement in similarity score
-over \multiatlas{} segmentation when using the same size of atlas library and
-majority vote label fusion (Figure \ref{fig:ADNI1-xval-k-diff}). The magnitude
-of improvement increases with the size of template library, and shows
-diminishing returns with larger atlas libraries. Peak improvement
-(+\Sexpr{round(mb.diff.best, digits=3)} DSC) is found with a single atlas
-and template library of 19 images.
+The \ants{} registration method consistently outperforms \animal{} registration
+over all variable settings we tested (mean increase in DSC is
+\Sexpr{mean(ants$k.mb-animal$k.mb)}).  Pearson correlations of \mb{} DSC scores
+when using weighted voting and when using non-weighted majority vote label
+fusion (with \ants{} registration) for all combinations of atlases and templates
+are $r > \Sexpr{min(ants.stats$estimate)}$,
+\Sexpr{plevel(max(ants.stats$p.value))}, with a mean difference in DSC score of
+\Sexpr{mean(mivote$k.mb - mavote$k.mb)}.  This result suggests that using a
+weighted voting strategy does not significantly improve \mb{} segmentation
+agreement, contrary to the findings of \citet{Aljabar2009} for basic
+\multiatlas{} segmentation. Thus, in the remainder of our experiments only
+results using the \ants{} registration algorithm and majority vote fusion will
+be shown. 
+
+With at least five templates, \mb{} consistently shows a higher DSC score than
+\multiatlas{} segmentation wth the same number of atlases: 
+  $r = \Sexpr{round(cor.test(ants$k.mb, ants$k.ma)$estimate, 2)}$, 
+       $\Sexpr{plevel(cor.test(ants$k.mb, ants$k.ma)$p.value)}$, 
+mean DSC increase = \Sexpr{mean(ants$k.mb - ants$k.ma)} (Figure
+\ref{fig:ADNI1-xval-k-diff}). The magnitude of DSC increase grows with template
+library size but shows diminishing returns with larger atlas libraries.  Peak
+increase (+\Sexpr{mb.diff.best} DSC) is found with a single atlas and template
+library of 19 images.
 
 In addition to a mean increase in similarity score over \multiatlas{}-based
 segmentation, \mb{} also shows more consistency in similarity scores across all
@@ -1224,8 +1306,8 @@ ggplot(fep.volumes, aes(x= mean, y = diff)) +
 \subsection{\expadni{}: \expadnidesc{}}
 \label{exp:adni}
 To validate \mb{} segmentation quality with respect to other established
-automated hippocampal segmentation methods, \mb{} was applied to a large dataset
-from the ADNI project and the resulting segmentations were compared to those
+automated hippocampal segmentation methods, we apply \mb{} to a large dataset
+from the ADNI project. The resulting segmentations are compared to those
 produced by \freesurfer{}, \fsl{}, \maper{}, as well as semi-automated whole
 hippocampal segmentations (\snt{}) provided by ADNI.
 
@@ -1233,9 +1315,10 @@ hippocampal segmentations (\snt{}) provided by ADNI.
 \subsubsection{\expadni{}: Materials and Methods}
 
 \paragraph{\adnidataset{} dataset}  %%%%%%%%%%%
-The {\em \adnidataset{}} standardized dataset contains $1919$ images of subjects
-diagnosed with Alzheimer's disease (AD), late-onset mild cognitive impairment
-(LMCI), or who are identified as cognitively normal (CN). See Section
+The {\em \adnidataset{}} standardized dataset contains $1919$ images in total.
+\snt{}, \maper{}, and \freesurfer{} hippocampal volumes for a subset of images were
+provided by ADNI, along with quality control data for each \freesurfer{}
+segmentation (guidelines described in \citep{Hartig2010}).  See Section
 \ref{adnidataset} for study details, inclusion criteria and imaging
 characteristics. 
 
@@ -1553,17 +1636,17 @@ This is done, in turn, for each item in the dataset and the output across all
 items is evaluated together. 
 
 In this experiment, the Winterburn atlases (\expfepxval, section
-\ref{exp:fep-xval}) are resampled to $0.9mm$-isotropic
-voxel resolution to simulate standard 3T T1-weighted resolution images. Image
-subsampling is performed using trilinear subsampling techniques. In each round
-of LOOCV, a single atlas image is selected and treated as a target image to be
-segmented by \mb{}. So as to have an odd-sized atlas library, atlas image is
-segmented once using each possible triple of atlas images, and corresponding
-manual segmentations, from the remaining four unselected atlases. Thus, for
-each of the five atlases, a total of ${3 \choose 4}=4$ segmentations are
-evaluated, resulting in a combined total of $5\times4=20$ segmentations
-evaluated overall. We chose an atlas library with an odd number of images so as
-to ensure unbiased label fusion when using majority voting (see Discussion). 
+\ref{exp:fep-xval}) are resampled to $0.9mm$-isotropic voxel resolution to
+simulate standard 3T T1-weighted resolution images. Image subsampling is
+performed using trilinear subsampling techniques. In each round of LOOCV, a
+single atlas image is selected and treated as a target image to be segmented by
+\mb{}. So as to have an odd-sized atlas library, atlas image is segmented once
+using each possible triple of atlas images, and corresponding manual
+segmentations, from the remaining four unselected atlases. Thus, for each of the
+five atlases, a total of ${3 \choose 4}=4$ segmentations are evaluated,
+resulting in a combined total of $5\times4=20$ segmentations evaluated overall.
+We chose an atlas library with an odd number of images so as to ensure unbiased
+label fusion when using majority voting (see Discussion). 
 
 The template library used has a total of 19 images composed of all five
 resampled atlas images plus the additional 14 images from the healthy control
@@ -1656,23 +1739,6 @@ SRLM  = subset(wa.n.sim,label=='SR/SL/SM')$k
 Whole = subset(wa.n.sim,label=='Whole')$k
 @
 
-Figure \ref{fig:WAxval-kappa} shows the overlap similarity scores between the
-\mb{} segmentations and the resampled Winterburn atlases for each hippocampal
-subfield across all subjects and folds of the validation. Mean and standard
-deviation DSC scores of the subfields are shown in Table
-\ref{tab:WAxval-perturb-kappa}. We find that the CA4/DG subfield shows the highest mean DSC score of
-\Sexpr{mean(CA4DG)}$\pm$\Sexpr{sd(CA4DG)}, followed by the Subiculum and CA1
-subfields having scores of \Sexpr{mean(CA1)}$\pm$\Sexpr{sd(CA1)} and
-\Sexpr{mean(Sub)}$\pm$\Sexpr{sd(Sub)}, respectively. Both the CA4/DG and
-molecular regions score below 0.5. These scores may seem low but not when taken
-in context and compared to existing (semi-)automated methods (see Discussion).
-The whole hippocampus is segmented with a mean DSC score
-of\Sexpr{mean(Whole)}$\pm$\Sexpr{sd(Whole)}. Table
-\ref{tab:WAxval-perturb-kappa} also shows mean DSC overlap scores for simulated
-manual segmentations with error introduced by a one-voxel translation in all
-directions. For all subfields, \mb{} DSC scores are well within the error bounds
-set by these segmentations.
-
 %%%%%%%%%%
 % Winterburn Bland-Altman
 %%%%%%%%%%
@@ -1753,6 +1819,22 @@ ggplot(wa.n.all.vols, aes(x=mean, y=diff)) +
         axis.text.y = element_text(angle = 90, hjust=0.5), 
         axis.text = element_text(size = 8))
 @
+
+Figure \ref{fig:WAxval-kappa} shows the overlap similarity scores between the
+\mb{} segmentations and the resampled Winterburn atlases for each hippocampal
+subfield across all subjects and folds of the validation. Mean and standard
+deviation DSC scores of the subfields are shown in Table
+\ref{tab:WAxval-perturb-kappa}, along with DSC scores for the resampled atlas
+segmentations when perturbed slightly and compared to the originals. We find
+that the CA4/DG subfield shows the highest mean DSC score of
+\Sexpr{mean(CA4DG)}$\pm$\Sexpr{sd(CA4DG)}, followed by the Subiculum and CA1
+subfields having scores of \Sexpr{mean(CA1)}$\pm$\Sexpr{sd(CA1)} and
+\Sexpr{mean(Sub)}$\pm$\Sexpr{sd(Sub)}, respectively. Both the CA4/DG and
+molecular regions score below 0.5. These scores may seem low but not when taken
+in context and compared to existing (semi-)automated methods (see Discussion).
+The whole hippocampus is segmented with a mean DSC score
+of\Sexpr{mean(Whole)}$\pm$\Sexpr{sd(Whole)}.
+
 
 \begin{figure}
   \centering
