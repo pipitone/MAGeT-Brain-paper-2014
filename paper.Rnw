@@ -237,8 +237,8 @@ experiments, we segment \Sexpr{length(means.complete$RID)} images of the
 \adnidataset{} dataset and compare these with segmentations from existing
 automated methods: \fsl{}, \freesurfer{}, \maper{}, and \snt.  Finally, we
 conduct a leave-one-out cross-validation (LOOCV) of hippocampal subfield
-segmentation in standard 3T T1 images, using five high-resolution manually
-segmented atlases \citep{Winterburn2013}.
+segmentation in standard 3T T1-weighted images, using five high-resolution
+manually segmented atlases \citep{Winterburn2013}.
 
 \textbf{Results:} In the ADNI cross-validation, using 9 atlases \mb{} achieves a
 mean Dice's Similarity Coefficient (DSC) score of \Sexpr{mb.kappa.best} with
@@ -254,13 +254,15 @@ reference volumes within disease categories, and shows a conservative bias and a
 mean difference in volume of $250 mm^3$ across the entire dataset, compared with
 \freesurfer{} and \fsl{} which both overesimate volume differences by $2600
 mm^3$ and $2800 mm^3$ on average, respectively. Finally, \mb{} segments the CA1,
-CA4/DG and subiculum subfields with an DSC overlap scores of 0.56, 0.65, 0.58,
-respectively. 
+CA4/DG and subiculum subfields on standard 3T T1-weighted resolution images with
+DSC overlap scores of 0.56, 0.65, and 0.58, respectively, relative to manual
+segmentations.  %TODO: use Sexpr
 
 \textbf{Conclusion:} We demonstrate that \mb{} produces accurate whole
-hippocampal segmentations using at most only 9 atlases with various hippocampal
-definitions, disease populations, and image acquisition types, as well we show
-that accurate identification of the hippocampal subfields is possible.
+hippocampal segmentations using only 9 atlases, or fewer, with various
+hippocampal definitions, disease populations, and image acquisition types.
+Additionally, we show that \mb{} identifies hippocampal subfields in standard 3T
+T1-weighted images with overlap scores comparable to competing methods.
 \end{abstract}
 
 \parbox{4in}{
@@ -2267,9 +2269,9 @@ process inevitably introduces noise which may lower overlap scores. Lastly, as
 our method is aimed specifically at situations when manually produced atlases
 are scarce, in our cross validation we are forced to use three rather than all
 five of the Winterburn atlases (which, based on our findings with whole
-hippocampal segmentation, would lead to improved overlap similarity).
+hippocampal segmentation, would have resulted in improved overlap similarity).
 Although having more atlases would be ideal in this context, these atlases are
-incredibly time consuming to generate \citep{Winterburn2013}. Nevertheless, the
+very time consuming to generate \citep{Winterburn2013}. Nevertheless, the
 advantage of evaluating \mb{} on standard 3T T1-weighted resolution MR images
 with a publically available atlas library is that our results reflect typical
 usage scenarios of researchers and clinicians. 
@@ -2322,16 +2324,20 @@ This points to a larger issue of how to truly validate subfield segmentations,
 both in high resolution images and in standard T1-weighted images. There are
 several manual subfield segmentation methodologies, and they do not agree on
 which regions can be differentiated, even on high-resolution scans. See Table
-\ref{tab:subfield-segmentation-protocols} for a comparison of manual subfield
-segmentation methodologies. A further complication is that different researchers
-have differing operational definitions for the subfields and how they ought to
-be parcellated. The disagreement in the community has led to an international
-working group devoted to normalizing the ontology and segmentation rules for the
-hippocampal subfields (\url{http://www.hippocampalsubfields.com/}). Both of
-these disagreements suggest that direct comparison of automated methods using
-``ground truth''-based overlap similarity metrics, such as Dice's Similarity
-Coefficient, are not possible without carefully taking into account the
-differences in underlying segmentation protocols and image characteristics. 
+\ref{tab:subfield-segmentation-protocols} for a comparison of MRI-based manual
+subfield segmentation methodologies. A further complication is that different
+researchers have differing operational definitions for the subfields and how
+they ought to be parcellated. The disagreement in the community has led to an
+international working group devoted to normalizing the ontology and segmentation
+rules for the hippocampal subfields
+(\url{http://www.hippocampalsubfields.com/}).  In addition, there have been
+recent advances from the Yushkevich group to revise their MRI subfield
+segmentation protocol based on anatomy discerned from serial histological
+acquisitions \citep{Adler2014}.  The definitional and operational disagreements
+suggest that direct comparison across automated methods using ``ground
+truth''-based overlap similarity metrics, such as Dice's Similarity Coefficient,
+are not possible without carefully taking into account the differences in
+underlying segmentation protocols and image characteristics. 
 
 In conclusion, we have demonstrated the viability of leveraging a small
 number of input atlases to bootstrap a large template library and thereby
