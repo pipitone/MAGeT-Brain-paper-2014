@@ -15,7 +15,7 @@
    inkscape:version="0.48.3.1 r9886"
    width="936"
    height="1182"
-   sodipodi:docname="montage.svg">
+   sodipodi:docname="montage.pdf">
   <metadata
      id="metadata8">
     <rdf:RDF>
@@ -24,6 +24,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -117,16 +118,16 @@
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
      inkscape:window-width="1280"
-     inkscape:window-height="750"
+     inkscape:window-height="721"
      id="namedview4"
      showgrid="false"
      showguides="true"
      inkscape:guide-bbox="true"
-     inkscape:zoom="0.25"
+     inkscape:zoom="0.70710678"
      inkscape:cx="182.23225"
      inkscape:cy="1003.7237"
-     inkscape:window-x="220"
-     inkscape:window-y="1050"
+     inkscape:window-x="0"
+     inkscape:window-y="25"
      inkscape:window-maximized="1"
      inkscape:current-layer="svg2"
      inkscape:showpageshadow="false"
@@ -148,11 +149,11 @@
     <image
        sodipodi:absref="/home/jp/prj/hippo/figure/ADNI1_SNT_MB_montage/montage_pic.png"
        xlink:href="montage_pic.png"
-       width="888"
-       height="1087"
-       id="image4613"
+       y="-2.0016613"
        x="-0.28009033"
-       y="-2.0016613" />
+       id="image4613"
+       height="1087"
+       width="888" />
     <path
        inkscape:connector-curvature="0"
        style="font-size:medium;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-indent:0;text-align:start;text-decoration:none;line-height:normal;letter-spacing:normal;word-spacing:normal;text-transform:none;direction:ltr;block-progression:tb;writing-mode:lr-tb;text-anchor:start;color:#000000;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1px;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate;font-family:Bitstream Charter;-inkscape-font-specification:Bitstream Charter"
@@ -294,101 +295,79 @@
      xml:space="preserve"
      style="font-size:18.95520592px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Sans"
      x="60.973503"
-     y="36.334129"
+     y="37.998524"
      id="text3074"
      sodipodi:linespacing="125%"><tspan
        sodipodi:role="line"
        id="tspan3076"
        x="60.973503"
-       y="36.334129">T1 </tspan></text>
+       y="37.998524">T1 </tspan></text>
   <text
      xml:space="preserve"
-     style="font-size:18.95520592px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Sans"
-     x="137.11726"
-     y="36.334129"
+     style="font-size:18.95520592px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Sans;-inkscape-font-specification:Sans"
+     x="175.11726"
+     y="37.730114"
      id="text3074-1"
      sodipodi:linespacing="125%"><tspan
        sodipodi:role="line"
-       id="tspan3076-8"
-       x="137.11726"
-       y="36.334129">Manual </tspan></text>
+       id="tspan3058"
+       x="175.11726"
+       y="37.730114">SNT</tspan></text>
   <text
      xml:space="preserve"
      style="font-size:18.95520592px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Sans"
      x="231.65355"
-     y="36.334129"
+     y="37.730114"
      id="text3074-1-3"
      sodipodi:linespacing="125%"><tspan
        sodipodi:role="line"
        id="tspan3076-8-7"
        x="231.65355"
-       y="36.334129">MAGeT</tspan></text>
+       y="37.730114">MAGeT</tspan></text>
   <text
      xml:space="preserve"
      style="font-size:18.95520592px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Sans"
      x="362.19681"
-     y="36.334129"
+     y="37.998524"
      id="text3074-2"
      sodipodi:linespacing="125%"><tspan
        sodipodi:role="line"
        id="tspan3076-7"
        x="362.19681"
-       y="36.334129">T1 </tspan></text>
-  <text
-     xml:space="preserve"
-     style="font-size:18.95520592px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Sans"
-     x="438.34058"
-     y="36.334129"
-     id="text3074-1-33"
-     sodipodi:linespacing="125%"><tspan
-       sodipodi:role="line"
-       id="tspan3076-8-5"
-       x="438.34058"
-       y="36.334129">Manual </tspan></text>
+       y="37.998524">T1 </tspan></text>
   <text
      xml:space="preserve"
      style="font-size:18.95520592px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Sans"
      x="532.87689"
-     y="36.334129"
+     y="37.730114"
      id="text3074-1-3-5"
      sodipodi:linespacing="125%"><tspan
        sodipodi:role="line"
        id="tspan3076-8-7-5"
        x="532.87689"
-       y="36.334129">MAGeT</tspan></text>
+       y="37.730114">MAGeT</tspan></text>
   <text
      xml:space="preserve"
      style="font-size:18.95520592px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Sans"
      x="648.19678"
-     y="36.334129"
+     y="37.998524"
      id="text3074-0"
      sodipodi:linespacing="125%"><tspan
        sodipodi:role="line"
        id="tspan3076-5"
        x="648.19678"
-       y="36.334129">T1 </tspan></text>
-  <text
-     xml:space="preserve"
-     style="font-size:18.95520592px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Sans"
-     x="724.34058"
-     y="36.334129"
-     id="text3074-1-0"
-     sodipodi:linespacing="125%"><tspan
-       sodipodi:role="line"
-       id="tspan3076-8-4"
-       x="724.34058"
-       y="36.334129">Manual </tspan></text>
+       y="37.998524">T1 </tspan></text>
   <text
      xml:space="preserve"
      style="font-size:18.95520592px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Sans"
      x="818.87689"
-     y="36.334129"
+     y="37.730114"
      id="text3074-1-3-3"
      sodipodi:linespacing="125%"><tspan
        sodipodi:role="line"
        id="tspan3076-8-7-4"
        x="818.87689"
-       y="36.334129">MAGeT</tspan></text>
+       y="37.730114">MAGeT</tspan></text>
   <text
      xml:space="preserve"
      style="font-size:30px;font-style:normal;font-weight:normal;text-align:center;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Sans"
@@ -422,4 +401,26 @@
        x="763.46002"
        y="1160.9313"
        id="tspan3992-6">AD</tspan></text>
+  <text
+     xml:space="preserve"
+     style="font-size:18.95520592px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Sans;-inkscape-font-specification:Sans"
+     x="473.47763"
+     y="37.730114"
+     id="text3074-1-5"
+     sodipodi:linespacing="125%"><tspan
+       sodipodi:role="line"
+       id="tspan3058-0"
+       x="473.47763"
+       y="37.730114">SNT</tspan></text>
+  <text
+     xml:space="preserve"
+     style="font-size:18.95520592px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:center;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Sans;-inkscape-font-specification:Sans"
+     x="767.27008"
+     y="37.730114"
+     id="text3074-1-1"
+     sodipodi:linespacing="125%"><tspan
+       sodipodi:role="line"
+       id="tspan3058-3"
+       x="767.27008"
+       y="37.730114">SNT</tspan></text>
 </svg>

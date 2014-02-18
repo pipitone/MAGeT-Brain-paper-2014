@@ -399,7 +399,7 @@ random field shape priors learned from 10 manual segmentations. This work,
 available as part of the \freesurfer{} package, is limited as the segmentation
 omits the tail of the hippocampus and the protocol has yet to be fully
 validated. \citet{Yushkevich2009} manually segment hippocampal subfields on
-high-resolution (either $0.2mm^3$ isotropic or $0.2mm \times 0.3mm \times 0.2mm$
+high-resolution (either $0.2mm$-isotropic or $0.2mm \times 0.3mm \times 0.2mm$
 resolution voxels) T2-weighted MR images acquired from five post-mortem medial
 temporal lobe samples. Then, using nonlinear registration guided by shape-based
 models of the subfield segmentations, and manually derived hippocampus masks of
@@ -1605,7 +1605,7 @@ ggplot(melted, aes(x= mean, y = diff, colour=Diagnosis)) +
 \label{exp:winterburn-xval}
 The previous experiment assesses \mb{} performance on whole hippocampus
 segmentation. In this experiment, we evaluate \mb{} hippocampal subfield
-segmentation of standard 3T T1-weighted images at $0.9m^3$-isotropic voxels. We
+segmentation of standard 3T T1-weighted images at $0.9mm$-isotropic voxels. We
 use a modified leave-one-out cross-validation (LOOCV) design. 
 
 \subsubsection{\expsubfield{}: Materials and Methods}
@@ -1619,7 +1619,7 @@ acquired on a 3T GE Discovery MR 750 system (General Electric, Milwaukee, WI)
 using an 8-channel head coil with the enhanced fast gradient recalled echo
 3-dimensional acquisition protocol, FGRE-BRAVO, with the following parameters:
 $TE/TR/TI = 3.0ms/6.7ms/650ms$, flip angle=$8^\circ$ , $FOV = 15.3cm$, slice
-thickness$=0.9mm$, 170 in-plane steps for an approximate 0.9mm isotropic voxel
+thickness$=0.9mm$, 170 in-plane steps for an approximate $0.9mm$-isotropic voxel
 resolution. 
 
 \paragraph{Experiment details} 
@@ -1667,7 +1667,7 @@ latex(tab, file="", size="scriptsize",landscape=FALSE, ctable=FALSE,
 
 \paragraph{Evaluation method}  
 Evaluating the agreement of automated hippocampal subfield segmentations with
-manual segmentations for T1 images at $0.9mm^3$-isotropic voxels is inherently
+manual segmentations for T1 images at $0.9mm$-isotropic voxels is inherently
 ill-defined since there are no manual protocols for segmentation at this
 resolution. Instead, we must evaluate the reliability, or {\it precision}, with
 which \mb{} produces hippocampal subfields segmentations at this resolution that
@@ -1683,9 +1683,9 @@ resolution we evaluate reliability of \mb{} segmentations using DSC overlap
 scores and evaluate consistency across the range of hippocampal sizes using
 Bland-Altman plots of subfield volumes. 
 
-Additionally, by shifting the original manual $0.3mm^3$-isotropic voxel
+Additionally, by shifting the original manual $0.3mm$-isotropic voxel
 segmentations by one voxel in the x, y, and z direction and then resampling it
-to $0.9mm^3$-isotropic voxels we obtain a simulated manual segmentation having a
+to $0.9mm$-isotropic voxels we obtain a simulated manual segmentation having a
 small amount of error. We can compare the DSC overlap score of the shifted
 labels (relative to the directly resampled labels) with the DSC score of the
 \mb{} generated labels in order to evaluate their relevance. 
@@ -2141,7 +2141,7 @@ modest improvement in segmentation agreement observed using \mb{} over
 shown in that same experiment, the benefit in using \mb{} is both an increase in
 the overlap agreement and also in the improved consistency of the labelling
 regardless of atlas or template choice. Reducing the variability in segmentation
-accuracy is an important consideration that few have touched on previously. In
+agreement is an important consideration that few have touched on previously. In
 addition, the Monte Carlo cross-validations that we present in \expadnixval{}
 and \expfepxval{} are amongst the most stringent performed in the \multiatlas{}
 segmentation literature. To the best of our knowledge, with the exception of
@@ -2189,7 +2189,7 @@ framework. In their initial work, \citet{Chupin2009} develop their probabilistic
 methodology using a cohort of 8 healthy controls and 15 epilepsy patients, and
 then use this method to segment an ADNI sample, with a hierarchical
 experimentation protocol. These methods suggest that some post-processing of the
-final segmentations would improve accuracy of the segmentation. While that may
+final segmentations would improve agreement of the segmentation. While that may
 be true, there is little consensus regarding how to achieve this. 
 
 To the best of our knowledge, no other groups have validated their work using
@@ -2199,7 +2199,7 @@ one of the clear strengths of this work. Furthermore, unlike some of the
 algorithms mentioned, our implementation does not require retuning for new
 populations or datasets as it inherently models the variability of the dataset
 through the template library. However it should be noted that the increased
-accuracy that follows increasing the number of atlases and templates comes at an
+agreement that follows increasing the number of atlases and templates comes at an
 increased computational cost ($O(log(n))$), as previously mentioned in
 other work \citep{Heckemann2006}. 
 
@@ -2255,7 +2255,7 @@ appropriate for the segmentation of hippocampal subfields in standard
 T1-weighted data. Subfield segmentation is a burgeoning topic in the literature
 although very few automated methods are available for the segmentation of 3T
 data \citep{Yushkevich2009,Yushkevich2010,VanLeemput2009}. Table
-\ref{tab:subfield-segmentation-kappa} compares segmentation accuracy from some
+\ref{tab:subfield-segmentation-kappa} compares segmentation agreement from some
 of these methods and \mb{}. The overlap DSC scores for \mb{} subfields are
 notably lower but a direct comparison of overlap values must be done cautiously.
 In the present work, our overlap scores are computed on $0.9mm$-isotropic voxel
@@ -2275,6 +2275,26 @@ very time consuming to generate \citep{Winterburn2013}. Nevertheless, the
 advantage of evaluating \mb{} on standard 3T T1-weighted resolution MR images
 with a publically available atlas library is that our results reflect typical
 usage scenarios of researchers and clinicians. 
+
+Experiments 1, 2, and 5 have demonstrated that our algorithm flexibly
+accommodates different whole hippocampus manual segmentation methodologies. We
+have not explicitly evaluated a subfield definition other than the Winterburn
+protocol, and therefore it is possible that using an alternate subfield
+definition could improve the reliability of our automated subfield definitions.
+For example, established definitions such as those from \citet{Mueller2007}
+could be a prime candidate for further exploration. In addition, the
+conservative nature of the Mueller definition (labelling of the 5 slices in the
+hippocampus body only) would likely further aid in reliability measurement.
+However, there are two main logistical problems that we would have to overcome
+prior to implementation. The first is that these definitions were developed for
+data that is highly anisotropic ($0.4mm \times 0.5mm \times 2mm$), and it is
+unclear how our algorithms would deal with such atlases used as input. The
+second is that, since these atlases are not publicly available, we would be have
+to re-implement the protocol using our atlases. At the present time it is
+unclear how we would adapt these protocol to data that we used, where subfield
+segmentations are defined on $0.3mm^3$ voxels. However, the impact of subfield
+definitions in the context of our work is an important one and should be
+considered in subsequent studies.
 
 One further complication common to all subfield segmentation evaluation is that,
 by its nature, the Dice's Similarity Coefficient score penalizes structures with
@@ -2319,7 +2339,6 @@ tail                 & ---                 & ---  & 0.863                       
 \end{center}
 \end{table}
 
-
 This points to a larger issue of how to truly validate subfield segmentations,
 both in high resolution images and in standard T1-weighted images. There are
 several manual subfield segmentation methodologies, and they do not agree on
@@ -2344,7 +2363,7 @@ number of input atlases to bootstrap a large template library and thereby
 improve segmentation reliability when using \multiatlas{} methods. We
 demonstrated that this method works robustly over hippocampal definitions,
 different disease populations, and different acquisition types. Finally, we also
-demonstrate that accurate identification of the hippocampal subfields in
+demonstrate that reliable reproduction of hippocampal subfield segmentations in
 standard 3T T1-weighted images is possible. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
