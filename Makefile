@@ -31,8 +31,13 @@ paper.Rnw: $(shell find . -name '*.csv' | sed 's/:/\\:/g')
 	touch paper.Rnw 
 
 # dist   :: zip up all the source material
+.PHONY: dist
 dist: paper.tex
-	zip -r paper paper.tex references.bib IEEEbib.bst spconf.sty montage.png figure
+	zip -r paper.zip paper.tex references.bib \
+		figure/*.pdf \
+		figure/ADNI1_SNT_MB_montage/montage.pdf \
+		figure/winterburn-atlas-montage/figure.pdf
+
 
 # clean  :: remove generated files
 clean:
