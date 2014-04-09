@@ -34,17 +34,17 @@ paper.Rnw: $(shell find . -name '*.csv' | sed 's/:/\\:/g')
 # diff   :: make old=HEAD^^ new=HEAD diff
 .PHONY: diff
 diff:
-	rm paper.tex
-	git checkout $(old)
-	make paper.tex
-	mv paper.tex old.tex
-	git checkout $(new)
-	make paper.tex
-	mv paper.tex new.tex
-	git checkout HEAD
-	latexdiff old.tex new.tex > paper.tex
-	make paper.pdf
-	mv paper.pdf > diff-$(old)-$(new).pdf
+	rm paper.tex && \
+	git checkout $(old) && \
+	make paper.tex && \
+	mv paper.tex old.tex && \
+	git checkout $(new) && \
+	make paper.tex && \
+	mv paper.tex new.tex && \
+	git checkout HEAD && \
+	latexdiff old.tex new.tex > paper.tex && \
+	make paper.pdf && \
+	mv paper.pdf diff-$(old)-$(new).pdf
 
 # dist   :: zip up all the source material
 .PHONY: dist

@@ -410,18 +410,20 @@ Manual input is only needed to mark divisions between the head, body and tail
 of the hippocampus on target images. 
 
 In this paper we describe a thorough validation of the \mb{} algorithm for the
-fully automatic segmentation of the hippocampus and its subfields. First, we
-address the very idea of boostrapping a template library from a limited number
-of input atlases \citep{Chakravarty2013} for whole hippocampus segmentation by
-conducting a multi-fold validation experiment over a range of atlas and template
-library sizes, registration and label fusion methods. This type of validation is
-done first on a subset of the Alzheimer's Disease Neuroimaging Initiative (ADNI)
-dataset with manual segmentations  \prsnr{}-protocol, and then replicated on a
-first episode psychosis patient dataset to determine the behaviour of \mb{} when
-segmenting younger and differently diseased subjects. Next, we compare \mb{}
-with other popular segmentation algorithms (\freesurfer{}, \fsl{}, \maper{}, and
-\snt{}) on all the images available in the \adnidataset{} sample. Lastly, using
-the optimal parameter settings for \mb{} found from the previous experiments, we
+fully automatic segmentation of the hippocampus and a proof-of-concept
+validation of its application to the segmentation of hippocampal subfields in
+standard T1-weighted images. First, we address the very idea of generating a
+template library from a limited number of input atlases \citep{Chakravarty2013}
+for whole hippocampus segmentation by conducting a multi-fold validation
+experiment over a range of atlas and template library sizes, registration and
+label fusion methods. This type of validation is done first on a subset of the
+Alzheimer's Disease Neuroimaging Initiative (ADNI) dataset with manual
+segmentations  \prsnr{}-protocol, and then replicated on a first episode
+psychosis patient dataset to determine the behaviour of \mb{} when segmenting
+younger and differently diseased subjects. Next, we compare \mb{} with other
+popular segmentation algorithms (\freesurfer{}, \fsl{}, \maper{}, and \snt{})
+on all the images available in the \adnidataset{} sample. Lastly, using the
+optimal parameter settings for \mb{} found from the previous experiments, we
 investigate hippocampal subfield segmentation by conducting a leave-one-out
 validation using the \citet{Winterburn2013} manually segmented high-resolution
 MR atlases. 
@@ -453,19 +455,20 @@ is described in detail in other publications
 basic \multiatlas{} segmentation degenerates into model-based segmentation: labels
 are propagated from the atlas to a target, and no label fusion is needed.
 
-\mb{} ({\textbf M}ultiple {\textbf A}utomatically {\textbf Ge}nerated {\textbf
-T}emplates) bootstraps the creation of a large template library given a limited
-input atlas library, and then uses the template library in basic \multiatlas{}
-segmentation. Images for the template library are selected from a set of input
-target images, either arbitrarily or so as to reflect the neuroanatomy or
-demographics of the target set as a whole (for instance, by sampling equally
-from cases and controls). The template library images are automatically
-labelled by each of the atlases via label propagation. Effectively, basic
-\multiatlas{} segmentation is then conducted using the template library to
-segment the entire set of target images (including the target images used in the
-construction of the template library). Since each template library image has
-multiple labels (one from each atlas), the final number of labels to be fused
-for each target may be quite large (i.e. \# of atlas $\times$ \# of templates).
+The \mb{} ({\textbf M}ultiple {\textbf A}utomatically {\textbf Ge}nerated {\textbf
+T}emplates) algorithm creates a large template library given a much smaller
+sized input atlas library and then uses this template library in basic
+\multiatlas{} segmentation to segment a set of input target images. The images
+used in the template library are selected from the input images, either
+arbitrarily or so as to reflect the neuroanatomy or demographics of the target
+set as a whole (for instance, by sampling equally from cases and controls). The
+template library images are automatically labelled by each of the atlases via
+label propagation.  Effectively, basic \multiatlas{} segmentation is then
+conducted using the template library to segment the entire set of target images
+(including the target images used in the construction of the template library).
+Since each template library image has multiple labels (one from each atlas),
+the final number of labels to be fused for each target may be quite large (i.e.
+\# of atlas $\times$ \# of templates).
 
 Figure \ref{fig:MAGeT} illustrates the \mb{} algorithm graphically. Source code
 for \mb{} can be found at \url{http://github.com/pipitone/MAGeTbrain}.
@@ -531,7 +534,7 @@ segmentation quality of the \mb{} algorithm:
 \subsection{\expadnixval{}: \expadnixvaldesc{}}
 \label{exp:adni-xval}
 
-In this experiment we explore the very idea of bootstrapping a template library
+In this experiment we explore the very idea of generating a template library
 for multi-atlas-based segmentation from a small number of input atlases. To do
 so, we conduct repeated cross-validations of \mb{} whilst varying the
 composition and sizes of the atlas and template libraries used, as well as
@@ -1604,9 +1607,10 @@ ggplot(melted, aes(x= mean, y = diff, colour=Diagnosis)) +
 \subsection{\expsubfield{}: \expsubfielddesc{}}
 \label{exp:winterburn-xval}
 The previous experiment assesses \mb{} performance on whole hippocampus
-segmentation. In this experiment, we evaluate \mb{} hippocampal subfield
-segmentation of standard 3T T1-weighted images at $0.9mm$-isotropic voxels. We
-use a modified leave-one-out cross-validation (LOOCV) design. 
+segmentation. In this experiment, we conduct a proof-of-concept evaluatation of
+\mb{} hippocampal subfield segmentation of standard 3T T1-weighted images at
+$0.9mm$-isotropic voxels. We use a modified leave-one-out cross-validation
+(LOOCV) design. 
 
 \subsubsection{\expsubfield{}: Materials and Methods}
 
@@ -1669,19 +1673,17 @@ latex(tab, file="", size="scriptsize",landscape=FALSE, ctable=FALSE,
 Evaluating the agreement of automated hippocampal subfield segmentations with
 manual segmentations for T1 images at $0.9mm$-isotropic voxels is inherently
 ill-defined since there are no manual protocols for segmentation at this
-resolution. Instead, we must evaluate the reliability, or {\it precision}, with
-which \mb{} produces hippocampal subfields segmentations at this resolution that
-correspond in form to the segmentation protocol used by the given
-high-resolution atlas library images. 
-
-By directly resampling the Winterburn atlas segmentations to $0.9mm^3$ voxels
-(using standard nearest-neighbour image resampling techniques) we obtain a
-subsampled version of the labels which preserve the original segmentation
-protocol within the limits of error from rounding and interpolation. Therefore,
-using the resampled Winterburn segmentations as definitive for the $0.9mm^3$
-resolution we evaluate reliability of \mb{} segmentations using DSC overlap
-scores and evaluate consistency across the range of hippocampal sizes using
-Bland-Altman plots of subfield volumes. 
+resolution. Instead, we must evaluate how well the lower-resolution \mb{}
+hippocampal subfield segmentations correspond in form to the segmentation
+protocol used in the high-resolution images. By directly resampling the
+Winterburn atlas segmentations to $0.9mm^3$ voxels (using standard
+nearest-neighbour image resampling techniques) we obtain a subsampled version
+of the labels which preserve the original segmentation protocol within the
+limits of error from rounding and interpolation. Therefore, using the resampled
+Winterburn segmentations as definitive for the $0.9mm^3$ resolution we evaluate
+agreement of \mb{} segmentations using DSC overlap scores and evaluate
+consistency across the range of hippocampal sizes using Bland-Altman plots of
+subfield volumes. 
 
 Additionally, by shifting the original manual $0.3mm$-isotropic voxel
 segmentations by one voxel in the x, y, and z direction and then resampling it
@@ -2061,29 +2063,30 @@ demonstrates that across \Sexpr{length(means.complete$RID)} images from the
 \adnidataset{} dataset, \mb{} performs as well as, or better, than other
 established and popular methods, and has a much more conservative proportional
 bias in segmentation volume.  Finally, \expsubfield{} (Section
-\ref{exp:winterburn-xval}) demonstrates the reliability of \mb{} in producing
-subfield segmentations which match the segmentation protocol of the input
-atlases despite contrast and resolution limitations in standard T1-weighted
-image volumes.  All of these experiments together demonstrate that \mb's
-algorithmic performance is not dependent on a single definition of the
-hippocampus but is effective with differing hippocampal definitions
-\citep{Winterburn2013,Pruessner2000,Hsu2002}, across image types, and subject
-populations. 
+\ref{exp:winterburn-xval}) is a proof-of-concept validation demonstrating the
+reliability of \mb{} in producing subfield segmentations which match the
+segmentation protocol of the input atlases despite contrast and resolution
+limitations in standard T1-weighted image volumes.  All of these experiments
+together demonstrate that \mb's algorithmic performance is not dependent on a
+single definition of the hippocampus but is effective with differing
+hippocampal definitions \citep{Winterburn2013,Pruessner2000,Hsu2002}, across
+image types, and subject populations. 
 
-The core claim the \mb{} method is based on -- that we can meaningfully bootstrap
-a template library from a small set of labelled atlas images -- is validated in
-the cross validation conducted in \expadnixval{} (and the replication in
-\expfepxval{} and \expadnixvalsnt{}, Supplementary Materials). We find that both
-increasing the number of atlases and the number of templates used improves \mb{}
-segmentation over and above basic-\multiatlas{} segmentations using the same
-number of atlas images. That is, by taking the extra step of generating a
+The core claim the \mb{} method is based on -- that a useful template library
+can be generated from a small set of labelled atlas images -- is validated in
+the cross-validation conducted in \expadnixval{} (and the replication in
+\expfepxval{} and \expadnixvalsnt{}, Supplementary Materials).  We find that
+both increasing the number of atlases and the number of templates used improves
+\mb{} segmentation over and above basic-\multiatlas{} segmentations using the
+same number of atlas images. That is, by taking the extra step of generating a
 template library using target images, \mb{} is able to improve the overlap
 between the automatically generated segmentations and manually generated ``gold
 standard'' segmentations. The magnitude of this improvement is greatest with a
-small number of atlases, but even with larger atlas libraries we have found that
-generating a template library reduces the variability in segmentation precision
-(i.e. \mb{} more consistently produces high quality segmentations than does
-basic-\multiatlas{} segmentation). These effects do not appear dependant on the
+small number of atlases, but even with larger atlas libraries we have found
+that generating a template library reduces the variability in segmentation
+agreement (i.e. \mb{} more consistently produces segmentations in greater
+agreement with manual segmentations than does basic-\multiatlas{} method, over
+repeated randomized trials). These effects do not appear dependant on the
 hippocampal segmentation protocol used. 
 
 Interestingly, previous work on \multiatlas{} segmentation methods
@@ -2208,17 +2211,17 @@ other work \citep{Heckemann2006}.
 Among the automated segmentation methods we compared in this paper
 (\freesurfer{}, \maper{}, \fsl{}), we find extremely variable
 performance of all methods. With the exception of \fsl{} all methods correlate
-well with the \snt{} volumes provided in the ADNI database. However, \freesurfer{}
-and \fsl{} provide radically different definitions of the size of the hippocampus
-in comparison to the other methods. Further, when estimating bias of these
-methods relative to \snt{} hippocampal volumes we see that large hippocampi are
-over estimated while small hippocampi are under estimated. By comparison, \mb{}
-and \maper{} are far more conservative in volume estimation, suggesting these
-methods may be better suited for estimating true-positives, especially in
-neurodegenerative disease subjects featuring smaller overall hippocampi.
-However, in this analysis we have only compared methods by total hippocampal
-volume, and so more work is needed to understand the full extent to which these
-methods differ.
+well with the semi-automated \snt{} volumes provided in the ADNI database.
+However, the \freesurfer{} and \fsl{} hippocampal segmentations are on average
+about twice the volume of those from all other methods. Furthermore, when
+estimating the bias of \freesurfer{} and \fsl{} relative to the \snt{}
+hippocampal volumes we see that large hippocampi are over estimated while small
+hippocampi are under estimated. By comparison, \mb{} and \maper{} are far more
+conservative in volume estimation, suggesting these methods may be better
+suited for estimating true-positives, especially in neurodegenerative disease
+subjects featuring smaller overall hippocampi.  However, in this analysis we
+have only compared methods by total hippocampal volume, and so more work is
+needed to understand the full extent to which these methods differ.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Tabulation of subfield segmentation protocols
@@ -2361,7 +2364,7 @@ are not possible without carefully taking into account the differences in
 underlying segmentation protocols and image characteristics. 
 
 In conclusion, we have demonstrated the viability of leveraging a small
-number of input atlases to bootstrap a large template library and thereby
+number of input atlases to generate a large template library and thereby
 improve segmentation reliability when using \multiatlas{} methods. We
 demonstrated that this method works robustly over hippocampal definitions,
 different disease populations, and different acquisition types. Finally, we also
