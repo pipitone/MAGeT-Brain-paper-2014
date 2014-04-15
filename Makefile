@@ -49,11 +49,12 @@ diff:
 # dist   :: zip up all the source material
 .PHONY: dist
 dist: paper.tex
-	zip -r paper.zip paper.tex references.bib \
-		figure/*.pdf \
-		figure/ADNI1_SNT_MB_montage/montage.pdf \
-		figure/winterburn-atlas-montage/figure.pdf
-
+	rm -rf dist && mkdir dist && \
+	sed 's#figure.*/##g' paper.tex > dist/paper.tex && \
+	cp figure/*.pdf references.bib \
+	   figure/ADNI1_SNT_MB_montage/montage.pdf \
+	   figure/winterburn-atlas-montage/figure.pdf dist/ && \
+	cd dist && zip ../dist.zip * 
 
 # clean  :: remove generated files
 clean:

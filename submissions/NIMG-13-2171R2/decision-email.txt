@@ -1,0 +1,138 @@
+Ms. No.: NIMG-13-2171R1
+Title: Bootstrapping Multi-atlas Segmentation Using Multiple Automatically Generated Templates for the Segmentation of the Whole Hippocampus and Subfields
+Corresponding Author: Mr. Jonathan Pipitone
+Authors: Min Tae M Park, BSc; Julie Winterburn, BSc; Tristram A Lett, BSc; Jason P Lerch, PhD; Jens C Pruessner, PhD; Martin Lepage, PhD; Aristotle N Voineskos, PhD, MD; Mallar M Chakravarty, PhD
+
+Dear Mr. Pipitone,
+
+Thank you for submitting your manuscript to NeuroImage.  Your paper, referenced above, has been reviewed by experts in the field.  Based on the comments of these reviewers, we feel a major revision would be appropriate
+
+Below, please find reviewer comment(s) for your manuscript which you submitted to NeuroImage. If any of the reviewers have uploaded their comments as a separate attachment file, you can view/download the file(s) by clicking the 'View Review Attachments' link once you have accessed this manuscript number. The Editors would like you to consider these comments and revise your manuscript appropriately. Upon receipt, the manuscript will be re-reviewed promptly.
+
+Please submit your revision online within 30 days from the date of this message by logging onto the Elsevier Editorial System for NeuroImage:
+
+http://ees.elsevier.com/ynimg/
+Your username is: jon@pipitone.ca
+
+You can find the manuscript record listed under "Submissions Needing Revisions." Click "Revise" when you are ready to submit your revision. (If you have forgotten your password, please click the "Forget your password" link located on the log-in screen.)
+
+NOTE: Upon submitting your revised manuscript, please upload the source files for your article. For additional details regarding acceptable file formats, please refer to the Guide for Authors at: http://www.elsevier.com/journals/neuroimage/1053-8119/guide-for-authors
+
+When submitting your revised paper, we ask that you include the following items:
+
+Manuscript and Figure Source Files (mandatory)
+
+We cannot accommodate PDF manuscript files for production purposes. We also ask that when submitting your revision you follow the journal formatting guidelines.  Figures and tables may be embedded within the source file for the submission as long as they are of sufficient resolution for Production. Refer to the Guide for Authors for additional information.
+http://www.elsevier.com/journals/neuroimage/1053-8119/guide-for-authors
+
+Highlights (mandatory)
+
+Highlights consist of a short collection of bullet points that convey the core findings of the article and should be submitted in a separate file in the online submission system. Please use 'Highlights' in the file name and include 3 to 5 bullet points (maximum 85 characters, including spaces, per bullet point). See the following website for more information 
+http://www.elsevier.com/highlights
+
+Graphical Abstract (optional)
+
+Graphical Abstracts should summarize the contents of the article in a concise, pictorial form designed to capture the attention of a wide readership online. Refer to the following website for more information: http://www.elsevier.com/graphicalabstracts
+
+Should you require additional time to revise your paper, please inform the editorial office.
+
+When submitting your revised paper, please include a separate document called "Response to Reviews" detailing your responses to the comments of the reviewers and the changes you have made to your manuscript. If you disagree with the reviewers' comments, please explain your position.
+
+
+PLEASE NOTE: NeuroImage invites you to submit any supplementary tables with your article as Inline Supplementary Material. The supplementary tables will be inserted at the appropriate place in the online version of your article, making it easier for your readers to find them and to interpret them in the context of the article. 
+
+For more information and instructions, please visit the Guide for Authors or our Inline Supplementary Material support page.
+
+To facilitate the electronic publication of your manuscript (should it be accepted), we request that your manuscript text, tables and figure legend be submitted in an editable format (Word or LaTex only), and all figures uploaded individually as TIF or EPS files.
+
+
+Thank you for submitting your manuscript to NeuroImage. We look forward to receiving your revised manuscript.
+
+PLEASE NOTE: NeuroImage would like to enrich online articles by displaying interactive figures that help the reader to visualize and explore your research results. For this purpose, we would like to invite you to upload figures in the MATLAB .FIG file format as supplementary material to our online submission system. Elsevier will generate interactive figures from these files and include them with the online article on SciVerseScienceDirect. If you wish, you can submit .FIG files along with your revised submission.
+
+This journal offers a new, free service called AudioSlides: brief, webcast-style presentations that are shown next to published articles on ScienceDirect (see also http://www.elsevier.com/audioslides). If your paper is accepted for publication, you will automatically receive an invitation to create an AudioSlides presentation.
+
+NeuroImage would like to enrich its relevant online articles with 3D neuroimaging viewer  that allows the reader to interactively explore the underlying research data. Hence, if applicable, we would like to invite you to upload with your manuscript neuroimaging data (in NIfTI format) as supplementary material to our online submission system. Elsevier will generate the interactive viewer  for your datasets  and include it with the online article on ScienceDirect. More information can be found at: http://www.elsevier.com/3DNeuroimaging
+
+
+With kind regards,
+
+Michael Breakspear, MB BS PhD
+Senior Editor
+
+NeuroImage Editorial Office
+Elsevier, Inc.
+525 B Street, Suite 1800
+San Diego, CA 92101-4495
+USA
+Phone:  (619) 699-6354
+Fax:  (619) 699-6211
+E-mail: ni@elsevier.com
+
+To receive e-mail table of content alerts for NeuroImage, register now by following the links at http://www.sciencedirect.com/science/alerts
+
+
+Reviewers' comments:
+
+> Reviewer #1: The manuscript by Pipitone describes a technique for automated
+> segmentation of the hippocampus and hippocampal subfields.   I reviewed this
+> manuscript previously and this version is improved.  However, problems persist,
+> particularly in the abstract, that require attention.  The authors insist on
+> using the term accuracy (p. 1) but then within the paper, state that there is
+> not agreement for even manual segmentation of the entire hippocampus (let alone
+> the subfields).  Thus, it seems incorrect to state that their method is
+> accurate when the "gold-stand" is not agreed on.  While the authors touch on
+> this in some form in the manuscript, I think they need to take out instances of
+> accuracy in the abstract (and elsewhere) and instead state that the automated
+> segmentation generally matches quite well what would be obtained in the same
+> subject using manual tracing.  Closely corresponding, consistent, even
+> reliable, seem like much better choices here.
+ 
+We have updated all references to “accuracy” or related terms. Specifically,   
+	- 
+ 
+> Along these lines, the manuscript continues to suffer from issues of over use
+> of jargon, making it hard to follow. When the authors employ precision here,
+> it wasn't clear to me that they mean the same numbers came out during
+> repeated testing of the same algorithm?  This should probably be made
+> clearer.
+
+- precision Exp4/eval: rewrote sentence to leave out 'precision' entirely
+- precision -> agreement/consistency
+
+- discussion: qualified use of precision to mean "over repeated randomized trials"
+
+> Another example of jargon is the sentence: "meaningfully bootstrap a template
+> library..." This sentence is opaque to me.  Even the use of bootstrap in the
+> title is a little confusing, I suggest a title that can more clearly convey
+> the content to a wider audience.
+
+- dropped bootstrapping from the title
+- where applicable changed 'bootstrap' to 'generate' as was done in the
+  previous paper.
+- rewrote discussion sentence: 
+	"that a useful template library can be generated from a small set of
+	labelled atlas images"
+
+> Finally, it wasn't clear to me that FIRST provided "radically" different
+> definitions of the hippocampus from the plots showed here.  I think there is
+> tendency in the manuscript to overstate MAGeTs accomplishments relative to
+> other methods.  The plots support that MAGeT brain is doing better overall,
+> but I don't see the whopping advantage to justify these kinds of statements.  
+
+Respectfully, the FIRST FreeSurfer definitions are on average about double the
+size of the ADNI semi-automated SNT labels, MAGeT and MAPER. 
+
+
+> Regarding the inclusion of hippocampal subfields, given the resampling
+> necessary to do this, I wasn't really convinced that much was gained here
+> other than that MAGeT could do this, given fairly noisy input.   I suggest
+> reframing this part, if the authors still feel strongly about keeping this
+> section in, to talk about the subfield segmentations as a proof of concept.
+
+- necessary 
+- reframed through as a "proof-of-concept validation". 
+
+> Overall, I think the manuscript needs to be more evenly toned with its
+> conclusions and how it compares MAGeT to other work, and greater
+> consideration is still required with how they treat subfield segmentation.

@@ -1,0 +1,32 @@
+We suggest the following reviewers: 
+
+ - Rolf Heckemann, Imperial College London
+   r.heckemann@imperial.ac.uk
+   Expertise in multi-atlas segmentation 
+
+ - Laura L.E.M. Wisse, University Medical Center Utrecht
+   l.e.m.wisse@umcutrecht.nl
+   Expertise in Hippocampus subfield anatomy 
+
+ - Lei Wang, Northwestern University Feinberg School of Medicine
+   leiwang1@northwestern.edu
+   Expertise in hippocampal subfield anatomy and automated segmentation.
+
+ - Marc Budge, Australian National University Medical School
+   marc.budge@anu.edu.au
+   Expertise in Alzheimer's disease and medial temporal lobe anatomy.
+
+ - Michael A. Yassa, Johns Hopkins University
+   yassa@jhu.edu
+   Expertise in medial temporal lobe anatomy and function.
+
+ - Paul A. Yushkevich. University of Pennsylvania
+   pauly2@mail.med.upenn.edu
+   Expertise in image processing and segmentation.  
+   
+
+We oppose the following reviewers: 
+
+  - Sébastien Ourselin, University College London
+    s.ourselin@cs.ucl.ac.uk
+    Conflict of interest
